@@ -1,0 +1,165 @@
+""""""" PATHOGEN begin
+execute pathogen#infect()
+syntax enable
+filetype plugin indent on
+call pathogen#helptags()
+""""""" PATHOGEN end
+
+"""" AIRLINE begin
+" always show status bar
+set laststatus=2
+" declare airline symbol list
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+" unicode symbols
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.branch = '⎇'
+" airline colorscheme/theme
+let g:airline_theme='gruvbox'
+"""" AIRLINE end
+
+"""" ULTISNIPS begin
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+let g:UltiSnipsSnippetsDir=$HOME."/.vim/bundle/my-ulti-snippets"
+let g:UltiSnipsSnippetDirectories=$HOME."/.vim/bundle/my-ulti-snippets"
+"""" ULTISNIPS end
+
+"""" SNEAK begin
+"replace 'f' with 1-char Sneak
+nmap f <Plug>Sneak_f
+nmap F <Plug>Sneak_F
+xmap f <Plug>Sneak_f
+xmap F <Plug>Sneak_F
+omap f <Plug>Sneak_f
+omap F <Plug>Sneak_F
+"replace 't' with 1-char Sneak
+nmap t <Plug>Sneak_t
+nmap T <Plug>Sneak_T
+xmap t <Plug>Sneak_t
+xmap T <Plug>Sneak_T
+omap t <Plug>Sneak_t
+omap T <Plug>Sneak_T
+"""" SNEAK end
+
+"""" EASYMOTION begin
+map <leader> <plug>(easymotion-prefix)
+nmap s <leader>s
+"""" EASYMOTION end
+
+"""" MUNDO begin
+nnoremap <leader>u :MundoToggle<CR>
+"""" MUNDO end
+
+"""" DISPLAY SETTINGS begin
+set showcmd "show vim commands as they're typed
+set number "show line number
+set relativenumber "show relative line numbering
+set hlsearch " set hlsearch
+" set 256 colors available
+set t_Co=256
+" non-printable character display settings when :set list
+set lcs=space:·,tab:»»,eol:↵
+hi NonText ctermfg=0 guifg=gray
+hi SpecialKey ctermfg=0 guifg=gray
+" let lines wrap at the indentation of beginning of the line being wrapped
+set breakindent
+" colors
+set background=dark
+colorscheme gruvbox
+hi Normal ctermbg=NONE
+"""" DISPLAY SETTINGS end
+
+"""" AUTOPAIRS begin
+let g:AutoPairsMultilineClose = 0
+"""" AUTOPAIRS end
+
+"""" TABULAR begin
+nnoremap <bar> :Tab/
+"""" TABULAR end
+
+"""" TABLINE begin
+set showtabline=1
+nnoremap <leader>t :tabedit 
+nnoremap <leader>l :tabnext<CR>
+nnoremap <leader>h :tabprevious<CR>
+nnoremap <leader>d :tabclose<CR>
+"""" TABLINE end
+
+"""" FZF begin
+set rtp+=~/installed_software/fzf
+"""" FZF end
+
+""""""" plugin-related settings begin
+" let vim detect filetype. needed for some plugins
+filetype plugin on
+" latex filetype setting
+let g:tex_flavor = "latex"
+""""""" plugin-related settings end
+
+""""""" search settings begin
+" this mapping causes vim to startup with c pressed
+nnoremap <esc> <esc>:noh<cr>:<bs><esc>hl
+" but neovim doesn't have this issue
+""""""" search settings end
+
+""""""" clipboard settings begin
+" set <C-c> to paste-to-clipboard in insert mode
+inoremap <C-c> <esc>"+pa
+" set <C-c> to copy-to-clipboard in visual mode
+vnoremap <C-c> "+y
+" ensure that clipboard = the unnamed register
+set clipboard=unnamed
+""""""" clipboard settings end
+
+""""""" terminal emulator settings begin
+" let C-w work as it normall does even in terminal mode
+tnoremap <C-w> <C-\><C-n><C-w>
+tnoremap <Esc><Esc> <C-\><C-n>
+""""""" terminal emulator settings end
+
+" <C-m> is 'm'y namespace
+noremap <C-m>hls :set hlsearch!<CR>
+noremap <C-m>rn :set relativenumber!<CR>
+noremap <C-m>ln :set number!<CR>
+noremap <C-m>lcs :set list!<CR>
+nmap <C-m>sn :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif <CR>
+nmap <C-m>rr :bufdo e<CR>
+
+" tab settings
+set tabstop=4     "The width of a TAB is set to 4, but is still \lt
+set shiftwidth=4  "Indents will have a width of 4
+set softtabstop=4 "Sets the number of columns for a TAB
+set expandtab     "Expand TABs to spaces
+" except you can still manually TAB like this:
+inoremap <S-Tab> <C-v><Tab>
+
+" :split opens to the right or below
+set splitright
+set splitbelow
+
+" let % jump to closing tag in html on top of usual functionality
+runtime macros/matchit.vim
+
+" code folding settings
+set foldmethod=indent
+set nofoldenable
+
+""""""" MY FUNCTIONS BEGIN
+" remove trailing whitespace + tabs to spaces
+noremap <C-m>w :call RemoveTrailingWhitespace()<CR>:call TabsToSpaces()<CR>
+
+function RemoveTrailingWhitespace()
+    :exe "silent! :%s/\\s\\+\\n/\\r/"
+endfunction
+
+function TabsToSpaces()
+    :exe "silent! :%s/\\t/    /g"
+endfunction
+""""""" MY FUNCTIONS END
+
+""""""" MY VARIABLES BEGIN
+let g:no_ocaml_maps=1
+""""""" MY VARIABLES END

@@ -1,0 +1,28 @@
+[push]
+    default = current
+[alias]
+    cm = commit
+    cmm = commit -m
+    a = add
+    aa = add -A
+    aacm = !git add -A && git commit
+    aacmm = !git add -A && git commit -m
+    b = branch
+    ba = branch --all
+    bd = branch -d
+    bD = branch -D
+    bn = checkout -b
+    ch = checkout
+    ls = ls-files
+    lsg = !git ls-files | egrep
+    s = status
+    lg = log --decorate --graph --all
+    d = diff
+    dw = diff --word-diff
+    ps = push
+    pl = pull
+    i = init
+    rs = reset
+    rsc = reset --cached
+    m = merge
+    mm = merge master
