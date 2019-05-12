@@ -21,6 +21,6 @@ END='\[\033[00m\]'      # end color
 PS1=""
 PS1+="\n$OR|$BL[\$(abbreviated_pwd)]" # abbreviated pwd
 PS1+="$YE\$(lbgit)\$(mygitbranch)$GR\$(mygitstaged)$RE\$(mygituntracked)$YE\$(rbgit)" # git
-PS1+="GR\$(lbvenv)\$(venvname)\$(rbvenv)" # virtualenv
+PS1+="$GR\$(lbvenv)\$(venvname)\$(rbvenv)" # virtualenv
 PS1+="\n$OR|$BL\u$OR@$BL\h$OR\$$END "
 PS1="${debian_chroot:+($debian_chroot))}$PS1"
