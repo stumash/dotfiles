@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+cd "${THIS_DIR}"
+
 # INSTALL NEOVIM IF NECESSARY
 
 if [ -z "$(which nvim)" ]; then
@@ -19,20 +22,24 @@ fi
 
 # INSTALL NEOVIM CONFIG
 
-ln -s "_vimrc" "~/.vimrc"
+[ -f "${HOME}/.vimrc" ] && rm "${HOME}/.vimrc"
+ln "$(readlink -f "_vimrc")" "${HOME}/.vimrc"
 
 # setup dirs for pathogen and install pathogen
-bundir="~/.vim/bundle"
-autodir="~/.vim/autoload"
+[ -d "${HOME}/.vim" ] && rm -rf "${HOME}/.vim"
+bundir="${HOME}/.vim/bundle"
+autodir="${HOME}/.vim/autoload"
 mkdir -p "$autodir" "$bundir" && \
 curl -LSso "$autodir/pathogen.vim" "https://tpo.pe/pathogen.vim"
 
-nvimconfdir="~/.config/nvim"
+nvimconfdir="${HOME}/.config/nvim"
+[ -f "${nvimconfdir}/.init.vim" ] && rm "${nvimconfdir}/.init.vim"
 mkdir -p "$nvimconfdir" && \
-ln -s "_init.vim" "$nvimconfdir/.init.vim"
+ln "$(readlink -f "_init.vim")" "$nvimconfdir/.init.vim"
 
 # install vim packages
-ln -s "_vim-packages" "$bundir/vim-packages"
+[ -f "${bundir}/vim-packages" ] && rm "${bundir}/vim-packages"
+ln "$(readlink -f  "_vim-packages")" "$bundir/vim-packages"
 while read line; do
   if [ "${line:0:1}" != "#" ]; then # ignore commented lines
     git clone "$line" "$bundir/${line##*/}"
@@ -41,6 +48,7 @@ done < "$bundir/vim-packages"
 
 # install my-ulti-snippets
 mkdir -p "$bundir/my-ulti-snippets"
-for FILE in "$(ls -1 "_my_ulti_snippets")"; do
-    ln -s "_my_ulti_snippets/$FILE" "$bundir/my-ulti-snippets/$FILE"
+for FILE in $(ls "_my_ulti_snippets"); do
+    [ -f "${bundir}/my-ulti-snippets/${FILE}" ] && rm "${bundir}/my-ulti-snippets/${FILE}"
+    ln "$(readlink -f "_my_ulti_snippets/$FILE")" "$bundir/my-ulti-snippets/$FILE"
 done

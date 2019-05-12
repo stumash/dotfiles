@@ -3,4 +3,5 @@
 THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 cd "${THIS_DIR}"
 
-ln -s "_gitconfig" "~/.gitconfig"
+[ -f "${HOME}/.gitconfig" ] && rm "${HOME}/.gitconfig"
+ln "$(readlink -f "_gitconfig")" "${HOME}/.gitconfig"

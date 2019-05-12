@@ -4,13 +4,15 @@ THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 cd "${THIS_DIR}"
 
 FILEMAP=(
-    ["_haskeline"] "~/.haskeline"
-    ["_latexmkrc"] "~/.latexmkrc"
-    ["_tmux.conf"] "~/.tmux.conf"
+    ["_haskeline"] "${HOME}/.haskeline"
+    ["_latexmkrc"] "${HOME}/.latexmkrc"
+    ["_tmux.conf"] "${HOME}/.tmux.conf"
 )
 
 for TARGET in "${!FILEMAP[@]}"; do
     LINK="${FILEMAP[${TARGET}]}"
+    TARGET="$(readlink -f "${TARGET}")"
 
-    ln -s "${TARGET}" "${LINK}"
+    [ -f "${TARGET}" ] && rm "${TARGET}"
+    ln "${TARGET}" "${LINK}"
 done

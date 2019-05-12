@@ -7,7 +7,7 @@
 set -o vi
 
 # PS1
-if [[ ! "${TERM}" =~ (xterm-color|(.*256color) ]]; then
+if [[ ! "${TERM}" =~ (xterm-color)|(.*256color) ]]; then
     echo "error: ~/.bashrc: not color terminal"
     exit 1
 fi
