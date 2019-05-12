@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# install neovim if necessary
+# INSTALL NEOVIM IF NECESSARY
 
 if [ -z "$(which nvim)" ]; then
     echo "warning: dotfiles/vim/install.sh: need to install neovim"
@@ -17,7 +17,7 @@ if [ -z "$(which nvim)" ]; then
     python3 -m pip install neovim
 fi
 
-# install neovim config
+# INSTALL NEOVIM CONFIG
 
 ln -s "_vimrc" "~/.vimrc"
 
@@ -39,8 +39,8 @@ while read line; do
   fi
 done < "$bundir/vim-packages"
 
-# can swap your capslock and escape if Ubuntu
-# sudo vim /etc/default/keyboard and edit
-# to `KBOPTIONS="caps:swapescape"` then run
-# sudo dpkg-reconfigure -phigh console-setup
-# or just use gnome-tweak-tool
+# install my-ulti-snippets
+mkdir -p "$bundir/my-ulti-snippets"
+for FILE in "$(ls -1 "_my_ulti_snippets")"; do
+    ln -s "_my_ulti_snippets/$FILE" "$bundir/my-ulti-snippets/$FILE"
+done
