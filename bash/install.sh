@@ -41,7 +41,6 @@ for FILE in "${POSSIBLE_DEFAULT_GIT_COMPLETION_FILES[@]}"; do
 done
 if [ -z "${DEFAULT_GIT_COMPLETION_FILE}" ]; then
     echo "error: dotfiles/git/install.sh: could not find a default git completion file"
-    echo "FILE: ${FILE}, DGCF: ${DEFAULT_GIT_COMPLETION_FILE}"
     exit 1
 fi
 

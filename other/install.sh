@@ -13,8 +13,6 @@ for TARGET in "${!FILEMAP[@]}"; do
     LINK="${FILEMAP[${TARGET}]}"
     TARGET="$(readlink -f "${TARGET}")"
 
-    echo "LINK: ${LINK} , TARGET: ${TARGET}"
-
     [ -f "${TARGET}" ] && rm "${TARGET}"
     ln "${TARGET}" "${LINK}"
 done
