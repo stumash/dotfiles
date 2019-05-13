@@ -63,15 +63,19 @@ function rbvenv() {
 
 # abbreviated pwd
 function abbreviated_pwd() {
-    pwd | sed -r "s#/home/.*$(whoami)(/)?#~\\1#" | sed -r "s#([^/]{4})[^/]+#\1#g"
+    pwd | sed -r "s#/home/.*$(whoami)(/)?#~\\1#" | sed -r 's#([^/]{4})[^/]+#\1#g'
 }
 
 # utilities
 
 # move up the directory tree n times
 function cd..() {
-    path=$(yes '../' | head -n "${1}" | tr -d '\n')
-    cd "${path}"
+    if [ -z "${1}" ]; then
+        cd ..
+    else
+        path=$(yes '../' | head -n "${1}" | tr -d '\n')
+        cd "${path}"
+    fi
 }
 
 # activate a python virtualenv in the current directory or nearest ancestor directory
