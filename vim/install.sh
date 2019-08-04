@@ -52,3 +52,6 @@ for FILE in $(ls "_my_ulti_snippets"); do
     [ -f "${bundir}/my-ulti-snippets/${FILE}" ] && rm "${bundir}/my-ulti-snippets/${FILE}"
     ln "$(readlink -f "_my_ulti_snippets/$FILE")" "$bundir/my-ulti-snippets/$FILE"
 done
+
+# install ternjs
+(cd "${bundir}/tern_for_vim"; npm install)

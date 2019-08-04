@@ -15,3 +15,5 @@ https://github.com/tpope/vim-fugitive.git
 https://github.com/junegunn/fzf.vim.git
 https://github.com/mkitt/tabline.vim.git
 https://github.com/sheerun/vim-polyglot.git
+https://github.com/ternjs/tern_for_vim
+https://github.com/Shougo/deoplete.nvim
