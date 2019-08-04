@@ -5,18 +5,34 @@ filetype plugin indent on
 call pathogen#helptags()
 """"""" PATHOGEN end
 
+"""" PYTHON begin
+let g:python3_host_prog = '/usr/bin/python3.6'
+"""" PYTHON end
+
+"""" DEOPLETE begin
+let g:deoplete#enable_at_startup = 1
+"""" DEOPLETE end
+
 """" AIRLINE begin
 " always show status bar
 set laststatus=2
-" declare airline symbol list
+" unicode symbols
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
-" unicode symbols
-let g:airline_symbols.linenr = '␤'
-let g:airline_symbols.branch = '⎇'
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.dirty='⚡'
 " airline colorscheme/theme
 let g:airline_theme='gruvbox'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
 """" AIRLINE end
 
 """" ULTISNIPS begin
@@ -82,10 +98,10 @@ nnoremap <bar> :Tab/
 
 """" TABLINE begin
 set showtabline=1
-nnoremap <leader>t :tabedit 
+nnoremap <leader>t :tabedit<space>
 nnoremap <leader>l :tabnext<CR>
 nnoremap <leader>h :tabprevious<CR>
-nnoremap <leader>d :tabclose<CR>
+nnoremap <leader>d :bd<CR>
 """" TABLINE end
 
 """" FZF begin
