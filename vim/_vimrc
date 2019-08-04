@@ -112,7 +112,7 @@ nnoremap <leader>d :bd<CR>
 
 """" FZF begin
 set rtp+=~/installed_software/fzf
-nmap <leader>f :Files<space>
+nmap <leader>f :Files<CR>
 """" FZF end
 
 """"""" plugin-related settings begin
