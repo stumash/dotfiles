@@ -5,9 +5,17 @@ filetype plugin indent on
 call pathogen#helptags()
 """"""" PATHOGEN end
 
-"""" DEOPLETE begin
-let g:deoplete#enable_at_startup = 1
-"""" DEOPLETE end
+"""" RANGER begin
+let g:ranger_map_keys = 0
+map <leader>a :Ranger<CR>
+map <leader>A :RangerWorkingDirectory<CR>
+"""" RANGER end
+
+"""" YOUCOMPLETEME begin
+" no keystealing from Ultisnips, removed TAB and S-TAB
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+"""" YOUCOMPLETEME end
 
 """" AIRLINE begin
 " always show status bar
@@ -30,23 +38,25 @@ let g:airline_theme='gruvbox'
 let g:airline_powerline_fonts = 1
 " airline tabline
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#show_buffers = 0
-let g:airline#extensions#tabline#show_splits = 0
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_splits = 1
 let g:airline#extensions#tabline#show_tabs = 1
 let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
 let g:airline#extensions#tabline#show_tab_nr = 1
-let g:airline#extensions#tabline#show_tab_count = 0
+let g:airline#extensions#tabline#show_tab_count = 1
 let g:airline#extensions#tabline#show_tab_type = 0
 let g:airline#extensions#tabline#close_symbol = '×'
 let g:airline#extensions#tabline#show_close_button = 0
+" keybindings
+nmap <leader>n :bnext<CR>
+nmap <leader>p :bprevious<CR>
 """" AIRLINE end
 
 """" ULTISNIPS begin
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
-let g:UltiSnipsSnippetsDir=$HOME."/.vim/bundle/my-ulti-snippets"
-let g:UltiSnipsSnippetDirectories=$HOME."/.vim/bundle/my-ulti-snippets"
+let g:UltiSnipsSnippetsDir=$HOME.'/.vim/bundle/my-ulti-snippets'
 """" ULTISNIPS end
 
 """" SNEAK begin
@@ -65,15 +75,6 @@ xmap T <Plug>Sneak_T
 omap t <Plug>Sneak_t
 omap T <Plug>Sneak_T
 """" SNEAK end
-
-"""" EASYMOTION begin
-map <leader> <plug>(easymotion-prefix)
-nmap s <leader>s
-"""" EASYMOTION end
-
-"""" MUNDO begin
-nnoremap <leader>u :MundoToggle<CR>
-"""" MUNDO end
 
 """" DISPLAY SETTINGS begin
 set showcmd "show vim commands as they're typed
@@ -104,16 +105,21 @@ nnoremap <bar> :Tab/
 
 """" TABLINE begin
 set showtabline=1
-nnoremap <leader>t :tabedit<space>
-nnoremap <leader>l :tabnext<CR>
-nnoremap <leader>h :tabprevious<CR>
+nnoremap <leader>e :edit<space>
 nnoremap <leader>d :bd<CR>
 """" TABLINE end
 
 """" FZF begin
 set rtp+=~/installed_software/fzf
-nmap <leader>f :Files<CR>
+" open new file
+nmap <leader>o :Files<space>
+" find file by contents
+nmap <leader>f :Ag<CR>
 """" FZF end
+
+"""" POLYGLOT begin
+let g:csv_no_conceal = 1
+"""" POLYGLOT end
 
 """"""" plugin-related settings begin
 " let vim detect filetype. needed for some plugins
@@ -185,4 +191,5 @@ endfunction
 
 """"""" MY VARIABLES BEGIN
 let g:no_ocaml_maps=1
+let g:csv_delim=','
 """"""" MY VARIABLES END
