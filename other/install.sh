@@ -3,6 +3,7 @@
 THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 cd "${THIS_DIR}"
 
+declare -A FILEMAP
 FILEMAP=(
     ["_haskeline"]="${HOME}/.haskeline"
     ["_latexmkrc"]="${HOME}/.latexmkrc"
@@ -13,6 +14,8 @@ for TARGET in "${!FILEMAP[@]}"; do
     LINK="${FILEMAP[${TARGET}]}"
     TARGET="$(readlink -f "${TARGET}")"
 
-    [ -f "${TARGET}" ] && rm "${TARGET}"
+    echo "link: ${LINK}, target: ${TARGET}"
+
+    [ -f "${LINK}" ] && rm "${LINK}"
     ln "${TARGET}" "${LINK}"
 done
