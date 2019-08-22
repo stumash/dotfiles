@@ -5,19 +5,6 @@ filetype plugin indent on
 call pathogen#helptags()
 """"""" PATHOGEN end
 
-"""" RANGER begin
-let g:ranger_map_keys = 0
-map <leader>a :Ranger<CR>
-map <leader>A :RangerWorkingDirectory<CR>
-"""" RANGER end
-
-"""" YOUCOMPLETEME begin
-" no keystealing from Ultisnips, removed TAB and S-TAB
-let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
-let g:ycm_autoclose_preview_window_after_completion = 1
-"""" YOUCOMPLETEME end
-
 """" AIRLINE begin
 " always show status bar
 set laststatus=2
@@ -58,8 +45,22 @@ nmap <leader>+ <Plug>AirlineSelectNextTab
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+let g:UltiSnipsSnippetDirectories=[$HOME.'/.vim/bundle/my-ulti-snippets']
 let g:UltiSnipsSnippetsDir=$HOME.'/.vim/bundle/my-ulti-snippets'
 """" ULTISNIPS end
+
+"""" YOUCOMPLETEME begin
+" no keystealing from Ultisnips, removed TAB and S-TAB
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_autoclose_preview_window_after_completion = 1
+"""" YOUCOMPLETEME end
+
+"""" RANGER begin
+let g:ranger_map_keys = 0
+map <leader>a :Ranger<CR>
+map <leader>A :RangerWorkingDirectory<CR>
+"""" RANGER end
 
 """" SNEAK begin
 "replace 'f' with 1-char Sneak
