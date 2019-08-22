@@ -18,3 +18,16 @@ function install_oh_my_fish_theme_bobthefish() {
 install_fish && \
     install_oh_my_fish && \
     install_oh_my_fish_theme_bobthefish
+
+declare -A FILEMAP
+FILEMAP=(
+    ["a"]="aye"
+    ["b"]="bee"
+    ["c"]="cee"
+)
+
+for KEY in ${!FILEMAP[@]}; do
+    VALUE="${FILEMAP[$key]}"
+
+    echo "$KEY: $VALUE"
+done
