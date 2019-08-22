@@ -3,31 +3,6 @@
 THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 cd "${THIS_DIR}"
 
-function install_fish() {
-    sudo apt-get install fish
-}
+sudo apt-get install fish
 
-function install_oh_my_fish() {
-    curl -L https://get.oh-my.fish | fish
-}
-
-function install_oh_my_fish_theme_bobthefish() {
-    omf install bobthefish
-}
-
-install_fish && \
-    install_oh_my_fish && \
-    install_oh_my_fish_theme_bobthefish
-
-declare -A FILEMAP
-FILEMAP=(
-    ["a"]="aye"
-    ["b"]="bee"
-    ["c"]="cee"
-)
-
-for KEY in ${!FILEMAP[@]}; do
-    VALUE="${FILEMAP[$key]}"
-
-    echo "$KEY: $VALUE"
-done
+"${THIS_DIR}/install.fish" "${@}"
