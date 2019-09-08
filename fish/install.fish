@@ -29,7 +29,7 @@ if [ "$argv[1]" != "--last-steps" ]
         echo "$STEP"
     end
 else
-    and omf install bobthefish
+    omf install bobthefish
 
     # configure bobthefish
     cd $OMF_PATH/themes/bobthefish/
