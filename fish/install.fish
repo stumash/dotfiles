@@ -13,7 +13,7 @@ if [ "$argv[1]" != "--last-steps" ]
         set -l TARGET "$__DIR__/functions/$FUNCTION_FILE"
         set -l LINK "$FISH_CONFIG_DIR/functions/$FUNCTION_FILE"
 
-        ln $TARGET $LINK
+        ln -f $TARGET $LINK
     end
 
     set NEXT_STEPS \
