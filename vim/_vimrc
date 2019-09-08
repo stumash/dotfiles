@@ -38,7 +38,7 @@ nmap <leader>7 <Plug>AirlineSelectTab7
 nmap <leader>8 <Plug>AirlineSelectTab8
 nmap <leader>9 <Plug>AirlineSelectTab9
 nmap <leader>- <Plug>AirlineSelectPrevTab
-nmap <leader>+ <Plug>AirlineSelectNextTab
+nmap <leader>= <Plug>AirlineSelectNextTab
 """" AIRLINE end
 
 """" ULTISNIPS begin
@@ -108,7 +108,6 @@ nnoremap <bar> :Tab/
 
 """" TABLINE begin
 set showtabline=1
-nnoremap <leader>x :bd<CR>
 """" TABLINE end
 
 """" FZF begin
@@ -116,7 +115,9 @@ set rtp+=~/installed_software/fzf
 " open new file
 nmap <leader>f :Files<space>
 " find file by contents
-nmap <leader>F :Ag<space>
+nmap <leader>F :Rg<space>
+" find line in current buffer
+nmap <leader>/ :BLines<CR>
 """" FZF end
 
 """" POLYGLOT begin
@@ -159,11 +160,17 @@ noremap <C-m>lcs :set list!<CR>
 nmap <C-m>sn :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif <CR>
 nmap <C-m>rr :bufdo e<CR>
 
+" allow opening buffers even if current has unsaved changes
+set hidden
+
 " tab settings
 set tabstop=4     "The width of a TAB is set to 4, but is still \lt
 set shiftwidth=4  "Indents will have a width of 4
 set softtabstop=4 "Sets the number of columns for a TAB
 set expandtab     "Expand TABs to spaces
+" filetype-specific tab settings
+autocmd FileType html setlocal shiftwidth=2 tabstop=2 softtabstop=4
+autocmd FileType javascript setlocal shiftwidth=2 tabstop=2 softtabstop=4
 " except you can still manually TAB like this:
 inoremap <S-Tab> <C-v><Tab>
 
