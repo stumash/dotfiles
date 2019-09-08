@@ -26,6 +26,6 @@ cat <<EOF
 # rustup
 # ripgrep
 # fzf
-# ranger
+# ranger (ranger-fm)
 # YCM setup (libclang, go)
 EOF
