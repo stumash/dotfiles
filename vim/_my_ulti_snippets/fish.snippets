@@ -1,0 +1,11 @@
+snippet #! "shebang" b
+#!/usr/bin/env fish
+
+$0
+endsnippet
+
+snippet __DIR__ "file name and folder of current script" b
+set __FILE__ (readlink -f (status --current-filename))
+set __DIR__ (dirname $__FILE__)
+$0
+endsnippet
