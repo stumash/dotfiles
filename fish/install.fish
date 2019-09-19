@@ -6,14 +6,15 @@ set FISH_CONFIG_DIR "$HOME/.config/fish"
 
 if [ "$argv[1]" != "--last-steps" ]
     # create links to functions
-    set FUNCTION_FILES g.fish f.rish t.fish v.fish
+    set FUNCTION_FILES g.fish r.fish t.fish v.fish
+    set FISH_CONFIG_DIR "$HOME/.config/fish"
     mkdir -p "$FISH_CONFIG_DIR/functions"
 
     for FUNCTION_FILE in $FUNCTION_FILES
         set -l TARGET "$__DIR__/functions/$FUNCTION_FILE"
         set -l LINK "$FISH_CONFIG_DIR/functions/$FUNCTION_FILE"
 
-        ln $TARGET $LINK
+        ln -f $TARGET $LINK
     end
 
     set NEXT_STEPS \
@@ -29,7 +30,7 @@ if [ "$argv[1]" != "--last-steps" ]
         echo "$STEP"
     end
 else
-    and omf install bobthefish
+    omf install bobthefish
 
     # configure bobthefish
     cd $OMF_PATH/themes/bobthefish/
@@ -38,6 +39,6 @@ else
     git checkout endvi
 
     # add code to "$FISH_CONFIG_DIR/config.fish"
-    ln "$__DIR__/myconfig.fish" "$FISH_CONFIG_DIR/myconfig.fish"
+    ln -f "$__DIR__/myconfig.fish" "$FISH_CONFIG_DIR/myconfig.fish"
     echo "source $FISH_CONFIG_DIR/myconfig.fish" >> "$FISH_CONFIG_DIR/config.fish"
 end

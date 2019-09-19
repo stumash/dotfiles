@@ -19,3 +19,13 @@ for TARGET in "${!FILEMAP[@]}"; do
     [ -f "${LINK}" ] && rm "${LINK}"
     ln "${TARGET}" "${LINK}"
 done
+
+cat <<EOF
+# more things to install:
+# tmux
+# rustup
+# ripgrep
+# fzf
+# ranger (ranger-fm)
+# YCM setup (libclang, go)
+EOF
