@@ -2,6 +2,7 @@
 
 set __FILE__ (readlink -f (status --current-filename))
 set __DIR__ (dirname $__FILE__)
+set FISH_CONFIG_DIR "$HOME/.config/fish"
 
 if [ "$argv[1]" != "--last-steps" ]
     # create links to functions
@@ -39,4 +40,8 @@ else
     git remote add stuhub git@github.com:stumash/theme-bobthefish.git
     git fetch stuhub
     git checkout endvi
+
+    # add code to "$FISH_CONFIG_DIR/config.fish"
+    ln -f "$__DIR__/myconfig.fish" "$FISH_CONFIG_DIR/myconfig.fish"
+    echo "source $FISH_CONFIG_DIR/myconfig.fish" >> "$FISH_CONFIG_DIR/config.fish"
 end
