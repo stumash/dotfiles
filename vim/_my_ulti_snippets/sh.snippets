@@ -98,4 +98,9 @@ while ${2:[[ ${1:condition} ]]}; do
 done
 endsnippet
 
+snippet __DIR__ "get current script's dir" b
+__DIR__="$(dirname "$(readlink -f ${BASH_SOURCE[0]})")" # directory of this script
+$0
+endsnippet
+
 # vim:ft=snippets:

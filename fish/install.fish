@@ -2,11 +2,11 @@
 
 set __FILE__ (readlink -f (status --current-filename))
 set __DIR__ (dirname $__FILE__)
+set FISH_CONFIG_DIR "$HOME/.config/fish"
 
 if [ "$argv[1]" != "--last-steps" ]
     # create links to functions
     set FUNCTION_FILES g.fish f.rish t.fish v.fish
-    set FISH_CONFIG_DIR "$HOME/.config/fish"
     mkdir -p "$FISH_CONFIG_DIR/functions"
 
     for FUNCTION_FILE in $FUNCTION_FILES
@@ -37,5 +37,7 @@ else
     git fetch stuhub
     git checkout endvi
 
-    # TODO: add code to "$FISH_CONFIG_DIR/config.fish"
+    # add code to "$FISH_CONFIG_DIR/config.fish"
+    ln "$__DIR__/myconfig.fish" "$FISH_CONFIG_DIR/myconfig.fish"
+    echo "source $FISH_CONFIG_DIR/myconfig.fish" >> "$FISH_CONFIG_DIR/config.fish"
 end
