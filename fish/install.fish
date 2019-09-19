@@ -10,6 +10,8 @@ if [ "$argv[1]" != "--last-steps" ]
     set FISH_CONFIG_DIR "$HOME/.config/fish"
     mkdir -p "$FISH_CONFIG_DIR/functions"
 
+    ln -f "$__DIR__/config.fish" "$FISH_CONFIG_DIR/config.fish"
+
     for FUNCTION_FILE in $FUNCTION_FILES
         set -l TARGET "$__DIR__/functions/$FUNCTION_FILE"
         set -l LINK "$FISH_CONFIG_DIR/functions/$FUNCTION_FILE"
@@ -31,6 +33,7 @@ if [ "$argv[1]" != "--last-steps" ]
     end
 else
     omf install bobthefish
+    omf install bass
 
     # configure bobthefish
     cd $OMF_PATH/themes/bobthefish/

@@ -1,5 +1,7 @@
 # fish settings
 
+bass source ~/.profile
+
 fish_vi_key_bindings
 
 set -x EDITOR nvim
