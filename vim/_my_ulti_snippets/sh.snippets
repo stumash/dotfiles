@@ -99,7 +99,8 @@ done
 endsnippet
 
 snippet __DIR__ "get current script's dir" b
-__DIR__="$(dirname "$(readlink -f ${BASH_SOURCE[0]})")" # directory of this script
+__FILE__="$(readlink -f ${BASH_SOURCE[0]})"
+__DIR__="$(dirname "$__FILE__")"
 $0
 endsnippet
 
