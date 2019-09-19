@@ -32,12 +32,11 @@ if [ "$argv[1]" != "--last-steps" ]
     end
 else
     omf install bobthefish
+    omf install bass
 
     # configure bobthefish
     cd $OMF_PATH/themes/bobthefish/
     git remote add stuhub git@github.com:stumash/theme-bobthefish.git
     git fetch stuhub
     git checkout endvi
-
-    # TODO: add code to "$FISH_CONFIG_DIR/config.fish"
 end
