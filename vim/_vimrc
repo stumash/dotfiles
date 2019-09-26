@@ -124,6 +124,16 @@ nmap <leader>/ :BLines<CR>
 let g:csv_no_conceal = 1
 """" POLYGLOT end
 
+"""" GITGUTTER begin
+let g:gitgutter_enabled = 0
+nmap <leader>g :GitGutterToggle<CR>
+nmap <leader>G :GitGutterAll<CR>
+nmap ]g <Plug>GitGutterNextHunk
+nmap [g <Plug>GitGutterPrevHunk
+nmap <leader>ga <Plug>GitGutterStageHunk
+nmap <leader>gu <Plug>GitGutterUndoHunk
+"""" GITGUTTER end
+
 """"""" plugin-related settings begin
 " let vim detect filetype. needed for some plugins
 filetype plugin on
@@ -202,3 +212,8 @@ endfunction
 let g:no_ocaml_maps=1
 let g:csv_delim=','
 """"""" MY VARIABLES END
+
+""" MY LEADER MAPPINGS begin
+" copy current filename into system clipboard
+nmap <leader>% mz:put =expand('%:p')<CR>0v$h<C-c>dd`z
+""" MY LEADER MAPPINGS end
