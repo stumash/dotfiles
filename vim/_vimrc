@@ -124,7 +124,14 @@ nmap <leader>/ :BLines<CR>
 let g:csv_no_conceal = 1
 """" POLYGLOT end
 
+"""" FUGITIVE begin
+" git add current file
+nmap <leader> gaf :Gwrite<CR>
+nmap <leader>gs :Gstatus<CR>
+"""" FUGITIVE end
+
 """" GITGUTTER begin
+" this line is only in the index, not the HEAD
 nmap <leader>G :GitGutterToggle<CR>
 " force git gutter to run on all buffers
 nmap <leader>gg :GitGutterAll<CR>
@@ -134,6 +141,21 @@ nmap [g <Plug>GitGutterPrevHunk
 nmap <leader>ga <Plug>GitGutterStageHunk
 " git undo hunk ()
 nmap <leader>gu <Plug>GitGutterUndoHunk
+" toggle diff base to HEAD (default to index)
+function ToggleGitgutterDiffBase()
+    if g:gitgutter_diff_base == ""
+        " defaults to index
+        let g:gitgutter_diff_base = "HEAD"
+        echom "diff base set to HEAD"
+    else
+        " reset to index
+        let g:gitgutter_diff_base = ""
+        echom "diff base set to index"
+    endif
+    runtime plugin/."vim-gittgutter"
+    call gitgutter#all(1)
+endfunction
+nmap <leader>gb :call ToggleGitgutterDiffBase()<CR>
 """" GITGUTTER end
 
 """"""" plugin-related settings begin
@@ -197,7 +219,7 @@ runtime macros/matchit.vim
 set foldmethod=indent
 set nofoldenable
 
-""""""" MY FUNCTIONS BEGIN
+"""" MY FUNCTIONS BEGIN
 " remove trailing whitespace + tabs to spaces
 noremap <C-m>w :call RemoveTrailingWhitespace()<CR>:call TabsToSpaces()<CR>
 
@@ -208,14 +230,14 @@ endfunction
 function TabsToSpaces()
     :exe "silent! :%s/\\t/    /g"
 endfunction
-""""""" MY FUNCTIONS END
+"""" MY FUNCTIONS END
 
-""""""" MY VARIABLES BEGIN
+"""" MY VARIABLES BEGIN
 let g:no_ocaml_maps=1
 let g:csv_delim=','
-""""""" MY VARIABLES END
+"""" MY VARIABLES END
 
-""" MY LEADER MAPPINGS begin
+"""" MY LEADER MAPPINGS begin
 " copy current filename into system clipboard
 nmap <leader>% mz:put =expand('%:p')<CR>0v$h<C-c>dd`z
-""" MY LEADER MAPPINGS end
+"""" MY LEADER MAPPINGS end
