@@ -125,12 +125,14 @@ let g:csv_no_conceal = 1
 """" POLYGLOT end
 
 """" GITGUTTER begin
-let g:gitgutter_enabled = 0
-nmap <leader>g :GitGutterToggle<CR>
-nmap <leader>G :GitGutterAll<CR>
+nmap <leader>G :GitGutterToggle<CR>
+" force git gutter to run on all buffers
+nmap <leader>gg :GitGutterAll<CR>
 nmap ]g <Plug>GitGutterNextHunk
 nmap [g <Plug>GitGutterPrevHunk
+" git add hunk
 nmap <leader>ga <Plug>GitGutterStageHunk
+" git undo hunk ()
 nmap <leader>gu <Plug>GitGutterUndoHunk
 """" GITGUTTER end
 
