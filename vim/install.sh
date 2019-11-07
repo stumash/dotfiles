@@ -33,9 +33,10 @@ mkdir -p "$autodir" "$bundir" && \
 curl -LSso "$autodir/pathogen.vim" "https://tpo.pe/pathogen.vim"
 
 nvimconfdir="${HOME}/.config/nvim"
-[ -f "${nvimconfdir}/.init.vim" ] && rm "${nvimconfdir}/.init.vim"
+nvimconffile="init.vim"
+[ -f "$nvimconfdir}/$nvimconffile}" ] && rm "$nvimconfdir/$nvimconffile"
 mkdir -p "$nvimconfdir" && \
-ln "$(readlink -f "_init.vim")" "$nvimconfdir/.init.vim"
+ln -f "$(readlink -f "_init.vim")" "$nvimconfdir/$nvimconffile"
 
 # install vim packages
 [ -f "${bundir}/vim-packages" ] && rm "${bundir}/vim-packages"
