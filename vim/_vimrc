@@ -115,33 +115,16 @@ nmap <leader> gaf :Gwrite<CR>
 nmap <leader>gs :Gstatus<CR>
 """" FUGITIVE end
 
-"""" GITGUTTER begin
+"""" SIGNIFY begin
 " this line is only in the index, not the HEAD
-nmap <leader>G :GitGutterToggle<CR>
-" force git gutter to run on all buffers
-nmap <leader>gg :GitGutterAll<CR>
-nmap ]g <Plug>GitGutterNextHunk
-nmap [g <Plug>GitGutterPrevHunk
-" git add hunk
-nmap <leader>ga <Plug>GitGutterStageHunk
-" git undo hunk ()
-nmap <leader>gu <Plug>GitGutterUndoHunk
-" toggle diff base to HEAD (default to index)
-function ToggleGitgutterDiffBase()
-    if g:gitgutter_diff_base == ""
-        " defaults to index
-        let g:gitgutter_diff_base = "HEAD"
-        echom "diff base set to HEAD"
-    else
-        " reset to index
-        let g:gitgutter_diff_base = ""
-        echom "diff base set to index"
-    endif
-    runtime plugin/."vim-gittgutter"
-    call gitgutter#all(1)
-endfunction
-nmap <leader>gb :call ToggleGitgutterDiffBase()<CR>
-"""" GITGUTTER end
+nmap <leader>G :SignifyToggle<CR>
+"" force git gutter to run on all buffers
+nmap <leader>gg :SignifyRefresh<CR>
+nmap ]g <Plug>(signify-next-hunk)
+nmap [g <Plug>(signify-prev-hunk)
+"" git undo hunk ()
+nmap <leader>gu :SignifyHunkUndo<CR>
+"""" SIGNIFY end
 
 """"""" plugin-related settings begin
 " let vim detect filetype. needed for some plugins
@@ -181,6 +164,9 @@ nmap <C-m>rr :bufdo e<CR>
 
 " allow opening buffers even if current has unsaved changes
 set hidden
+
+" highlight column 120
+set colorcolumn=120
 
 " tab settings
 set tabstop=4     "The width of a TAB is set to 4, but is still \lt

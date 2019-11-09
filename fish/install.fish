@@ -4,13 +4,11 @@ set __FILE__ (readlink -f (status --current-filename))
 set __DIR__ (dirname $__FILE__)
 set FISH_CONFIG_DIR "$HOME/.config/fish"
 
-if [ "$argv[1]" != "--last-steps" ]
+if test "$argv[1]" != "--last-steps"
     # create links to functions
-    set FUNCTION_FILES {g, r, t, v, ipy3}.fish
+    set FUNCTION_FILES {g,r,t,v,ipy3}.fish
     set FISH_CONFIG_DIR "$HOME/.config/fish"
     mkdir -p "$FISH_CONFIG_DIR/functions"
-
-    ln -f "$__DIR__/config.fish" "$FISH_CONFIG_DIR/config.fish"
 
     for FUNCTION_FILE in $FUNCTION_FILES
         set -l TARGET "$__DIR__/functions/$FUNCTION_FILE"

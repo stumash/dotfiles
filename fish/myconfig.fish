@@ -1,9 +1,13 @@
 # PATH settings
 
-set -x PATH "/usr/local/go/bin" "$HOME/installed_software/bin" $PATH
-set -x GOPATH "$HOME/installed_software" $GOPATH
-set -x NODE_PATH (npm root -g)
-set -x INSTALLED_SOFTWARE_PATH "$HOME/installed_software"
+set -x INSTALLS "$HOME/installed_software"
+
+test -d "/usr/local/go/bin/" -a -d "$INSTALLS/bin";
+    and set -x PATH "/usr/local/go/bin" "$INSTALLS/bin" $PATH
+test -d "$INSTALLS";
+    and set -x GOPATH "$INSTALLS" $GOPATH;
+test -x (which npm);
+    and set -x NODE_PATH (npm root -g)
 
 # fish settings
 
@@ -11,8 +15,10 @@ bass source ~/.profile
 
 fish_vi_key_bindings
 
-set FISH_FZF_KEYBINDINGS_PATH $INSTALLED_SOFTWARE_PATH/fzf/shell/key-bindings.fish
-test -f $FISH_FZF_KEYBINDINGS_PATH && source $FISH_FZF_KEYBINDINGS_PATH && fzf_key_bindings
+set FISH_FZF_KEYBINDINGS_PATH "$INSTALLS/fzf/shell/key-bindings.fish"
+test -f $FISH_FZF_KEYBINDINGS_PATH;
+    and source $FISH_FZF_KEYBINDINGS_PATH;
+    and fzf_key_bindings
 
 set -x EDITOR nvim
 set -x VISUAL nvim
