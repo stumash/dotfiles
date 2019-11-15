@@ -6,7 +6,7 @@ set FISH_CONFIG_DIR "$HOME/.config/fish"
 
 if test "$argv[1]" != "--last-steps"
     # create links to functions
-    set FUNCTION_FILES {g,r,t,v,ipy3}.fish
+    set FUNCTION_FILES {g,r,t,v,ipy3,nvm}.fish
     set FISH_CONFIG_DIR "$HOME/.config/fish"
     mkdir -p "$FISH_CONFIG_DIR/functions"
 

@@ -1,3 +1,8 @@
+" vim uses bash best, not fish
+if &shell =~# 'fish$'
+    set shell=sh
+endif
+
 """"""" PATHOGEN begin
 execute pathogen#infect()
 syntax enable

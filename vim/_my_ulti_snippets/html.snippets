@@ -12,6 +12,8 @@ def x(snip):
 		snip.rv = ""
 endglobal
 
+extends html_emmet
+
 snippet doctype "HTML - 5.0 (doctype)" b
 <!DOCTYPE html>
 
@@ -59,6 +61,13 @@ endsnippet
 #############
 # HTML TAGS #
 #############
+
+snippet t "a tag" w
+<${1:t}>
+  ${0:${VISUAL}}
+</$1>
+endsnippet
+
 snippet a "Link" w
 <a href="${1:http://www.${2:url.com}}"${3: target="_blank"}>${4:Anchor Text}</a>
 endsnippet

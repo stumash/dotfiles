@@ -8,6 +8,7 @@ FILEMAP=(
     ["_haskeline"]="${HOME}/.haskeline"
     ["_latexmkrc"]="${HOME}/.latexmkrc"
     ["_tmux.conf"]="${HOME}/.tmux.conf"
+    ["_tmuxline.conf"]="${HOME}/.tmuxline.conf"
 )
 
 for TARGET in "${!FILEMAP[@]}"; do
@@ -27,5 +28,7 @@ cat <<EOF
 # ripgrep
 # fzf
 # ranger (ranger-fm)
+# powerline fonts
+# nvm
 # YCM setup (libclang, go)
 EOF

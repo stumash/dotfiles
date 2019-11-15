@@ -6,7 +6,6 @@ priority -50
 
 extends javascript-jasmine-arrow
 extends javascript-node
-extends html_emmet
 extends html
 
 snippet us "use strict;" b
@@ -16,7 +15,7 @@ $0
 endsnippet
 
 snippet cl "console.log()"
-console.log('$1');$0
+console.log("$1");$0
 endsnippet
 
 snippet if "if"
@@ -43,7 +42,7 @@ snippet ()= "anonymous arrow function"
 }
 endsnippet
 
-snippet : "json prop:val"
+snippet : "json prop:val" w
 "$1": "$2",$0
 endsnippet
 
