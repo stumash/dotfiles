@@ -2,8 +2,10 @@
 
 set -x INSTALLS "$HOME/installed_software"
 
-test -d "/usr/local/go/bin/" -a -d "$INSTALLS/bin";
-    and set -x PATH "/usr/local/go/bin" "$INSTALLS/bin" $PATH
+test -d "$INSTALLS/bin";
+    and set -x PATH "$INSTALLS/bin" $PATH
+test -d "/usr/local/go/bin/";
+    and set -x PATH "/usr/local/go/bin" $PATH
 test -d "$INSTALLS";
     and set -x GOPATH "$INSTALLS" $GOPATH;
 test -x (which npm);
