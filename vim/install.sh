@@ -23,7 +23,7 @@ fi
 # INSTALL NEOVIM CONFIG
 
 [ -f "${HOME}/.vimrc" ] && rm "${HOME}/.vimrc"
-ln "$(readlink -f "_vimrc")" "${HOME}/.vimrc"
+ln -f "$(readlink -f "_vimrc")" "${HOME}/.vimrc"
 
 # setup dirs for pathogen and install pathogen
 [ -d "${HOME}/.vim" ] && rm -rf "${HOME}/.vim"
@@ -51,5 +51,5 @@ done < "$bundir/vim-packages"
 mkdir -p "$bundir/my-ulti-snippets"
 for FILE in $(ls "_my_ulti_snippets"); do
     [ -f "${bundir}/my-ulti-snippets/${FILE}" ] && rm "${bundir}/my-ulti-snippets/${FILE}"
-    ln "$(readlink -f "_my_ulti_snippets/$FILE")" "$bundir/my-ulti-snippets/$FILE"
+    ln -f "$(readlink -f "_my_ulti_snippets/$FILE")" "$bundir/my-ulti-snippets/$FILE"
 done
