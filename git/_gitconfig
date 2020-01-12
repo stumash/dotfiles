@@ -26,3 +26,5 @@
     rsc = reset --cached
     m = merge
     mm = merge master
+[diff]
+    algorithm = patience
