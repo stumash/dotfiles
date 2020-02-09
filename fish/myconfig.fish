@@ -14,7 +14,6 @@ test -x (which npm);
 # fish settings
 
 bass source ~/.profile
-bass source ~/.bashrc
 
 fish_vi_key_bindings
 
@@ -33,3 +32,6 @@ set -x theme_newline_cursor endvi
 # virtualenv
 
 set -x VIRTUAL_ENV_DISABLE_PROMPT 1
+
+# nvm
+nvm current > /dev/null; and nvm use default > /dev/null

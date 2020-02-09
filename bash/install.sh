@@ -14,8 +14,7 @@ for TARGET in "${!FILEMAP[@]}"; do
     LINK="${FILEMAP[${TARGET}]}"
     TARGET="$(readlink -f "${TARGET}")"
 
-    rm "${LINK}"
-    ln "${TARGET}" "${LINK}"
+    ln -f "${TARGET}" "${LINK}"
 done
 
 # BASHRC INCLUDE
