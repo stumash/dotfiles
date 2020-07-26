@@ -25,31 +25,8 @@ fi
 [ -f "${HOME}/.vimrc" ] && rm "${HOME}/.vimrc"
 ln -f "$(readlink -f "_vimrc")" "${HOME}/.vimrc"
 
-# setup dirs for pathogen and install pathogen
-[ -d "${HOME}/.vim" ] && rm -rf "${HOME}/.vim"
-bundir="${HOME}/.vim/bundle"
-autodir="${HOME}/.vim/autoload"
-mkdir -p "$autodir" "$bundir" && \
-curl -LSso "$autodir/pathogen.vim" "https://tpo.pe/pathogen.vim"
-
 nvimconfdir="${HOME}/.config/nvim"
 nvimconffile="init.vim"
 [ -f "$nvimconfdir}/$nvimconffile}" ] && rm "$nvimconfdir/$nvimconffile"
 mkdir -p "$nvimconfdir" && \
 ln -f "$(readlink -f "_init.vim")" "$nvimconfdir/$nvimconffile"
-
-# install vim packages
-[ -f "${bundir}/vim-packages" ] && rm "${bundir}/vim-packages"
-ln "$(readlink -f  "_vim-packages")" "$bundir/vim-packages"
-while read line; do
-  if [ "${line:0:1}" != "#" ]; then # ignore commented lines
-    git clone "$line" "$bundir/${line##*/}"
-  fi
-done < "$bundir/vim-packages"
-
-# install my-ulti-snippets
-mkdir -p "$bundir/my-ulti-snippets"
-for FILE in $(ls "_my_ulti_snippets"); do
-    [ -f "${bundir}/my-ulti-snippets/${FILE}" ] && rm "${bundir}/my-ulti-snippets/${FILE}"
-    ln -f "$(readlink -f "_my_ulti_snippets/$FILE")" "$bundir/my-ulti-snippets/$FILE"
-done
