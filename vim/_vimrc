@@ -25,7 +25,12 @@ Plug 'https://github.com/mhinz/vim-signify'
 Plug 'https://github.com/airblade/vim-rooter'
 Plug 'https://github.com/neoclide/coc.nvim.git'
 Plug 'https://github.com/unblevable/quick-scope'
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 call plug#end()
+
+"""" PRETTIER BEGIN
+let g:prettier#autoformat_config_present = 1
+"""" PRETTIER END
 
 """" AIRLINE begin
 " always show status bar
