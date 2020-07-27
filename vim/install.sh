@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-cd "${THIS_DIR}"
+if [[ "${OSTYPE}" == "darwin"* ]]; then
+    function fullname() { greadlink "${@}"; }
+else
+    function fullname() { readlink "${@}"; }
+fi
+THIS_DIR="$(dirname "$(fullname -f "${BASH_SOURCE[0]}")")"
 
 # INSTALL NEOVIM IF NECESSARY
 
@@ -23,10 +27,10 @@ fi
 # INSTALL NEOVIM CONFIG
 
 [ -f "${HOME}/.vimrc" ] && rm "${HOME}/.vimrc"
-ln -f "$(readlink -f "_vimrc")" "${HOME}/.vimrc"
+ln -f "$(fullname -f "_vimrc")" "${HOME}/.vimrc"
 
 nvimconfdir="${HOME}/.config/nvim"
 nvimconffile="init.vim"
 [ -f "$nvimconfdir}/$nvimconffile}" ] && rm "$nvimconfdir/$nvimconffile"
 mkdir -p "$nvimconfdir" && \
-ln -f "$(readlink -f "_init.vim")" "$nvimconfdir/$nvimconffile"
+ln -f "$(fullname -f "_init.vim")" "$nvimconfdir/$nvimconffile"
