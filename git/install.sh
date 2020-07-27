@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
-THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-cd "${THIS_DIR}"
+if [[ "${OSTYPE}" == "darwin"* ]]; then
+    THIS_DIR="$(dirname "$(greadlink -f "${BASH_SOURCE[0]}")")"
+else
+    THIS_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+fi
 
-[[ ! -f "${HOME}/.gitconfig" ]] && cp "$(readlink -f "_gitconfig")" "${HOME}/.gitconfig"
+MY_GITCONFIG="${THIS_DIR}/_gitconfig"
+LOCAL_GITCONFIG="${HOME}/.gitconfig"
+[[ -f "${LOCAL_GITCONFIG}" ]] || touch ${LOCAL_GITCONFIG}
 
-FOUND_GIT_ALIASES=
-FOUND_GIT_PUSH=
-FOUND_GIT_DIFF=
+INCLUDED_MY_GITCONFIG=
 while read LINE; do
-    [[ "${LINE}" == "[alias]" ]] && FOUND_GIT_ALIASES="true"
-    [[ "${LINE}" == "[push]" ]]  && FOUND_GIT_PUSH="true"
-    [[ "${LINE}" == "[diff]" ]]  && FOUND_GIT_DIFF="true"
+    [[ "${LINE}" == "[include]" ]] && INCLUDED_MY_GITCONFIG="true"
 done < "${HOME}/.gitconfig"
-if [[ -z "${FOUND_GIT_ALIASES}" && -z "${FOUND_GIT_PUSH}" && -z "${FOUND_GIT_DIFF}" ]]; then
-    cat "$(readlink -f "_gitconfig")" >> "${HOME}/.gitconfig"
+
+# gitconfig `include` requires git >1.7
+if [[ -z "${INCLUDED_MY_GITCONFIG}" ]]; then
+    echo -e "[include]\n    path = ${MY_GITCONFIG}" >> "${HOME}/.gitconfig"
 fi
