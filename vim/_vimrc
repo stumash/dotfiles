@@ -26,11 +26,21 @@ Plug 'https://github.com/airblade/vim-rooter'
 Plug 'https://github.com/neoclide/coc.nvim.git'
 Plug 'https://github.com/unblevable/quick-scope'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
+Plug 'https://github.com/stumash/vim-base64'
+"Plug 'https://github.com/ryanoasis/vim-devicons'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 call plug#end()
 
 """" PRETTIER BEGIN
 let g:prettier#autoformat_config_present = 1
 """" PRETTIER END
+
+"""" BASE64 BEGIN
+" base Sixty Four encode
+vnoremap <silent> <leader>sf :<c-u>call base64#v_btoa()<cr>
+" base Sixty Four decode
+vnoremap<silent> <leader>fs :<c-u>call base64#v_atob()<cr>
+"""" BASE64 END
 
 """" AIRLINE begin
 " always show status bar
@@ -222,6 +232,12 @@ set nofoldenable
 
 " turn on mouse support
 set mouse=a
+
+" no ex-mode by accident
+nnoremap Q <Nop>
+
+" custom mappings must be typed in x milis
+set timeoutlen=300
 
 """" MY FUNCTIONS BEGIN
 function RemoveTrailingWhitespace()
