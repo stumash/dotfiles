@@ -5,6 +5,7 @@
 
 # bash with vim keys
 set -o vi
+bind -m vi 'L':'clear-screen'
 
 # PS1
 if [[ ! "${TERM}" =~ (xterm-color)|(.*256color) ]]; then
