@@ -59,9 +59,8 @@ hi SpecialKey ctermfg=0 guifg=black
 " let lines wrap at the indentation of beginning of the line being wrapped
 set breakindent
 " colors
-set background=dark
+let g:gruvbox_contrast_dark = "hard"
 colorscheme gruvbox
-let g:gruvbox_contrast_dark = 1
 hi Normal ctermbg=NONE
 " highlight column 120
 set colorcolumn=120
