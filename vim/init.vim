@@ -23,7 +23,7 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
 Plug 'https://github.com/unblevable/quick-scope'
 Plug 'https://github.com/stumash/vim-base64'
-Plug 'https://github.com/ryanoasis/vim-devicons'
+Plug 'kyazdani42/nvim-web-devicons'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'folke/which-key.nvim'
 Plug 'norcalli/nvim-colorizer.lua'
@@ -33,7 +33,14 @@ Plug 'https://github.com/p00f/nvim-ts-rainbow'
 Plug 'nvim-lua/completion-nvim'
 Plug 'rafcamlet/nvim-luapad'
 Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'folke/lsp-colors.nvim'
+Plug 'folke/trouble.nvim'
 call plug#end()
+
+
+lua << EOF
+  require("trouble").setup({})
+EOF
 
 
 """" LEADER:
@@ -86,10 +93,15 @@ hi Normal ctermbg=NONE
 set colorcolumn=120
 
 
+"""" DEVICONS:
+lua << EOF
+require'nvim-web-devicons'.setup { default = true }
+EOF
+
 """" INDENTLINE:
 lua << EOF
 vim.cmd [[highlight IndentBlanklineIndent1 guibg=#1f1f1f guifg=#383838 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#1a1a1a guifg=#383838 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guibg=#121212 guifg=#383838 gui=nocombine]]
 
 require("indent_blankline").setup {
     char = "·",
@@ -97,7 +109,7 @@ require("indent_blankline").setup {
         "IndentBlanklineIndent1",
         "IndentBlanklineIndent2",
     },
-    space_char_blankline = " ",
+    space_char_blankline = "·",
     space_char_highlight_list = {
         "IndentBlanklineIndent1",
         "IndentBlanklineIndent2",
