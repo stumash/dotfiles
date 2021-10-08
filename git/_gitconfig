@@ -15,6 +15,7 @@
     ch = checkout
     ls = ls-files
     s = status
+    sa = stash
     lg = log --decorate --graph --all
     d = diff
     dw = diff --word-diff
