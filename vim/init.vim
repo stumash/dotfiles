@@ -1,14 +1,15 @@
-" need this up front
 set runtimepath^=~/.config/nvim
 let &packpath = &runtimepath
-set shell=bash
-set encoding=utf-8
+lua vim.o.shell = "bash"
+lua vim.o.encoding = "utf-8"
 filetype plugin on
-set mouse=a
-set hidden
-set timeoutlen=300
-set updatetime=300
-let g:home = '~/.config/nvim/'
+lua vim.o.mouse = "a" -- mouse can scroll, click, select
+lua vim.o.hidden = true -- allow open new buffer even when current is modified
+lua vim.o.timeoutlen = 300
+lua vim.o.updatetime = 300
+lua vim.o.clipboard = "unnamed" -- yank to system clipboard
+lua vim.g.home = "~/.config/nvim/"
+nnoremap <esc> <esc>:noh<cr>
 
 
 call plug#begin(g:home . 'plugged/')
@@ -39,14 +40,13 @@ Plug 'nvim-treesitter/playground'
 Plug 'p00f/nvim-ts-rainbow'
 Plug 'nvim-lua/completion-nvim'
 Plug 'rafcamlet/nvim-luapad'
-Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'folke/lsp-colors.nvim'
 Plug 'folke/trouble.nvim'
 call plug#end()
 
 
 """" TROUBLE:
-lua require("trouble").setup({})
+lua require"trouble".setup {}
 
 
 """" LEADER:
@@ -61,9 +61,9 @@ nnoremap <leader>z :w<CR>:bd<CR>
 nnoremap <leader>Z :wqa<CR>
 nnoremap <leader>x :bd<CR>
 nnoremap <leader>X :bd!<CR>
-"" copy current filename into system clipboard
-nnoremap <leader>% mz:put =expand('%:p')<CR>0v$h<C-c>dd`z
-nnoremap <leader>* <C-W><C-W>
+" copy current filename into system clipboard
+nnoremap <leader>% mz:put=expand('%:p')<CR>
+nnoremap <leader><leader> <C-W><C-W>
 
 
 """" LUA-HELPERS:
@@ -71,9 +71,16 @@ luafile ~/.config/nvim/lua/helpers.lua
 
 
 """" TELESCOPE:
+lua << EOF
+  require('telescope').setup {
+    defaults = {
+      path_display = { shorten = 3 }
+    }
+  }
+EOF
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fp <cmd>lua require('telescope.builtin').find_files{ search_dirs = { '$HOME/.config/nvim/plugged'  } }<cr>
+nnoremap <leader>fp <cmd>lua require('telescope.builtin').find_files{ cwd = '$HOME/.config/nvim/plugged' }<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fth <cmd>Telescope help_tags<cr>
 
@@ -83,31 +90,24 @@ lua require('telescope').load_extension('fzf')
 
 
 """"" DISPLAY-SETTINGS:
-set showcmd "show vim commands as they're typed
-set number "show line number
-set relativenumber "show relative line numbering
-set hlsearch " set hlsearch
-"" set 256 colors available
-set t_Co=256
-set termguicolors " moar colors
-"" non-printable character display settings when :set list!
+" non-printable character display settings when :set list!
 set lcs=space:·,tab:→\ ,eol:↴
-hi NonText ctermfg=0 guifg=#282828
-hi SpecialKey ctermfg=0 guifg=#222222
-set list
-"" let lines wrap at the indentation of beginning of the line being wrapped
-set breakindent
+set showcmd " show vim commands as they're typed
+set hlsearch " set hlsearch
+set termguicolors " colors
+set list " show non-printable characters
+lua function toggleListChars() if vim.o.list == true then vim.o.list = false else vim.o.list = true end end
+nnoremap <leader>LC <CMD>lua toggleListChars()<CR>
+
+set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
 let g:gruvbox_contrast_dark = "hard"
 colorscheme gruvbox
 hi Normal ctermbg=NONE
-"" highlight column 120
-set colorcolumn=120
-" always show signcolumns
-set signcolumn=yes
+set colorcolumn=120 " highlight column 120
+set signcolumn=yes " always show signcolumns
 highlight SignColumn guibg=#222222
-" Better display for messages
-set cmdheight=2
+set cmdheight=2 " Better display for messages
 
 
 """" DEVICONS:
@@ -118,44 +118,20 @@ lua require'nvim-web-devicons'.setup { default = true }
 lua require"bufferline".setup { options = { diagnostics = "nvim_lsp" } }
 
 
-"""" INDENT-BLANKLINE:
-lua << EOF
-vim.cmd [[highlight IndentBlanklineIndent1 guibg=#151515 guifg=#303030 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#1f1f1f guifg=#303030 gui=nocombine]]
-
-require("indent_blankline").setup {
-  char = "·",
-  char_highlight_list = {
-    "IndentBlanklineIndent1",
-    "IndentBlanklineIndent2",
-  },
-  space_char_blankline = "·",
-  space_char_highlight_list = {
-    "IndentBlanklineIndent1",
-    "IndentBlanklineIndent2",
-  },
-  show_trailing_blankline_indent = true,
-}
-EOF
-
-
-
 """" LUAPAD: execute lua in the neovim context easily in a fresh buffer
 nnoremap <leader>LL :lua require('luapad').toggle()<CR>
 nnoremap <leader>LP :Luapad<CR>:lua require('luapad').toggle()<CR>
 
 
 """" TREESITTER: syntactic awareness in vim. highlighting and more
-" highlight lua in vim files
-let g:vimsyn_embed = 'l'
-
 lua << EOF
-require('nvim-treesitter.configs').setup {
+vim.g.vimsyn_embed = "l" -- highlight lua in vim files
+require"nvim-treesitter.configs".setup {
   playground = { enable = true },
   query_linter = {
     enable = true,
     use_virtual_text = true,
-    lint_events = { 'BufWrite', 'CursorHold' },
+    lint_events = { "BufWrite", "CursorHold" },
   },
   ensure_installed = "maintained",
   highlight = { enable = true },
@@ -311,43 +287,32 @@ vnoremap <silent> <leader>sf :<c-u>call base64#v_btoa()<cr>
 "" base Sixty Four decode
 vnoremap <silent> <leader>fs :<c-u>call base64#v_atob()<cr>
 
+lua << EOF
+  local all = require('plenary.functional').all
+  local setColNums = function(b) vim.o.number = b; vim.o.relativenumber = b end
+  function toggleNums()
+    local isTrue = function(_, x) return x == true end
+    setColNums(not all(isTrue, { vim.o.number, vim.o.relativenumber}))
+  end
+  toggleNums()
+EOF
+noremap <leader>NN :lua toggleNums()<CR>
 
-"""""""" plugin-related settings begin
-"" let vim detect filetype. needed for some plugins
-"" latex filetype setting
-let g:tex_flavor = "latex"
-"""""""" plugin-related settings end
-
-"""""""" search settings begin
-"" this mapping causes vim to startup with c pressed
-nnoremap <esc> <esc>:noh<cr>:<bs><esc>hl
-"" but neovim doesn't have this issue
-"""""""" search settings end
-
-"""""""" clipboard settings begin
-"" ensure that clipboard = the unnamed register
-set clipboard=unnamed
-"""""""" clipboard settings end
-
-""""" <C-m> is 'm'y namespace
-noremap <C-m>hls :set hlsearch!<CR>
-noremap <C-m>rn :set relativenumber!<CR>
-noremap <C-m>ln :set number!<CR>
 " reload file
 nmap <C-m>rr :bufdo e<CR>
 " remove trailing whitespace + tabs to spaces
 function RemoveTrailingWhitespace_and_TabsToSpaces()
-    :exe "silent! :%s/\\s\\+\\n/\\r/"
-    :exe "silent! :%s/\\t/    /g"
+  :exe "silent! :%s/\\s\\+\\n/\\r/"
+  :exe "silent! :%s/\\t/    /g"
 endfunction
 noremap <C-m>w :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
 """" <C-m is 'm'y namespace
 
-" tab settings
-set shiftwidth=4  "Indents will have a width of 4
-set tabstop=4     "The width of a TAB is set to 4, but is still \lt
-set softtabstop=4 "Sets the number of columns for a TAB
-set expandtab     "Expand TABs to spaces
+"""" TABS:
+lua vim.o.shiftwidth = 4   -- Indents will have a width of 4
+lua vim.o.tabstop = 4      -- The width of a TAB is set to 4, but is still \lt
+lua vim.o.softtabstop = 4  -- Sets the number of columns for a TAB
+lua vim.o.expandtab = true -- Expand TABs to spaces
 " filetype-specific tab settings
 autocmd FileType html setlocal shiftwidth=2
 autocmd FileType javascript setlocal shiftwidth=2
@@ -358,19 +323,19 @@ autocmd FileType lua setlocal shiftwidth=2
 autocmd FileType scala setlocal shiftwidth=2
 autocmd FileType vim setlocal shiftwidth=2
 autocmd FileType rust setlocal shiftwidth=4
-autocmd FileType nim setlocal shiftwidth=4
+autocmd FileType nim setlocal shiftwidth=2
 " except you can still manually TAB like this:
-inoremap <C-Tab> <C-v><Tab>
+
 
 "" :split opens to the right or below
-set splitright
-set splitbelow
+lua vim.o.splitright = true
+lua vim.o.splitbelow = true
 
 "" let % jump to closing tag in html on top of usual functionality
 runtime macros/matchit.vim
 
 "" code folding settings
-set foldmethod=indent
+lua vim.o.foldmethod = "indent"
 set nofoldenable
 
 "" no ex-mode by accident
