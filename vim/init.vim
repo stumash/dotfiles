@@ -3,33 +3,40 @@ set runtimepath^=~/.config/nvim
 let &packpath = &runtimepath
 set shell=bash
 set encoding=utf-8
+filetype plugin on
+set mouse=a
+set hidden
+set timeoutlen=300
+set updatetime=300
+let g:home = '~/.config/nvim/'
 
 
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin(g:home . 'plugged/')
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
-Plug 'https://github.com/morhetz/gruvbox'
-Plug 'https://github.com/scrooloose/nerdcommenter'
+Plug 'morhetz/gruvbox'
+Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
-Plug 'https://github.com/bling/vim-airline'
-Plug 'https://github.com/tpope/vim-repeat'
-Plug 'https://github.com/justinmk/vim-sneak'
-Plug 'https://github.com/tpope/vim-surround'
-Plug 'https://github.com/tommcdo/vim-exchange'
-Plug 'https://github.com/tpope/vim-fugitive.git'
-Plug 'https://github.com/airblade/vim-rooter'
+Plug 'bling/vim-airline'
+Plug 'tpope/vim-repeat'
+Plug 'justinmk/vim-sneak'
+Plug 'tpope/vim-surround'
+Plug 'tommcdo/vim-exchange'
+Plug 'tpope/vim-fugitive.git'
+Plug 'airblade/vim-rooter'
 Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
-Plug 'https://github.com/unblevable/quick-scope'
-Plug 'https://github.com/stumash/vim-base64'
+Plug 'unblevable/quick-scope'
+Plug 'stumash/vim-base64'
 Plug 'kyazdani42/nvim-web-devicons'
+Plug 'akinsho/bufferline.nvim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'folke/which-key.nvim'
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/playground'
-Plug 'https://github.com/p00f/nvim-ts-rainbow'
+Plug 'p00f/nvim-ts-rainbow'
 Plug 'nvim-lua/completion-nvim'
 Plug 'rafcamlet/nvim-luapad'
 Plug 'lukas-reineke/indent-blankline.nvim'
@@ -38,9 +45,8 @@ Plug 'folke/trouble.nvim'
 call plug#end()
 
 
-lua << EOF
-  require("trouble").setup({})
-EOF
+"""" TROUBLE:
+lua require("trouble").setup({})
 
 
 """" LEADER:
@@ -57,6 +63,7 @@ nnoremap <leader>x :bd<CR>
 nnoremap <leader>X :bd!<CR>
 "" copy current filename into system clipboard
 nnoremap <leader>% mz:put =expand('%:p')<CR>0v$h<C-c>dd`z
+nnoremap <leader>* <C-W><C-W>
 
 
 """" LUA-HELPERS:
@@ -66,8 +73,13 @@ luafile ~/.config/nvim/lua/helpers.lua
 """" TELESCOPE:
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fp <cmd>lua require('telescope.builtin').find_files{ search_dirs = { '$HOME/.config/nvim/plugged'  } }<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fth <cmd>Telescope help_tags<cr>
+
+
+"""" TELESCOPE-FZF:
+lua require('telescope').load_extension('fzf')
 
 
 """"" DISPLAY-SETTINGS:
@@ -79,7 +91,7 @@ set hlsearch " set hlsearch
 set t_Co=256
 set termguicolors " moar colors
 "" non-printable character display settings when :set list!
-set lcs=space:·,tab:→\ ,eol:↵
+set lcs=space:·,tab:→\ ,eol:↴
 hi NonText ctermfg=0 guifg=#282828
 hi SpecialKey ctermfg=0 guifg=#222222
 set list
@@ -91,32 +103,41 @@ colorscheme gruvbox
 hi Normal ctermbg=NONE
 "" highlight column 120
 set colorcolumn=120
+" always show signcolumns
+set signcolumn=yes
+highlight SignColumn guibg=#222222
+" Better display for messages
+set cmdheight=2
 
 
 """" DEVICONS:
-lua << EOF
-require'nvim-web-devicons'.setup { default = true }
-EOF
+lua require'nvim-web-devicons'.setup { default = true }
 
-"""" INDENTLINE:
+
+"""" BUFFERLINE:
+lua require"bufferline".setup { options = { diagnostics = "nvim_lsp" } }
+
+
+"""" INDENT-BLANKLINE:
 lua << EOF
-vim.cmd [[highlight IndentBlanklineIndent1 guibg=#1f1f1f guifg=#383838 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#121212 guifg=#383838 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent1 guibg=#151515 guifg=#303030 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guibg=#1f1f1f guifg=#303030 gui=nocombine]]
 
 require("indent_blankline").setup {
-    char = "·",
-    char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-    },
-    space_char_blankline = "·",
-    space_char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-    },
-    show_trailing_blankline_indent = true,
+  char = "·",
+  char_highlight_list = {
+    "IndentBlanklineIndent1",
+    "IndentBlanklineIndent2",
+  },
+  space_char_blankline = "·",
+  space_char_highlight_list = {
+    "IndentBlanklineIndent1",
+    "IndentBlanklineIndent2",
+  },
+  show_trailing_blankline_indent = true,
 }
 EOF
+
 
 
 """" LUAPAD: execute lua in the neovim context easily in a fresh buffer
@@ -148,9 +169,7 @@ EOF
 
 
 """"" COLORIZER: show the color of hex and rgb color values
-lua << EOF
-require('colorizer').setup()
-EOF
+lua require('colorizer').setup()
 
 
 """" LSP-CONFIG: neovim-native Language Server Protocol client configuration
@@ -161,7 +180,7 @@ nnoremap <silent> <leader>kH :lua vim.lsp.buf.signature_help()<CR>
 nnoremap <silent> <leader>kt :lua vim.lsp.buf.type_definition()<CR>
 nnoremap <silent> <leader>kr :lua vim.lsp.buf.rename()<CR>
 nnoremap <silent> <leader>ka :lua vim.lsp.buf.code_action()<CR>
-nnoremap <silent> <leader>kv :lua vim.lsp.buf.references()<CR>
+nnoremap <silent> <leader>kv :Telescope lsp_references<CR>
 nnoremap <silent> <leader>ke :lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
 nnoremap <silent> ]k :lua vim.lsp.diagnostic.goto_next()<CR>
 nnoremap <silent> [k :lua vim.lsp.diagnostic.goto_prev()<CR>
@@ -196,19 +215,15 @@ lua << EOF
 _G.metals_config = require("metals").bare_config
 _G.metals_config.settings = { showImplicitArguments = true }
 _G.metals_config.init_options.statusBarProvider = "show-message"
-vim.cmd([[augroup lsp]])
-vim.cmd([[autocmd!]])
-vim.cmd([[autocmd FileType scala,sbt lua require("metals").initialize_or_attach(_G.metals_config)]])
-vim.cmd([[augroup END]])
 EOF
+augroup lsp
+  autocmd!
+  autocmd FileType scala,sbt lua require("metals").initialize_or_attach(_G.metals_config)
+augroup END
 
 
 """" GITSIGNS: show which lines have tracked and untracked changes. and more.
-lua << EOF
-require('gitsigns').setup {
-  debug_mode = true,
-}
-EOF
+lua require'gitsigns'.setup { debug_mode = true }
 " show the current hunk as popover
 nnoremap <leader>gp :Gitsigns preview_hunk<CR>
 " go to next hunk of code that git diff thinks changed
@@ -220,12 +235,8 @@ nnoremap <leader>gcm :Gitsigns change_base master<CR>
 nnoremap <leader>gch :Gitsigns change_base HEAD<CR>
 
 
-"""" WHICHKEY: show keymaps
-lua << EOF
-require("which-key").setup {
-  triggers = { "<leader>" },
-}
-EOF
+"""" WHICH-KEY: show keymaps
+lua require("which-key").setup { triggers = { "<leader>" } }
 
 
 """"" ROOTER: set the cwd to the project root automatically
@@ -241,7 +252,7 @@ let g:airline#extensions#branch#enabled = 0
 set laststatus=2
 "" unicode symbols
 if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
+  let g:airline_symbols = {}
 endif
 let g:airline_left_sep = ''
 let g:airline_left_alt_sep = ''
@@ -303,7 +314,6 @@ vnoremap <silent> <leader>fs :<c-u>call base64#v_atob()<cr>
 
 """""""" plugin-related settings begin
 "" let vim detect filetype. needed for some plugins
-filetype plugin on
 "" latex filetype setting
 let g:tex_flavor = "latex"
 """""""" plugin-related settings end
@@ -315,8 +325,6 @@ nnoremap <esc> <esc>:noh<cr>:<bs><esc>hl
 """""""" search settings end
 
 """""""" clipboard settings begin
-"" set <C-c> to copy-to-clipboard in visual mode
-vnoremap <C-c> "+y
 "" ensure that clipboard = the unnamed register
 set clipboard=unnamed
 """""""" clipboard settings end
@@ -325,10 +333,6 @@ set clipboard=unnamed
 noremap <C-m>hls :set hlsearch!<CR>
 noremap <C-m>rn :set relativenumber!<CR>
 noremap <C-m>ln :set number!<CR>
-" show hidden chars
-noremap <C-m>hc :set list!<CR>
-" turn off syntax highlighting
-nmap <C-m>sn :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif <CR>
 " reload file
 nmap <C-m>rr :bufdo e<CR>
 " remove trailing whitespace + tabs to spaces
@@ -338,12 +342,6 @@ function RemoveTrailingWhitespace_and_TabsToSpaces()
 endfunction
 noremap <C-m>w :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
 """" <C-m is 'm'y namespace
-
-" allow opening buffers even if current has unsaved changes
-set hidden
-
-" treat underscores as word breaks
-set iskeyword-=_
 
 " tab settings
 set shiftwidth=4  "Indents will have a width of 4
@@ -375,26 +373,12 @@ runtime macros/matchit.vim
 set foldmethod=indent
 set nofoldenable
 
-"" turn on mouse support
-set mouse=a
-
 "" no ex-mode by accident
 nnoremap Q <Nop>
-
-"" custom mappings must be typed in x milis
-set timeoutlen=300
-" You will have bad experience for diagnostic messages when it's default 4000.
-set updatetime=300
-
 
 " IDK-IF-I-NEED-THIS-ANYMORE:
 " Some servers have issues with backup files, see #649
 set nobackup
 set nowritebackup
-" Better display for messages
-set cmdheight=2
 " don't give |ins-completion-menu| messages.
 set shortmess+=c
-" always show signcolumns
-set signcolumn=yes
-
