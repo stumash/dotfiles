@@ -8,11 +8,12 @@ lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
-lua vim.g.home = "~/.config/nvim/"
 nnoremap <esc> <esc>:noh<cr>
 
 
-call plug#begin(g:home . 'plugged/')
+lua vim.g.home = "~/.config/nvim/"
+lua vim.g.pluggedir = vim.g.home .. "plugged/"
+call plug#begin(g:pluggedir)
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
@@ -24,7 +25,6 @@ Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
 Plug 'tommcdo/vim-exchange'
-Plug 'tpope/vim-fugitive.git'
 Plug 'airblade/vim-rooter'
 Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
@@ -38,10 +38,16 @@ Plug 'norcalli/nvim-colorizer.lua'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/playground'
 Plug 'p00f/nvim-ts-rainbow'
-Plug 'nvim-lua/completion-nvim'
 Plug 'rafcamlet/nvim-luapad'
 Plug 'folke/lsp-colors.nvim'
 Plug 'folke/trouble.nvim'
+" autocompletion
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'SirVer/ultisnips'
+Plug 'quangnguyen30192/cmp-nvim-ultisnips'
+Plug 'stumash/vim-snippets'
 call plug#end()
 
 
@@ -63,7 +69,7 @@ nnoremap <leader>x :bd<CR>
 nnoremap <leader>X :bd!<CR>
 " copy current filename into system clipboard
 nnoremap <leader>% mz:put=expand('%:p')<CR>
-nnoremap <leader><leader> <C-W><C-W>
+nnoremap <leader>8 <C-W><C-W>
 
 
 """" LUA-HELPERS:
@@ -72,17 +78,22 @@ luafile ~/.config/nvim/lua/helpers.lua
 
 """" TELESCOPE:
 lua << EOF
-  require('telescope').setup {
-    defaults = {
-      path_display = { shorten = 3 }
-    }
+require('telescope').setup {
+  defaults = {
+    path_display = { shorten = 3 }
   }
+}
 EOF
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fF <cmd>Telescope find_files<cr>
+nnoremap <leader>ff <cmd>Telescope git_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fp <cmd>lua require('telescope.builtin').find_files{ cwd = '$HOME/.config/nvim/plugged' }<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fth <cmd>Telescope help_tags<cr>
+nnoremap <leader>fb <cmd>lua require'telescope.builtin'.buffers { last_used = true }<cr>
+nnoremap <leader>f/ <cmd>Telescope current_buffer_fuzzy_find<cr>
+nnoremap <leader>gB <cmd>Telescope git_branches<cr>
+nnoremap <leader>gs <cmd>Telescope git_status<cr>
+nnoremap <leader>f: <cmd>Telescope command_history<cr>
+nnoremap <leader>fL <cmd>Telescope reloader<cr>
 
 
 """" TELESCOPE-FZF:
@@ -106,7 +117,7 @@ colorscheme gruvbox
 hi Normal ctermbg=NONE
 set colorcolumn=120 " highlight column 120
 set signcolumn=yes " always show signcolumns
-highlight SignColumn guibg=#222222
+highlight SignColumn guibg=0
 set cmdheight=2 " Better display for messages
 
 
@@ -148,6 +159,42 @@ EOF
 lua require('colorizer').setup()
 
 
+"""" NVIM-CMP: auto-complete, smart completion
+set completeopt=menuone,noinsert,noselect
+set shortmess+=c
+set lazyredraw
+lua << EOF
+local cmp = require'cmp'
+cmp.setup {
+  snippet = { expand = function(args) vim.fn["UltiSnips#Anon"](args.body) end },
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'ultisnips' },
+    { name = 'buffer' },
+  },
+  mapping = {
+    ['<C-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+    ['<C-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+    ['<C-y>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-e>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm({
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    })
+  }
+}
+EOF
+
+
+"""" ULTISNIPS: snippets for autocomplete
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-n>"
+let g:UltiSnipsJumpBackwardTrigger="<c-p>"
+let g:UltiSnipsSnippetDirectories=[ g:pluggedir . "vim-snippets/snippets/"]
+nnoremap <leader>U :UltiSnipsEdit<cr>
+
+
 """" LSP-CONFIG: neovim-native Language Server Protocol client configuration
 nnoremap <silent> <leader>kD :lua vim.lsp.buf.declaration()<CR>
 nnoremap <silent> <leader>kd :lua vim.lsp.buf.definition()<CR>
@@ -170,16 +217,13 @@ local nvim_lsp = require('lspconfig')
 local servers = { "rust_analyzer", "tsserver" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
     flags = {
       debounce_text_changes = 150,
     }
   }
 end
 EOF
-" use completion on every buffer
-autocmd BufEnter * lua require'completion'.on_attach()
-" don't automatically fill in autocomplete
-set completeopt=noselect,menuone
 
 
 """" NVIM-METALS: config for scala language server, metals
@@ -199,7 +243,16 @@ augroup END
 
 
 """" GITSIGNS: show which lines have tracked and untracked changes. and more.
-lua require'gitsigns'.setup { debug_mode = true }
+lua << EOF
+require'gitsigns'.setup {
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol',
+    delay = 200,
+  },
+}
+EOF
+highlight GitSignsCurrentLineBlame guifg=#fffd30
 " show the current hunk as popover
 nnoremap <leader>gp :Gitsigns preview_hunk<CR>
 " go to next hunk of code that git diff thinks changed
@@ -209,6 +262,8 @@ nnoremap [g :Gitsigns prev_hunk<CR>
 nnoremap <leader>gC :Gitsigns change_base<Space>
 nnoremap <leader>gcm :Gitsigns change_base master<CR>
 nnoremap <leader>gch :Gitsigns change_base HEAD<CR>
+" show line blame
+nnoremap <leader>gb :lua require'gitsigns'.toggle_current_line_blame(true)<cr>
 
 
 """" WHICH-KEY: show keymaps
@@ -274,13 +329,6 @@ omap T <Plug>Sneak_T
 set cursorline
 
 
-""""" FUGITIVE: git, in general
-"" git status
-nnoremap <leader>gs :Gstatus<CR>
-"" git blame
-nnoremap <leader>gb :G blame<CR>
-
-
 """"" BASE64: base64 encode/decode visual mode mappings
 "" base Sixty Four encode
 vnoremap <silent> <leader>sf :<c-u>call base64#v_btoa()<cr>
@@ -294,7 +342,7 @@ lua << EOF
     local isTrue = function(_, x) return x == true end
     setColNums(not all(isTrue, { vim.o.number, vim.o.relativenumber}))
   end
-  toggleNums()
+  setColNums(true)
 EOF
 noremap <leader>NN :lua toggleNums()<CR>
 
@@ -310,7 +358,7 @@ noremap <C-m>w :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
 
 """" TABS:
 lua vim.o.shiftwidth = 4   -- Indents will have a width of 4
-lua vim.o.tabstop = 4      -- The width of a TAB is set to 4, but is still \lt
+lua vim.o.tabstop = 4      -- The width of a TAB is set to 4, but is still \t
 lua vim.o.softtabstop = 4  -- Sets the number of columns for a TAB
 lua vim.o.expandtab = true -- Expand TABs to spaces
 " filetype-specific tab settings
@@ -327,23 +375,20 @@ autocmd FileType nim setlocal shiftwidth=2
 " except you can still manually TAB like this:
 
 
-"" :split opens to the right or below
+" :split opens to the right or below
 lua vim.o.splitright = true
 lua vim.o.splitbelow = true
 
-"" let % jump to closing tag in html on top of usual functionality
+" let % jump to closing tag in html on top of usual functionality
 runtime macros/matchit.vim
 
-"" code folding settings
-lua vim.o.foldmethod = "indent"
-set nofoldenable
+" code folding settings
+set foldmethod=manual
 
-"" no ex-mode by accident
+" no ex-mode by accident
 nnoremap Q <Nop>
 
 " IDK-IF-I-NEED-THIS-ANYMORE:
 " Some servers have issues with backup files, see #649
 set nobackup
 set nowritebackup
-" don't give |ins-completion-menu| messages.
-set shortmess+=c

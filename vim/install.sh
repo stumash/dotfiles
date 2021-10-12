@@ -7,9 +7,6 @@ else
 fi
 THIS_DIR="$(dirname "$(fullname -f "${BASH_SOURCE[0]}")")"
 
-# INSTALL NEOVIM IF NECESSARY
-echo "YOU NEED TO INSALL NEOVIM"
-
 nvim_confdir="$HOME/.config/nvim"
 mkdir -p $nvim_confdir
 ln $THIS_DIR $nvim_confdir
