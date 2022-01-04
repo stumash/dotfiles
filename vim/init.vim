@@ -2,14 +2,41 @@ set runtimepath^=~/.config/nvim
 let &packpath = &runtimepath
 lua vim.o.shell = "bash"
 lua vim.o.encoding = "utf-8"
-filetype plugin on
+lua vim.cmd [[filetype plugin on]]
 lua vim.o.mouse = "a" -- mouse can scroll, click, select
 lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
-nnoremap <esc> <esc>:noh<cr>
+nnoremap <esc> <esc>:noh<cr>jk:<esc>
+set foldmethod=indent
+set nofoldenable
+" no ex-mode by accident
+nnoremap Q <Nop>
 
+function! SystemStripped(cmd, input)
+    return substitute(system(a:cmd, a:input), '\n$', '', 'g')
+endfunction
+
+function! SystemOnVisSelect(cmd)
+    " Preserve line breaks
+    let l:paste = &paste
+    set paste
+    " Reselect the visual mode text
+    normal! gv
+    " Apply transformation to the text
+    execute "normal! c\<c-r>=SystemStripped(\"" . a:cmd . "\", @\")\<cr>\<esc>"
+    " Select the new text
+    normal! `[v`]h
+    " Revert to previous mode
+    let &paste = l:paste
+endfunction
+
+vnoremap <leader>sf :<c-u>call SystemOnVisSelect("base64")<cr>
+vnoremap <leader>fs :<c-u>call SystemOnVisSelect("base64 -d")<cr>
+
+vnoremap <leader>zsf :<c-u>call SystemOnVisSelect("gzip \| base64")<cr>
+vnoremap <leader>zfs :<c-u>call SystemOnVisSelect("base64 -d \| gzip -d")<cr>
 
 lua vim.g.home = "~/.config/nvim/"
 lua vim.g.pluggedir = vim.g.home .. "plugged/"
@@ -17,14 +44,15 @@ call plug#begin(g:pluggedir)
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
-Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'bling/vim-airline'
+Plug 'joshdick/onedark.vim'
 Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
 Plug 'tommcdo/vim-exchange'
+Plug 'stevearc/aerial.nvim'
 Plug 'airblade/vim-rooter'
 Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
@@ -41,18 +69,23 @@ Plug 'p00f/nvim-ts-rainbow'
 Plug 'rafcamlet/nvim-luapad'
 Plug 'folke/lsp-colors.nvim'
 Plug 'folke/trouble.nvim'
+Plug 'luukvbaal/stabilize.nvim'
 " autocompletion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'SirVer/ultisnips'
-Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 Plug 'stumash/vim-snippets'
+Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 call plug#end()
 
 
-"""" TROUBLE:
+"""" TROUBLE
 lua require"trouble".setup {}
+
+
+"""" STABILIZE:
+lua require"stabilize".setup()
 
 
 """" LEADER:
@@ -80,14 +113,16 @@ luafile ~/.config/nvim/lua/helpers.lua
 lua << EOF
 require('telescope').setup {
   defaults = {
-    path_display = { shorten = 3 }
+    path_display = { "truncate", shorten = 5 },
+    dynamic_preview_title = true,
+    preview = { filesize_limit = 10 } -- 10 MB
   }
 }
 EOF
-nnoremap <leader>fF <cmd>Telescope find_files<cr>
+nnoremap <leader>fF <cmd>lua require'telescope.builtin'.find_files { no_ignore = true }<cr>
 nnoremap <leader>ff <cmd>Telescope git_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fp <cmd>lua require('telescope.builtin').find_files{ cwd = '$HOME/.config/nvim/plugged' }<cr>
+nnoremap <leader>fp <cmd>lua require'telescope.builtin'.find_files { cwd = '$HOME/.config/nvim/plugged' }<cr>
 nnoremap <leader>fb <cmd>lua require'telescope.builtin'.buffers { last_used = true }<cr>
 nnoremap <leader>f/ <cmd>Telescope current_buffer_fuzzy_find<cr>
 nnoremap <leader>gB <cmd>Telescope git_branches<cr>
@@ -100,20 +135,43 @@ nnoremap <leader>fL <cmd>Telescope reloader<cr>
 lua require('telescope').load_extension('fzf')
 
 
+"""" AERIAL: symbol tree explorer
+nnoremap <leader>aa :AerialToggle!<cr>
+nnoremap <leader>af :AerialTreeSyncFolds<cr>
+nnoremap [a :AerialPrev<cr>
+noremap ]a :AerialNext<cr>
+noremap [[a :AerialPrevUp<cr>
+noremap ]]a :AerialNextUp<cr>
+lua require'telescope'.load_extension'aerial'
+lua vim.g.aerial = { manage_folds = false }
+nnoremap <leader>fa :Telescope aerial<cr>
+
+
 """"" DISPLAY-SETTINGS:
 " non-printable character display settings when :set list!
-set lcs=space:·,tab:→\ ,eol:↴
 set showcmd " show vim commands as they're typed
 set hlsearch " set hlsearch
 set termguicolors " colors
 set list " show non-printable characters
-lua function toggleListChars() if vim.o.list == true then vim.o.list = false else vim.o.list = true end end
-nnoremap <leader>LC <CMD>lua toggleListChars()<CR>
+lua <<EOF
+local tab = [[tab:→\ ]]
+local eol = [[eol:↴]]
+local spc = [[space:·]]
+local w_spc = true
+function toggleShowSpace()
+  w_spc = not w_spc
+  if w_spc == true then
+    vim.o.lcs = spc ..','.. tab ..','.. eol
+  else
+    vim.o.lcs = tab ..','.. eol
+  end
+end
+EOF
+nnoremap <leader>LC <CMD>lua toggleShowSpace()<CR>
 
 set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
-let g:gruvbox_contrast_dark = "hard"
-colorscheme gruvbox
+colorscheme onedark
 hi Normal ctermbg=NONE
 set colorcolumn=120 " highlight column 120
 set signcolumn=yes " always show signcolumns
@@ -127,6 +185,16 @@ lua require'nvim-web-devicons'.setup { default = true }
 
 """" BUFFERLINE:
 lua require"bufferline".setup { options = { diagnostics = "nvim_lsp" } }
+" choose buffer
+nnoremap <silent><leader><leader> :BufferLinePick<cr>
+" last buffer
+nnoremap <silent><leader>bb <C-^>
+" go left or right
+nnoremap <silent><leader>. :BufferLineCycleNext<cr>
+nnoremap <silent><leader>, :BufferLineCyclePrev<cr>
+" move buffer left or right
+nnoremap <silent><leader>> :BufferLineMoveNext<cr>
+nnoremap <silent><leader>< :BufferLineMovePrev<cr>
 
 
 """" LUAPAD: execute lua in the neovim context easily in a fresh buffer
@@ -178,7 +246,7 @@ cmp.setup {
     ['<C-y>'] = cmp.mapping.scroll_docs(-4),
     ['<C-e>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
-    ['<CR>'] = cmp.mapping.confirm({
+    ['<tab>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     })
@@ -189,9 +257,9 @@ EOF
 
 """" ULTISNIPS: snippets for autocomplete
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-n>"
-let g:UltiSnipsJumpBackwardTrigger="<c-p>"
-let g:UltiSnipsSnippetDirectories=[ g:pluggedir . "vim-snippets/snippets/"]
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsSnippetDirectories=[ g:pluggedir . "vim-snippets/UltiSnips/"]
 nnoremap <leader>U :UltiSnipsEdit<cr>
 
 
@@ -214,13 +282,14 @@ lua << EOF
 vim.lsp.set_log_level("debug")
 local nvim_lsp = require('lspconfig')
 
-local servers = { "rust_analyzer", "tsserver" }
+local servers = { "rust_analyzer", "tsserver", "pylsp" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
-    flags = {
-      debounce_text_changes = 150,
-    }
+    flags = { debounce_text_changes = 150 },
+    on_attach = function(client)
+      require'aerial'.on_attach(client)
+    end,
   }
 end
 EOF
@@ -232,13 +301,15 @@ nnoremap <leader>ore :!rm -rf .metals .bloop project/metals.sbt<CR>:MetalsRestar
 " silence messages about stuff I think?
 set shortmess-=F
 lua << EOF
-_G.metals_config = require("metals").bare_config
-_G.metals_config.settings = { showImplicitArguments = true }
-_G.metals_config.init_options.statusBarProvider = "show-message"
+_G.metals_config = require'metals'.bare_config()
+-- _G.metals_config.capabilities = require'cmp_nvim_lsp'.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- _G.metals_config.settings = { showImplicitArguments = true }
+-- _G.metals_config.init_options.statusBarProvider = "show-message"
+-- _G.metals_config.on_attach = function(client, bufnr) require'aerial'.on_attach(client) end
 EOF
 augroup lsp
   autocmd!
-  autocmd FileType scala,sbt lua require("metals").initialize_or_attach(_G.metals_config)
+  autocmd FileType scala,sc,sbt lua require'metals'.initialize_or_attach(_G.metals_config)
 augroup END
 
 
@@ -277,8 +348,6 @@ let g:rooter_patterns = ['.git', 'Cargo.toml', 'package.json', 'Makefile']
 """"" AIRLINE: fancy status line
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#fugitiveline#enabled = 0
-let g:airline#extensions#branch#enabled = 0
 "" always show status bar
 set laststatus=2
 "" unicode symbols
@@ -296,7 +365,7 @@ let g:airline_symbols.colnr = ' '
 let g:airline_symbols.maxlinenr = ''
 let g:airline_symbols.dirty='+'
 "" airline colorscheme/theme
-let g:airline_theme='gruvbox'
+let g:airline_theme='onedark'
 let g:airline_powerline_fonts = 1
 
 
@@ -344,23 +413,23 @@ lua << EOF
   end
   setColNums(true)
 EOF
-noremap <leader>NN :lua toggleNums()<CR>
+noremap <leader>NN :lua toggleNums()<cr>
 
 " reload file
-nmap <C-m>rr :bufdo e<CR>
+nmap <leader>rr :bufdo e<cr>
 " remove trailing whitespace + tabs to spaces
 function RemoveTrailingWhitespace_and_TabsToSpaces()
   :exe "silent! :%s/\\s\\+\\n/\\r/"
   :exe "silent! :%s/\\t/    /g"
 endfunction
-noremap <C-m>w :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
-"""" <C-m is 'm'y namespace
+noremap <leader>rmw :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
 
 """" TABS:
-lua vim.o.shiftwidth = 4   -- Indents will have a width of 4
-lua vim.o.tabstop = 4      -- The width of a TAB is set to 4, but is still \t
-lua vim.o.softtabstop = 4  -- Sets the number of columns for a TAB
-lua vim.o.expandtab = true -- Expand TABs to spaces
+lua vim.o.shiftround = true -- '<<' & '>>' always shit to multiples of shiftwidth
+lua vim.o.shiftwidth = 4    -- Indents will have a width of 4
+lua vim.o.tabstop = 4       -- The width of a TAB is set to 4, but is still \t
+lua vim.o.softtabstop = 4   -- Sets the number of columns for a TAB
+lua vim.o.expandtab = true  -- Expand TABs to spaces
 " filetype-specific tab settings
 autocmd FileType html setlocal shiftwidth=2
 autocmd FileType javascript setlocal shiftwidth=2
@@ -372,7 +441,6 @@ autocmd FileType scala setlocal shiftwidth=2
 autocmd FileType vim setlocal shiftwidth=2
 autocmd FileType rust setlocal shiftwidth=4
 autocmd FileType nim setlocal shiftwidth=2
-" except you can still manually TAB like this:
 
 
 " :split opens to the right or below
@@ -382,13 +450,6 @@ lua vim.o.splitbelow = true
 " let % jump to closing tag in html on top of usual functionality
 runtime macros/matchit.vim
 
-" code folding settings
-set foldmethod=manual
-
-" no ex-mode by accident
-nnoremap Q <Nop>
-
-" IDK-IF-I-NEED-THIS-ANYMORE:
-" Some servers have issues with backup files, see #649
+" I think is prevents crashes in some buggy LSPs?
 set nobackup
 set nowritebackup

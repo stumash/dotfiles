@@ -1,0 +1,10 @@
+[time]
+# show how long each command takes
+disabled = false
+
+[package]
+disabled = true
+
+[gcloud]
+disabled = true
+
