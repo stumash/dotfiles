@@ -14,6 +14,7 @@
   * starship
   * delta
 * gogh
+* jq
 * neovim
   * vim-plug
 * tmux

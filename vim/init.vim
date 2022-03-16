@@ -13,34 +13,13 @@ set foldmethod=indent
 set nofoldenable
 " no ex-mode by accident
 nnoremap Q <Nop>
+let mapleader=" "
 
-function! SystemStripped(cmd, input)
-    return substitute(system(a:cmd, a:input), '\n$', '', 'g')
-endfunction
-
-function! SystemOnVisSelect(cmd)
-    " Preserve line breaks
-    let l:paste = &paste
-    set paste
-    " Reselect the visual mode text
-    normal! gv
-    " Apply transformation to the text
-    execute "normal! c\<c-r>=SystemStripped(\"" . a:cmd . "\", @\")\<cr>\<esc>"
-    " Select the new text
-    normal! `[v`]h
-    " Revert to previous mode
-    let &paste = l:paste
-endfunction
-
-vnoremap <leader>sf :<c-u>call SystemOnVisSelect("base64")<cr>
-vnoremap <leader>fs :<c-u>call SystemOnVisSelect("base64 -d")<cr>
-
-vnoremap <leader>zsf :<c-u>call SystemOnVisSelect("gzip \| base64")<cr>
-vnoremap <leader>zfs :<c-u>call SystemOnVisSelect("base64 -d \| gzip -d")<cr>
 
 lua vim.g.home = "~/.config/nvim/"
 lua vim.g.pluggedir = vim.g.home .. "plugged/"
 call plug#begin(g:pluggedir)
+Plug 'stumash/shellvis'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
@@ -48,6 +27,7 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'bling/vim-airline'
 Plug 'joshdick/onedark.vim'
+Plug 'j-hui/fidget.nvim'
 Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
@@ -57,7 +37,6 @@ Plug 'airblade/vim-rooter'
 Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
 Plug 'unblevable/quick-scope'
-Plug 'stumash/vim-base64'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'akinsho/bufferline.nvim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -70,6 +49,8 @@ Plug 'rafcamlet/nvim-luapad'
 Plug 'folke/lsp-colors.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'luukvbaal/stabilize.nvim'
+Plug 'andymass/vim-matchup'
+Plug 'nvim-telescope/telescope-file-browser.nvim'
 " autocompletion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -80,8 +61,36 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 call plug#end()
 
 
+"""" MATCHUP
+let g:loaded_matchit = 1
+
+
+"""" FIDGET
+lua require"fidget".setup{}
+
+
+"""" SHELLVIS and text transforms
+" base64
+vnoremap <leader>esf :<c-u>call shellvis#do("base64")<cr>
+vnoremap <leader>efs :<c-u>call shellvis#do("base64 -d")<cr>
+" gzip | base64
+vnoremap <leader>ezsf :<c-u>call shellvis#do("gzip \| base64")<cr>
+vnoremap <leader>ezfs :<c-u>call shellvis#do("base64 -d \| gzip -d")<cr>
+" json formatting, defaults to indent = 2 spaces
+nnoremap <leader>json :%!jq<CR>
+nnoremap <leader>jsoN4 :%!jq --indent 4<CR>
+vnoremap <leader>json :<c-u>call shellvis#do("jq")<cr>
+vnoremap <leader>jsoN4 :<c-u>call shellvis#do("jq --indent 4")<cr>
+
+
 """" TROUBLE
 lua require"trouble".setup {}
+nnoremap <leader>tt <cmd>TroubleToggle<cr>
+nnoremap <leader>tw <cmd>TroubleToggle workspace_diagnostics<cr>
+nnoremap <leader>td <cmd>TroubleToggle document_diagnostics<cr>
+nnoremap <leader>tq <cmd>TroubleToggle quickfix<cr>
+nnoremap <leader>tl <cmd>TroubleToggle loclist<cr>
+nnoremap <leader>tk <cmd>TroubleToggle lsp_references<cr>
 
 
 """" STABILIZE:
@@ -89,7 +98,6 @@ lua require"stabilize".setup()
 
 
 """" LEADER:
-let mapleader=" "
 nmap <C-Space> <Space>
 lua leader = "<Space>"
 nnoremap <leader>q :q<CR>
@@ -103,6 +111,12 @@ nnoremap <leader>X :bd!<CR>
 " copy current filename into system clipboard
 nnoremap <leader>% mz:put=expand('%:p')<CR>
 nnoremap <leader>8 <C-W><C-W>
+
+
+"""" TERMINAL
+" double-esc to enter vim edit mode
+tnoremap <esc><esc> <c-\><c-n>
+nnoremap <leader>T :terminal bash --login<cr>
 
 
 """" LUA-HELPERS:
@@ -131,6 +145,11 @@ nnoremap <leader>f: <cmd>Telescope command_history<cr>
 nnoremap <leader>fL <cmd>Telescope reloader<cr>
 
 
+"""" TELESCOPE-FILE-BROWSER
+lua require"telescope".load_extension"file_browser"
+nnoremap <leader>fb :Telescope file_browser<cr>
+
+
 """" TELESCOPE-FZF:
 lua require('telescope').load_extension('fzf')
 
@@ -143,7 +162,6 @@ noremap ]a :AerialNext<cr>
 noremap [[a :AerialPrevUp<cr>
 noremap ]]a :AerialNextUp<cr>
 lua require'telescope'.load_extension'aerial'
-lua vim.g.aerial = { manage_folds = false }
 nnoremap <leader>fa :Telescope aerial<cr>
 
 
@@ -223,7 +241,7 @@ require"nvim-treesitter.configs".setup {
 EOF
 
 
-""""" COLORIZER: show the color of hex and rgb color values
+"""" COLORIZER: show the color of hex and rgb color values
 lua require('colorizer').setup()
 
 
@@ -272,9 +290,11 @@ nnoremap <silent> <leader>kt :lua vim.lsp.buf.type_definition()<CR>
 nnoremap <silent> <leader>kr :lua vim.lsp.buf.rename()<CR>
 nnoremap <silent> <leader>ka :lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <leader>kv :Telescope lsp_references<CR>
-nnoremap <silent> <leader>ke :lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
-nnoremap <silent> ]k :lua vim.lsp.diagnostic.goto_next()<CR>
-nnoremap <silent> [k :lua vim.lsp.diagnostic.goto_prev()<CR>
+nnoremap <silent> <leader>ke :lua vim.diagnostic.open_float()<CR>
+nnoremap <silent> ]k :lua vim.diagnostic.goto_next({severity=1})<CR>
+nnoremap <silent> [k :lua vim.diagnostic.goto_prev({severity=1})<CR>
+nnoremap <silent> ]i :lua vim.diagnostic.goto_next()<CR>
+nnoremap <silent> [i :lua vim.diagnostic.goto_prev()<CR>
 nnoremap <silent> <leader>kq :lua vim.lsp.diagnostic.set_loclist()<CR>
 nnoremap <silent> <leader>kf :lua vim.lsp.buf.formatting()<CR>
 
@@ -305,7 +325,7 @@ _G.metals_config = require'metals'.bare_config()
 -- _G.metals_config.capabilities = require'cmp_nvim_lsp'.update_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- _G.metals_config.settings = { showImplicitArguments = true }
 -- _G.metals_config.init_options.statusBarProvider = "show-message"
--- _G.metals_config.on_attach = function(client, bufnr) require'aerial'.on_attach(client) end
+_G.metals_config.on_attach = function(client, bufnr) require'aerial'.on_attach(client) end
 EOF
 augroup lsp
   autocmd!
@@ -369,11 +389,6 @@ let g:airline_theme='onedark'
 let g:airline_powerline_fonts = 1
 
 
-""""" JSON: automatically format json
-nnoremap <leader>json :%!python3 -m json.tool<CR>
-vnoremap <leader>json :!python3 -m json.tool<CR>
-
-
 """"" SNEAK: quicksearch for single or two characters with f,t, and s
 "" label-mode
 let g:sneak#label = 1
@@ -397,12 +412,6 @@ omap T <Plug>Sneak_T
 "" highlight current row
 set cursorline
 
-
-""""" BASE64: base64 encode/decode visual mode mappings
-"" base Sixty Four encode
-vnoremap <silent> <leader>sf :<c-u>call base64#v_btoa()<cr>
-"" base Sixty Four decode
-vnoremap <silent> <leader>fs :<c-u>call base64#v_atob()<cr>
 
 lua << EOF
   local all = require('plenary.functional').all
@@ -446,9 +455,6 @@ autocmd FileType nim setlocal shiftwidth=2
 " :split opens to the right or below
 lua vim.o.splitright = true
 lua vim.o.splitbelow = true
-
-" let % jump to closing tag in html on top of usual functionality
-runtime macros/matchit.vim
 
 " I think is prevents crashes in some buggy LSPs?
 set nobackup

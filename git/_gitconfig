@@ -1,5 +1,5 @@
 [push]
-    default = current
+    default = upstream
 [alias]
     cm = commit
     cmm = commit -m
@@ -9,10 +9,13 @@
     aacmm = !git add -A && git commit -m
     b = branch
     ba = branch --all
+    bc = branch --show-current
+    bg = !git branch | rg
     bd = branch -d
     bD = branch -D
     bn = checkout -b
     ch = checkout
+    chg = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1); }; gchg"
     ls = ls-files
     s = status
     sa = stash
