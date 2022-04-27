@@ -25,8 +25,7 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
-Plug 'bling/vim-airline'
-Plug 'joshdick/onedark.vim'
+Plug 'TimUntersberger/neogit'
 Plug 'j-hui/fidget.nvim'
 Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
@@ -51,6 +50,10 @@ Plug 'folke/trouble.nvim'
 Plug 'luukvbaal/stabilize.nvim'
 Plug 'andymass/vim-matchup'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
+Plug 'junegunn/vim-easy-align'
+" colors/appearance
+Plug 'feline-nvim/feline.nvim'
+Plug 'joshdick/onedark.vim'
 " autocompletion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -61,15 +64,23 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 call plug#end()
 
 
-"""" MATCHUP
+"""" vim-matchup
 let g:loaded_matchit = 1
 
 
-"""" FIDGET
+"""" fidget
 lua require"fidget".setup{}
 
 
-"""" SHELLVIS and text transforms
+"""" vim-easy-align
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+
+"""" shellvis and text transforms
+" <leader>e is for 'e'llvis
 " base64
 vnoremap <leader>esf :<c-u>call shellvis#do("base64")<cr>
 vnoremap <leader>efs :<c-u>call shellvis#do("base64 -d")<cr>
@@ -81,9 +92,13 @@ nnoremap <leader>json :%!jq<CR>
 nnoremap <leader>jsoN4 :%!jq --indent 4<CR>
 vnoremap <leader>json :<c-u>call shellvis#do("jq")<cr>
 vnoremap <leader>jsoN4 :<c-u>call shellvis#do("jq --indent 4")<cr>
+" sort
+vnoremap <leader>esort :<c-u>call shellvis#do("sort")<cr>
+" uniq
+vnoremap <leader>euniq :<c-u>call shellvis#do("uniq")<cr>
 
 
-"""" TROUBLE
+"""" trouble
 lua require"trouble".setup {}
 nnoremap <leader>tt <cmd>TroubleToggle<cr>
 nnoremap <leader>tw <cmd>TroubleToggle workspace_diagnostics<cr>
@@ -93,11 +108,11 @@ nnoremap <leader>tl <cmd>TroubleToggle loclist<cr>
 nnoremap <leader>tk <cmd>TroubleToggle lsp_references<cr>
 
 
-"""" STABILIZE:
-lua require"stabilize".setup()
+"""" stabilize:
+lua require"stabilize".setup { nexted = "QuickFixCmdPost *" }
 
 
-"""" LEADER:
+"""" leader:
 nmap <C-Space> <Space>
 lua leader = "<Space>"
 nnoremap <leader>q :q<CR>
@@ -110,20 +125,20 @@ nnoremap <leader>x :bd<CR>
 nnoremap <leader>X :bd!<CR>
 " copy current filename into system clipboard
 nnoremap <leader>% mz:put=expand('%:p')<CR>
-nnoremap <leader>8 <C-W><C-W>
+nnoremap <leader>O <C-W><C-W>
 
 
-"""" TERMINAL
+"""" terminal
 " double-esc to enter vim edit mode
 tnoremap <esc><esc> <c-\><c-n>
 nnoremap <leader>T :terminal bash --login<cr>
 
 
-"""" LUA-HELPERS:
+"""" my lua helpers:
 luafile ~/.config/nvim/lua/helpers.lua
 
 
-"""" TELESCOPE:
+"""" telescope:
 lua << EOF
 require('telescope').setup {
   defaults = {
@@ -145,16 +160,16 @@ nnoremap <leader>f: <cmd>Telescope command_history<cr>
 nnoremap <leader>fL <cmd>Telescope reloader<cr>
 
 
-"""" TELESCOPE-FILE-BROWSER
+"""" telescope-file-browser:
 lua require"telescope".load_extension"file_browser"
 nnoremap <leader>fb :Telescope file_browser<cr>
 
 
-"""" TELESCOPE-FZF:
+"""" telescope-fzf:
 lua require('telescope').load_extension('fzf')
 
 
-"""" AERIAL: symbol tree explorer
+"""" aerial: symbol tree explorer
 nnoremap <leader>aa :AerialToggle!<cr>
 nnoremap <leader>af :AerialTreeSyncFolds<cr>
 nnoremap [a :AerialPrev<cr>
@@ -165,28 +180,59 @@ lua require'telescope'.load_extension'aerial'
 nnoremap <leader>fa :Telescope aerial<cr>
 
 
-""""" DISPLAY-SETTINGS:
+"""" non-printable characters, a.k.a. listchars:
 " non-printable character display settings when :set list!
 set showcmd " show vim commands as they're typed
 set hlsearch " set hlsearch
 set termguicolors " colors
-set list " show non-printable characters
 lua <<EOF
-local tab = [[tab:→\ ]]
-local eol = [[eol:↴]]
-local spc = [[space:·]]
-local w_spc = true
-function toggleShowSpace()
-  w_spc = not w_spc
-  if w_spc == true then
-    vim.o.lcs = spc ..','.. tab ..','.. eol
-  else
-    vim.o.lcs = tab ..','.. eol
-  end
-end
-EOF
-nnoremap <leader>LC <CMD>lua toggleShowSpace()<CR>
+  lcs_settings = {
+    eol = { enabled = true, value = [[eol:↴]] },
+    tab = { enabled = true, value = [[tab:→\ ]] },
+    spc = { enabled = false, value = [[space:·]] },
+  }
 
+  function setLcs()
+    local lcs = ''
+
+    function addToLcs(s)
+      if lcs == '' then
+        lcs = s
+      else
+        lcs = lcs .. ',' .. s
+      end
+    end
+
+    for _, setting in pairs(lcs_settings) do
+      if setting.enabled then
+        addToLcs(setting.value)
+      end
+    end
+    vim.o.lcs = lcs
+  end
+
+  function toggleShowSpace()
+    lcs_settings.spc.enabled = not lcs_settings.spc.enabled
+    setLcs()
+  end
+  function toggleShowTab()
+    lcs_settings.tab.enabled = not lcs_settings.tab.enabled
+    setLcs()
+  end
+  function toggleShowEol()
+    lcs_settings.eol.enabled = not lcs_settings.eol.enabled
+    setLcs()
+  end
+
+  vim.o.list = true -- show non-printable characters
+  setLcs() -- apply the settings at startup
+EOF
+nnoremap <leader>LCSs <CMD>lua toggleShowSpace()<CR>
+nnoremap <leader>LCSt <CMD>lua toggleShowTab()<CR>
+nnoremap <leader>LCSe <CMD>lua toggleShowEol()<CR>
+
+
+""""" display settings
 set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
 colorscheme onedark
@@ -197,14 +243,12 @@ highlight SignColumn guibg=0
 set cmdheight=2 " Better display for messages
 
 
-"""" DEVICONS:
+"""" devicons:
 lua require'nvim-web-devicons'.setup { default = true }
 
 
-"""" BUFFERLINE:
-lua require"bufferline".setup { options = { diagnostics = "nvim_lsp" } }
-" choose buffer
-nnoremap <silent><leader><leader> :BufferLinePick<cr>
+"""" bufferline:
+lua require"bufferline".setup { options = { diagnostics = "nvim_lsp", numbers = "ordinal" } }
 " last buffer
 nnoremap <silent><leader>bb <C-^>
 " go left or right
@@ -213,6 +257,19 @@ nnoremap <silent><leader>, :BufferLineCyclePrev<cr>
 " move buffer left or right
 nnoremap <silent><leader>> :BufferLineMoveNext<cr>
 nnoremap <silent><leader>< :BufferLineMovePrev<cr>
+" open buffers by their visible ordinal
+nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
+nnoremap <silent><leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
+nnoremap <silent><leader>3 <Cmd>BufferLineGoToBuffer 3<CR>
+nnoremap <silent><leader>4 <Cmd>BufferLineGoToBuffer 4<CR>
+nnoremap <silent><leader>5 <Cmd>BufferLineGoToBuffer 5<CR>
+nnoremap <silent><leader>6 <Cmd>BufferLineGoToBuffer 6<CR>
+nnoremap <silent><leader>7 <Cmd>BufferLineGoToBuffer 7<CR>
+nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
+nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
+" close all buffers to the right or left of current buffer
+nnoremap <silent><leader>r <CMD>BufferLineCloseRight<CR>
+nnoremap <silent><leader>l <CMD>BufferLineCloseLeft<CR>
 
 
 """" LUAPAD: execute lua in the neovim context easily in a fresh buffer
@@ -357,6 +414,14 @@ nnoremap <leader>gch :Gitsigns change_base HEAD<CR>
 nnoremap <leader>gb :lua require'gitsigns'.toggle_current_line_blame(true)<cr>
 
 
+"""" NEOGIT
+lua << EOF
+local neogit = require('neogit')
+neogit.setup {}
+EOF
+nnoremap <leader>gg :Neogit<cr>
+
+
 """" WHICH-KEY: show keymaps
 lua require("which-key").setup { triggers = { "<leader>" } }
 
@@ -364,6 +429,9 @@ lua require("which-key").setup { triggers = { "<leader>" } }
 """"" ROOTER: set the cwd to the project root automatically
 let g:rooter_patterns = ['.git', 'Cargo.toml', 'package.json', 'Makefile']
 
+
+"""" feline
+lua require('feline').setup()
 
 """"" AIRLINE: fancy status line
 let g:airline#extensions#tabline#enabled = 1

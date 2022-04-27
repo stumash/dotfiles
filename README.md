@@ -2,6 +2,7 @@
 
 ### Tools I Use
 
+* stow
 * rust
   * rustup
   * exa
@@ -18,32 +19,41 @@
 * neovim
   * vim-plug
 * tmux
+  * tpm
+  * tmux-pain-control
+  * tmux-thumbs
 
 ### bash
 
-installs the following as hardlinks:
+installs softlinks for:
 
 * `~/.bash_functions.sh`
 * `~/.bash_aliases.sh`
 * `~/.bashrc_code.sh`
 * `~/.bashrc_env.sh`
 
-this will also set up the `${PS1}` variable to be fancy
-
 ### git
 
-adds aliases and other to `~/.gitconfig` if they are not present
+installs softlink for:
+
+* `~/.gitconfig`
 
 ### neovim
 
-Installs the following as hardlinks:
+installs softlinks for:
 
-* `${nvimconfigdir}/init.vim` (`$nvimconfigdir` is usually `~/.config/nvim/`)
+* `~/.config/nvim/lua/helpers.lua`
+* `~/.config/nvim/init.vim`
 
 ### other
 
-installs the following as hardlinks:
+installs softlinks for
 
 * `~/.haskeline`
 * `~/.latexmkrc`
 * `~/.tmux.conf`
+* `~/.tmuxline.conf`
+
+### starship
+
+* `~/.config/starship.toml`

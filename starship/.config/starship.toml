@@ -1,6 +1,5 @@
 [time]
-# show how long each command takes
-disabled = false
+disabled = false # show how long each command takes
 
 [package]
 disabled = true

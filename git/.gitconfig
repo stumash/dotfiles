@@ -7,18 +7,24 @@
     aa = add -A
     aacm = !git add -A && git commit
     aacmm = !git add -A && git commit -m
+    f = fetch
     b = branch
     ba = branch --all
     bc = branch --show-current
     bg = !git branch | rg
+    bag = !git branch --all | rg
     bd = branch -d
     bD = branch -D
     bn = checkout -b
     ch = checkout
     chg = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1); }; gchg"
+    chag = "!function gchag() { git checkout $(git branch -a | rg \"remotes.*$1\" | choose -f / 2 | sort | uniq | fzf -1); }; gchag"
     ls = ls-files
     s = status
-    sa = stash
+    ss = stash save
+    sp = stash pop
+    sd = stash drop
+    sl = stash list
     lg = log --decorate --graph --all
     d = diff
     dw = diff --word-diff
@@ -26,6 +32,7 @@
     pl = pull
     i = init
     rs = reset
+    rsh = reset --hard
     rsc = reset --cached
     m = merge
     mm = merge master
@@ -46,3 +53,13 @@
     hunk-header-file-style = red
     hunk-header-line-number-style = "#067a00"
     hunk-header-style = file line-number syntax
+
+[pager]
+    diff = delta
+    log = delta
+    reflog = delta
+    show = delta
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+[color]
+    ui = true
