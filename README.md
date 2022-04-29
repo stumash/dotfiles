@@ -1,5 +1,9 @@
 # dotfiles
 
+This project really only works if you clone it to your `~` (`$HOME`) folder.
+
+`./install.sh` to install my dotfile configurations.
+
 ### Tools I Use
 
 * stow

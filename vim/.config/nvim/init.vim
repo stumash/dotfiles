@@ -268,8 +268,8 @@ nnoremap <silent><leader>7 <Cmd>BufferLineGoToBuffer 7<CR>
 nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
 nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
 " close all buffers to the right or left of current buffer
-nnoremap <silent><leader>r <CMD>BufferLineCloseRight<CR>
-nnoremap <silent><leader>l <CMD>BufferLineCloseLeft<CR>
+nnoremap <silent><leader>bl <CMD>BufferLineCloseRight<CR>
+nnoremap <silent><leader>bh <CMD>BufferLineCloseLeft<CR>
 
 
 """" LUAPAD: execute lua in the neovim context easily in a fresh buffer
