@@ -29,7 +29,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
 
 ### bash
 
-installs softlinks for:
+installs softlinks for
 
 * `~/.bash_functions.sh`
 * `~/.bash_aliases.sh`
@@ -38,13 +38,13 @@ installs softlinks for:
 
 ### git
 
-installs softlink for:
+doesn't install anything. just prints the lines you should put in your
 
 * `~/.gitconfig`
 
 ### neovim
 
-installs softlinks for:
+installs softlinks for
 
 * `~/.config/nvim/lua/helpers.lua`
 * `~/.config/nvim/init.vim`
@@ -59,5 +59,7 @@ installs softlinks for
 * `~/.tmuxline.conf`
 
 ### starship
+
+installs softlinks for
 
 * `~/.config/starship.toml`
