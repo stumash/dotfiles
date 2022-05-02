@@ -20,6 +20,8 @@ lua vim.g.home = "~/.config/nvim/"
 lua vim.g.pluggedir = vim.g.home .. "plugged/"
 call plug#begin(g:pluggedir)
 Plug 'stumash/shellvis'
+Plug 'stumash/lcs.nvim'
+Plug 'stumash/snowball.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
@@ -185,54 +187,17 @@ nnoremap <leader>fa :Telescope aerial<cr>
 set showcmd " show vim commands as they're typed
 set hlsearch " set hlsearch
 set termguicolors " colors
-lua <<EOF
-  lcs_settings = {
-    eol = { enabled = true, value = [[eol:↴]] },
-    tab = { enabled = true, value = [[tab:→\ ]] },
-    spc = { enabled = false, value = [[space:·]] },
-  }
 
-  function setLcs()
-    local lcs = ''
-
-    function addToLcs(s)
-      if lcs == '' then
-        lcs = s
-      else
-        lcs = lcs .. ',' .. s
-      end
-    end
-
-    for _, setting in pairs(lcs_settings) do
-      if setting.enabled then
-        addToLcs(setting.value)
-      end
-    end
-    vim.o.lcs = lcs
-  end
-
-  function toggleShowSpace()
-    lcs_settings.spc.enabled = not lcs_settings.spc.enabled
-    setLcs()
-  end
-  function toggleShowTab()
-    lcs_settings.tab.enabled = not lcs_settings.tab.enabled
-    setLcs()
-  end
-  function toggleShowEol()
-    lcs_settings.eol.enabled = not lcs_settings.eol.enabled
-    setLcs()
-  end
-
-  vim.o.list = true -- show non-printable characters
-  setLcs() -- apply the settings at startup
-EOF
-nnoremap <leader>LCSs <CMD>lua toggleShowSpace()<CR>
-nnoremap <leader>LCSt <CMD>lua toggleShowTab()<CR>
-nnoremap <leader>LCSe <CMD>lua toggleShowEol()<CR>
+""" lcs.nvim: toggle listchars
+lua require'lcs'.setup()
+nnoremap <leader>LCSs <CMD>lua require"lcs".toggleShowSpace()<CR>
+nnoremap <leader>LCSt <CMD>lua require"lcs".toggleShowTab()<CR>
+nnoremap <leader>LCSe <CMD>lua require"lcs".toggleShowEol()<CR>
+nnoremap <leader>LCSr <CMD>lua require"lcs".toggleShowTrail()<CR>
+nnoremap <leader>LCSL <CMD>lua require'lcs'.toggleListchars()<CR>
 
 
-""""" display settings
+"""" display settings
 set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
 colorscheme onedark
@@ -287,7 +252,7 @@ require"nvim-treesitter.configs".setup {
     use_virtual_text = true,
     lint_events = { "BufWrite", "CursorHold" },
   },
-  ensure_installed = "maintained",
+  ensure_installed = "all",
   highlight = { enable = true },
   rainbow = {
     enable = true,
@@ -415,10 +380,7 @@ nnoremap <leader>gb :lua require'gitsigns'.toggle_current_line_blame(true)<cr>
 
 
 """" NEOGIT
-lua << EOF
-local neogit = require('neogit')
-neogit.setup {}
-EOF
+lua require'neogit'.setup {}
 nnoremap <leader>gg :Neogit<cr>
 
 
@@ -426,38 +388,25 @@ nnoremap <leader>gg :Neogit<cr>
 lua require("which-key").setup { triggers = { "<leader>" } }
 
 
-""""" ROOTER: set the cwd to the project root automatically
+"""" rooter: set the cwd to the project root automatically
 let g:rooter_patterns = ['.git', 'Cargo.toml', 'package.json', 'Makefile']
 
 
-"""" feline
-lua require('feline').setup()
-
-""""" AIRLINE: fancy status line
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
+"""" feline: fancy status bar
+lua << EOF
+local snowball = require'snowball'
+snowball.setup { labels = snowball.labels_alternate }
+require'feline'.setup {
+  custom_providers = { [snowball.provider_name] = snowball.provider },
+  components = snowball.add_whitespace_component(require'feline.presets'.default),
+}
+EOF
 "" always show status bar
 set laststatus=2
-"" unicode symbols
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ' '
-let g:airline_symbols.colnr = ' '
-let g:airline_symbols.maxlinenr = ''
-let g:airline_symbols.dirty='+'
-"" airline colorscheme/theme
-let g:airline_theme='onedark'
-let g:airline_powerline_fonts = 1
+" print(vim.pretty_print(require'snowball'.get_config()))
 
 
-""""" SNEAK: quicksearch for single or two characters with f,t, and s
+"""" sneak: quicksearch for single or two characters with f,t, and s
 "" label-mode
 let g:sneak#label = 1
 "" replace 'f' with 1-char Sneak
@@ -476,16 +425,16 @@ omap t <Plug>Sneak_t
 omap T <Plug>Sneak_T
 
 
-""""" CURSOR:
+"""" cursor:
 "" highlight current row
 set cursorline
 
 
 lua << EOF
   local all = require('plenary.functional').all
+  local isTrue = function(_, x) return x == true end
   local setColNums = function(b) vim.o.number = b; vim.o.relativenumber = b end
   function toggleNums()
-    local isTrue = function(_, x) return x == true end
     setColNums(not all(isTrue, { vim.o.number, vim.o.relativenumber}))
   end
   setColNums(true)
