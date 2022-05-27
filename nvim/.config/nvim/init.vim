@@ -21,7 +21,6 @@ lua vim.g.pluggedir = vim.g.home .. "plugged/"
 call plug#begin(g:pluggedir)
 Plug 'stumash/shellvis'
 Plug 'stumash/lcs.nvim'
-Plug 'stumash/snowball.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
@@ -33,12 +32,13 @@ Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
 Plug 'tommcdo/vim-exchange'
-Plug 'stevearc/aerial.nvim'
+Plug 'simrat39/symbols-outline.nvim'
 Plug 'airblade/vim-rooter'
 Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
 Plug 'unblevable/quick-scope'
 Plug 'kyazdani42/nvim-web-devicons'
+Plug 'kyazdani42/nvim-tree.lua'
 Plug 'akinsho/bufferline.nvim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'folke/which-key.nvim'
@@ -53,10 +53,13 @@ Plug 'luukvbaal/stabilize.nvim'
 Plug 'andymass/vim-matchup'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
 Plug 'junegunn/vim-easy-align'
+Plug 'NMAC427/guess-indent.nvim'
+Plug 'ThePrimeagen/harpoon'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
+Plug 'stumash/snowball.nvim'
 Plug 'joshdick/onedark.vim'
-" autocompletion
+" " autocompletion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
@@ -66,6 +69,11 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 call plug#end()
 
 
+"""" guess-indent
+lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
+autocmd FileType java,python,rust,bash,sh setlocal shiftwidth=4
+autocmd FileType scala,typescript,javascript,lua setlocal shiftwidth=2
+
 """" vim-matchup
 let g:loaded_matchit = 1
 
@@ -74,11 +82,40 @@ let g:loaded_matchit = 1
 lua require"fidget".setup{}
 
 
+"""" nvim-tree
+nnoremap <leader>nN :NvimTreeFindFile<CR>
+nnoremap <leader>nn :NvimTreeToggle<CR>
+lua << EOF
+local start_size = 30
+local incr_size = 10
+require'nvim-tree'.setup {}
+local size = start_size
+function increaseNvimTreeSize()
+  size = size + incr_size
+  require'nvim-tree'.resize(size)
+end
+function decreaseNvimTreeSize()
+  if size > start_size then
+    size = size - incr_size
+    require'nvim-tree'.resize(size)
+  else
+    print([[can't decrease below start_size ]] .. start_size)
+  end
+end
+EOF
+nnoremap <leader>nl :lua increaseNvimTreeSize()<cr>
+nnoremap <leader>nh :lua decreaseNvimTreeSize()<cr>
+
+
 """" vim-easy-align
 " Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
+xnoremap ga <Plug>(EasyAlign)
+xnoremap gA <Plug>(LiveEasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
+nnoremap ga <Plug>(EasyAlign)
+nnoremap gA <Plug>(LiveEasyAlign)
+" format curent table
+nnoremap <leader><bar> mavip:EasyAlign *<bar><cr>'a
 
 
 """" shellvis and text transforms
@@ -171,15 +208,10 @@ nnoremap <leader>fb :Telescope file_browser<cr>
 lua require('telescope').load_extension('fzf')
 
 
-"""" aerial: symbol tree explorer
-nnoremap <leader>aa :AerialToggle!<cr>
-nnoremap <leader>af :AerialTreeSyncFolds<cr>
-nnoremap [a :AerialPrev<cr>
-noremap ]a :AerialNext<cr>
-noremap [[a :AerialPrevUp<cr>
-noremap ]]a :AerialNextUp<cr>
-lua require'telescope'.load_extension'aerial'
-nnoremap <leader>fa :Telescope aerial<cr>
+"""" symbols-outline: ast tree structure of code
+nnoremap <leader>aa <CMD>SymbolsOutline<CR>
+nnoremap <leader>ax <CMD>SymbolsOutlineClose<CR>
+nnoremap <leader>ai <CMD>SymbolsOutlineOpen<CR>
 
 
 """" non-printable characters, a.k.a. listchars:
@@ -223,15 +255,15 @@ nnoremap <silent><leader>, :BufferLineCyclePrev<cr>
 nnoremap <silent><leader>> :BufferLineMoveNext<cr>
 nnoremap <silent><leader>< :BufferLineMovePrev<cr>
 " open buffers by their visible ordinal
-nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
-nnoremap <silent><leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
-nnoremap <silent><leader>3 <Cmd>BufferLineGoToBuffer 3<CR>
-nnoremap <silent><leader>4 <Cmd>BufferLineGoToBuffer 4<CR>
-nnoremap <silent><leader>5 <Cmd>BufferLineGoToBuffer 5<CR>
-nnoremap <silent><leader>6 <Cmd>BufferLineGoToBuffer 6<CR>
-nnoremap <silent><leader>7 <Cmd>BufferLineGoToBuffer 7<CR>
-nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
-nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
+nnoremap <silent><leader>1 <cmd>lua require("bufferline").go_to_buffer(1, true)<cr>
+nnoremap <silent><leader>2 <cmd>lua require("bufferline").go_to_buffer(2, true)<cr>
+nnoremap <silent><leader>3 <cmd>lua require("bufferline").go_to_buffer(3, true)<cr>
+nnoremap <silent><leader>4 <cmd>lua require("bufferline").go_to_buffer(4, true)<cr>
+nnoremap <silent><leader>5 <cmd>lua require("bufferline").go_to_buffer(5, true)<cr>
+nnoremap <silent><leader>6 <cmd>lua require("bufferline").go_to_buffer(6, true)<cr>
+nnoremap <silent><leader>7 <cmd>lua require("bufferline").go_to_buffer(7, true)<cr>
+nnoremap <silent><leader>8 <cmd>lua require("bufferline").go_to_buffer(8, true)<cr>
+nnoremap <silent><leader>9 <cmd>lua require("bufferline").go_to_buffer(9, true)<cr>
 " close all buffers to the right or left of current buffer
 nnoremap <silent><leader>bl <CMD>BufferLineCloseRight<CR>
 nnoremap <silent><leader>bh <CMD>BufferLineCloseLeft<CR>
@@ -242,10 +274,11 @@ nnoremap <leader>LL :lua require('luapad').toggle()<CR>
 nnoremap <leader>LP :Luapad<CR>:lua require('luapad').toggle()<CR>
 
 
-"""" TREESITTER: syntactic awareness in vim. highlighting and more
+"""" treesitter: syntactic awareness in vim. highlighting and more
 lua << EOF
 vim.g.vimsyn_embed = "l" -- highlight lua in vim files
 require"nvim-treesitter.configs".setup {
+  indent = { enable = false, disable = { "javascript", "typescript" } },
   playground = { enable = true },
   query_linter = {
     enable = true,
@@ -263,15 +296,15 @@ require"nvim-treesitter.configs".setup {
 EOF
 
 
-"""" COLORIZER: show the color of hex and rgb color values
+"""" colorizer: show the color of hex and rgb color values
 lua require('colorizer').setup()
 
 
-"""" NVIM-CMP: auto-complete, smart completion
-set completeopt=menuone,noinsert,noselect
-set shortmess+=c
-set lazyredraw
+"""" nvim-cmp: auto-complete, smart completion
 lua << EOF
+vim.opt_global.shortmess:remove("F"):append("c")
+vim.opt_global.completeopt = { "menuone", "noinsert" }
+
 local cmp = require'cmp'
 cmp.setup {
   snippet = { expand = function(args) vim.fn["UltiSnips#Anon"](args.body) end },
@@ -295,7 +328,7 @@ cmp.setup {
 EOF
 
 
-"""" ULTISNIPS: snippets for autocomplete
+"""" ultisnips: snippets for autocomplete
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
@@ -329,30 +362,41 @@ for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
     flags = { debounce_text_changes = 150 },
-    on_attach = function(client)
-      require'aerial'.on_attach(client)
-    end,
   }
 end
 EOF
 
 
-"""" NVIM-METALS: config for scala language server, metals
-" useful for restarting metals
-nnoremap <leader>ore :!rm -rf .metals .bloop project/metals.sbt<CR>:MetalsRestartServer<CR>
-" silence messages about stuff I think?
-set shortmess-=F
+"""" nvim-metals: config for scala language server, metals
 lua << EOF
-_G.metals_config = require'metals'.bare_config()
--- _G.metals_config.capabilities = require'cmp_nvim_lsp'.update_capabilities(vim.lsp.protocol.make_client_capabilities())
--- _G.metals_config.settings = { showImplicitArguments = true }
--- _G.metals_config.init_options.statusBarProvider = "show-message"
-_G.metals_config.on_attach = function(client, bufnr) require'aerial'.on_attach(client) end
+function make_metals_config()
+  local config = require'metals'.bare_config()
+
+  config.capabilities = require'cmp_nvim_lsp'.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+  config.settings = {
+    showImplicitArguments = true,
+    showInferredType = true,
+    serverVersion = [[0.11.5]],
+    decorationColor = [[Title]],
+  }
+
+  return config
+end
+function make_metals_config_and_restart()
+  local config = make_metals_config()
+  local metals = require'metals'
+  metals.initialize_or_attach(config)
+  metals.restart_server()
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "scala", "sbt", "sc", "java" },
+  callback = function()
+    require'metals'.initialize_or_attach(make_metals_config())
+  end,
+})
 EOF
-augroup lsp
-  autocmd!
-  autocmd FileType scala,sc,sbt lua require'metals'.initialize_or_attach(_G.metals_config)
-augroup END
+nnoremap <leader>ore :!rm -rf .metals .bloop project/metals.sbt<CR>:lua make_metals_config_and_restart()<CR>
 
 
 """" GITSIGNS: show which lines have tracked and untracked changes. and more.
@@ -368,6 +412,9 @@ EOF
 highlight GitSignsCurrentLineBlame guifg=#fffd30
 " show the current hunk as popover
 nnoremap <leader>gp :Gitsigns preview_hunk<CR>
+nnoremap <leader>ghr :Gitsigns reset_hunk<CR>
+nnoremap <leader>ghs :Gitsigns stage_hunk<CR>
+nnoremap <leader>ghu :Gitsigns undo_stage_hunk<CR>
 " go to next hunk of code that git diff thinks changed
 nnoremap ]g :Gitsigns next_hunk<CR>
 nnoremap [g :Gitsigns prev_hunk<CR>
@@ -375,8 +422,10 @@ nnoremap [g :Gitsigns prev_hunk<CR>
 nnoremap <leader>gC :Gitsigns change_base<Space>
 nnoremap <leader>gcm :Gitsigns change_base master<CR>
 nnoremap <leader>gch :Gitsigns change_base HEAD<CR>
+" set base back to index
+nnoremap <leader>gci :Gitsigns change_base<CR>
 " show line blame
-nnoremap <leader>gb :lua require'gitsigns'.toggle_current_line_blame(true)<cr>
+nnoremap <leader>gb :Gitsigns toggle_current_line_blame<CR>
 
 
 """" NEOGIT
@@ -398,12 +447,37 @@ local snowball = require'snowball'
 snowball.setup { labels = snowball.labels_alternate }
 require'feline'.setup {
   custom_providers = { [snowball.provider_name] = snowball.provider },
-  components = snowball.add_whitespace_component(require'feline.presets'.default),
+  components = snowball.reverse_scroll_bar(snowball.add_whitespace_component(require'feline.presets'.default)),
 }
 EOF
 "" always show status bar
 set laststatus=2
-" print(vim.pretty_print(require'snowball'.get_config()))
+
+
+"""" harpoon: navigate to popular fle locations faster
+lua require("telescope").load_extension('harpoon')
+nnoremap <leader>ha :lua require("harpoon.mark").add_file()<cr>
+nnoremap <leader>hh :Telescope harpoon marks<cr>
+
+
+"""" nerdcommenter: comment and uncomment easily
+let g:NERDDefaultAlign = 'left'
+let g:NERDSpaceDelims = 1
+let g:NERDCreateDefaultMappings = 0
+let g:NERDCompactSexyComs = 1
+let g:NERDTrimTrailingWhitespace = 1
+let g:NERDToggleCheckAllLines = 1
+" toggle line(s)
+nnoremap <leader>cc <Plug>NERDCommenterToggle
+vnoremap <leader>cc <Plug>NERDCommenterToggle
+" toggle line(s), but respect individual line commentedness
+nnoremap <leader>ci <Plug>NERDCommenterInvert
+vnoremap <leader>ci <Plug>NERDCommenterInvert
+" start writing a comment at the end of the current line
+nnoremap <leader>cA <Plug>NERDCommenterAppend
+" 'sexy' comment
+nnoremap <leader>cs <Plug>NERDCommenterSexy
+vnoremap <leader>cs <Plug>NERDCommenterSexy
 
 
 """" sneak: quicksearch for single or two characters with f,t, and s
@@ -452,22 +526,9 @@ noremap <leader>rmw :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
 
 """" TABS:
 lua vim.o.shiftround = true -- '<<' & '>>' always shit to multiples of shiftwidth
-lua vim.o.shiftwidth = 4    -- Indents will have a width of 4
 lua vim.o.tabstop = 4       -- The width of a TAB is set to 4, but is still \t
 lua vim.o.softtabstop = 4   -- Sets the number of columns for a TAB
 lua vim.o.expandtab = true  -- Expand TABs to spaces
-" filetype-specific tab settings
-autocmd FileType html setlocal shiftwidth=2
-autocmd FileType javascript setlocal shiftwidth=2
-autocmd FileType javascriptreact setlocal shiftwidth=2
-autocmd FileType typescript setlocal shiftwidth=2
-autocmd FileType typescriptreact setlocal shiftwidth=2
-autocmd FileType lua setlocal shiftwidth=2
-autocmd FileType scala setlocal shiftwidth=2
-autocmd FileType vim setlocal shiftwidth=2
-autocmd FileType rust setlocal shiftwidth=4
-autocmd FileType nim setlocal shiftwidth=2
-
 
 " :split opens to the right or below
 lua vim.o.splitright = true

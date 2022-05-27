@@ -27,6 +27,8 @@
     sl = stash list
     lg = log --decorate --graph --all
     d = diff
+    dc = diff --cached
+    dm = diff master
     dw = diff --word-diff
     ps = push
     pl = pull
