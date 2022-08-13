@@ -22,15 +22,17 @@ call plug#begin(g:pluggedir)
 Plug 'stumash/shellvis'
 Plug 'stumash/lcs.nvim'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'stevearc/dressing.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'ziontee113/icon-picker.nvim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'TimUntersberger/neogit'
 Plug 'j-hui/fidget.nvim'
 Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
-Plug 'tpope/vim-surround'
+Plug 'kylechui/nvim-surround'
 Plug 'tommcdo/vim-exchange'
 Plug 'simrat39/symbols-outline.nvim'
 Plug 'airblade/vim-rooter'
@@ -66,13 +68,18 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'SirVer/ultisnips'
 Plug 'stumash/vim-snippets'
 Plug 'quangnguyen30192/cmp-nvim-ultisnips'
+Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 call plug#end()
+
+
+"""" toggle-lsp-diagnostics:
+nnoremap <leader>kT :ToggleDiag<cr>
 
 
 """" guess-indent
 lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
-autocmd FileType java,python,rust,bash,sh setlocal shiftwidth=4
-autocmd FileType scala,typescript,javascript,lua setlocal shiftwidth=2
+autocmd FileType java,python,rust,bash,sh,tex setlocal shiftwidth=4
+autocmd FileType scala,typescript,javascript,lua,teal setlocal shiftwidth=2
 
 """" vim-matchup
 let g:loaded_matchit = 1
@@ -163,7 +170,8 @@ nnoremap <leader>Z :wqa<CR>
 nnoremap <leader>x :bd<CR>
 nnoremap <leader>X :bd!<CR>
 " copy current filename into system clipboard
-nnoremap <leader>% mz:put=expand('%:p')<CR>
+nnoremap <leader>%% <cmd>lua print(vim.fn.expand('%:p'))<cr>
+nnoremap <leader>%p mz:put=expand('%:p')<cr>
 nnoremap <leader>O <C-W><C-W>
 
 
@@ -278,15 +286,29 @@ nnoremap <leader>LP :Luapad<CR>:lua require('luapad').toggle()<CR>
 lua << EOF
 vim.g.vimsyn_embed = "l" -- highlight lua in vim files
 require"nvim-treesitter.configs".setup {
-  indent = { enable = false, disable = { "javascript", "typescript" } },
+  indent = { enable = false },
   playground = { enable = true },
   query_linter = {
     enable = true,
     use_virtual_text = true,
     lint_events = { "BufWrite", "CursorHold" },
   },
-  ensure_installed = "all",
-  highlight = { enable = true },
+  ensure_installed = {
+    "c", "rust", "cpp",
+    "javascript", "typescript", "tsx",
+    "json", "yaml",
+    "lua", "teal", "vim",
+    "python",
+    "bash",
+    "java",
+    "latex",
+    "dockerfile",
+    "css", "scss", "html",
+  },
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = true,
+  },
   rainbow = {
     enable = true,
     extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
@@ -355,11 +377,11 @@ nnoremap <silent> <leader>kf :lua vim.lsp.buf.formatting()<CR>
 
 lua << EOF
 vim.lsp.set_log_level("debug")
-local nvim_lsp = require('lspconfig')
+local lspconfig = require('lspconfig')
 
-local servers = { "rust_analyzer", "tsserver", "pylsp" }
+local servers = { "rust_analyzer", "tsserver", "pyright", "teal_ls" }
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup {
+  lspconfig[lsp].setup {
     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
     flags = { debounce_text_changes = 150 },
   }
@@ -399,7 +421,7 @@ EOF
 nnoremap <leader>ore :!rm -rf .metals .bloop project/metals.sbt<CR>:lua make_metals_config_and_restart()<CR>
 
 
-"""" GITSIGNS: show which lines have tracked and untracked changes. and more.
+"""" gitsigns: show which lines have tracked and untracked changes. and more.
 lua << EOF
 require'gitsigns'.setup {
   current_line_blame_opts = {
@@ -428,12 +450,20 @@ nnoremap <leader>gci :Gitsigns change_base<CR>
 nnoremap <leader>gb :Gitsigns toggle_current_line_blame<CR>
 
 
-"""" NEOGIT
+"""" icon-picker
+lua require'icon-picker'
+nnoremap <leader>i <cmd>PickEmoji<cr>
+nnoremap <leader>I <cmd>PickEverything<cr>
+inoremap <c-i> <cmd>PickEmojiInsert<cr>
+inoremap <c-I> <cmd>PickEverythingInsert<cr>
+
+
+"""" neogit
 lua require'neogit'.setup {}
 nnoremap <leader>gg :Neogit<cr>
 
 
-"""" WHICH-KEY: show keymaps
+"""" which-key: show keymaps
 lua require("which-key").setup { triggers = { "<leader>" } }
 
 
@@ -447,7 +477,9 @@ local snowball = require'snowball'
 snowball.setup { labels = snowball.labels_alternate }
 require'feline'.setup {
   custom_providers = { [snowball.provider_name] = snowball.provider },
-  components = snowball.reverse_scroll_bar(snowball.add_whitespace_component(require'feline.presets'.default)),
+  components = snowball.reverse_scroll_bar(snowball.add_whitespace_component(
+    require'feline.default_components'.statusline.icons
+  )),
 }
 EOF
 "" always show status bar
@@ -458,6 +490,11 @@ set laststatus=2
 lua require("telescope").load_extension('harpoon')
 nnoremap <leader>ha :lua require("harpoon.mark").add_file()<cr>
 nnoremap <leader>hh :Telescope harpoon marks<cr>
+" <c-d> to delete entries
+
+
+"""" nvim-surround
+lua require'nvim-surround'.setup{}
 
 
 """" nerdcommenter: comment and uncomment easily
@@ -504,6 +541,7 @@ omap T <Plug>Sneak_T
 set cursorline
 
 
+"""" toggle nums
 lua << EOF
   local all = require('plenary.functional').all
   local isTrue = function(_, x) return x == true end
@@ -537,3 +575,9 @@ lua vim.o.splitbelow = true
 " I think is prevents crashes in some buggy LSPs?
 set nobackup
 set nowritebackup
+
+"""" windows
+nmap <leader><leader>l <c-w>l
+nmap <leader><leader>h <c-w>h
+nmap <leader><leader>j <c-w>j
+nmap <leader><leader>k <c-w>k

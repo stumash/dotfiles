@@ -1,3 +1,6 @@
+[user]
+    name = "Stuart Mashaal"
+    email = "stuart.mashaal@gmail.com"
 [push]
     default = upstream
 [alias]

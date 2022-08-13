@@ -1,5 +1,3 @@
-# utilities
-
 # move up the directory tree n times
 function cd..() {
     if [ -z "${1}" ]; then
@@ -10,18 +8,12 @@ function cd..() {
     fi
 }
 
-# helpers
-
-# python expression printer
-function p() {
-    python3 -c "print($*)"
-}
-# javascript expression printer
-function j() {
-    node -e "console.log($*)"
-}
 # start ssh-agent, add provided key
 function sshstart() {
     eval $(ssh-agent -s)
-    ssh-add "${1}"
+    ssh-add "${HOME}/.ssh/${1}"
 }
+function showkeys() {
+    COMPREPLY=($(compgen -W "$(ls ${HOME}/.ssh | rg '.pub' | sd '.pub' '')" "${COMP_WORDS[1]}"))
+}
+complete -F showkeys sshstart

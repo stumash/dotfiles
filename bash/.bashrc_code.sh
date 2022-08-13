@@ -1,7 +1,9 @@
 # imports
-[ -f ~/.bash_aliases.sh ]   && source ~/.bash_aliases.sh
-[ -f ~/.bash_functions.sh ] && source ~/.bash_functions.sh
-[ -f ~/.bash_env.sh ]       && source ~/.bash_env.sh
+[ -f "$HOME/.bash_aliases.sh" ]   && source "$HOME/.bash_aliases.sh"
+[ -f "$HOME/.bash_functions.sh" ] && source "$HOME/.bash_functions.sh"
+[ -f "$HOME/.bash_env.sh" ]       && source "$HOME/.bash_env.sh"
+
+export PATH="$HOME/bin/:$PATH"
 
 # bash with vim keys
 set -o vi
