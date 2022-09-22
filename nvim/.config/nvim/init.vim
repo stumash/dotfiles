@@ -29,6 +29,7 @@ Plug 'ziontee113/icon-picker.nvim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'TimUntersberger/neogit'
+Plug 'akinsho/git-conflict.nvim'
 Plug 'j-hui/fidget.nvim'
 Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
@@ -57,6 +58,7 @@ Plug 'nvim-telescope/telescope-file-browser.nvim'
 Plug 'junegunn/vim-easy-align'
 Plug 'NMAC427/guess-indent.nvim'
 Plug 'ThePrimeagen/harpoon'
+Plug 'aarondiel/spread.nvim'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
@@ -69,6 +71,7 @@ Plug 'SirVer/ultisnips'
 Plug 'stumash/vim-snippets'
 Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 call plug#end()
 
 
@@ -81,8 +84,14 @@ lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
 autocmd FileType java,python,rust,bash,sh,tex setlocal shiftwidth=4
 autocmd FileType scala,typescript,javascript,lua,teal setlocal shiftwidth=2
 
+
 """" vim-matchup
 let g:loaded_matchit = 1
+
+
+"""" spread.nvim
+nnoremap <leader>so <cmd>lua require'spread'.out()<cr>
+nnoremap <leader>si <cmd>lua require'spread'.combine()<cr>
 
 
 """" fidget
@@ -314,6 +323,49 @@ require"nvim-treesitter.configs".setup {
     extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
     max_file_lines = 10000, -- Do not enable for files with more than n lines, int
   },
+  textobjects = {
+    select = {
+      enable = true,
+      lookahead = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner",
+      },
+      include_surrounding_whitespace = true,
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ["<leader>a"] = "@parameter.inner",
+      },
+      swap_previous = {
+        ["<leader>A"] = "@parameter.inner",
+      },
+    },
+    move = {
+      enable = true,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        ["]m"] = "@function.outer",
+        ["]c"] = "@class.outer",
+      },
+      goto_next_end = {
+        ["]M"] = "@function.outer",
+        ["]C"] = "@class.outer",
+      },
+      goto_previous_start = {
+        ["[m"] = "@function.outer",
+        ["[c"] = "@class.outer",
+      },
+      goto_previous_end = {
+        ["[M"] = "@function.outer",
+        ["[C"] = "@class.outer",
+      },
+    },
+  },
 }
 EOF
 
@@ -492,6 +544,20 @@ nnoremap <leader>ha :lua require("harpoon.mark").add_file()<cr>
 nnoremap <leader>hh :Telescope harpoon marks<cr>
 " <c-d> to delete entries
 
+
+"""" git-conflict: handle merge conflicts slightly better
+lua require('git-conflict').setup()
+" Select 'ours'
+nnoremap <leader>gco <cmd>GitConflictChooseOurs<cr>
+" Select 'theirs'
+nnoremap <leader>gct <cmd>GitConflictChooseTheirs<cr>
+" Select 'both' ours and theirs
+nnoremap <leader>gcb <cmd>GitConflictChooseBoth<cr>
+" Select 'neither'
+nnoremap <leader>gcn <cmd>GitConflictChooseNone<cr>
+nnoremap <leader>]c <cmd>GitConflictNextConflict<cr>
+nnoremap <leader>[c <cmd>GitConflictPrevConflict<cr>
+nnoremap <leader>gcc <cmd>GitConflictListQ<cr>
 
 """" nvim-surround
 lua require'nvim-surround'.setup{}
