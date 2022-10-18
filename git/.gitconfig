@@ -1,6 +1,14 @@
-[user]
-    name = "Stuart Mashaal"
-    email = "stuart.mashaal@gmail.com"
+# in the files listed in the snippets below, define a section like:
+# [user]
+#     name = Stuart Mashaal
+#     email = <email address>
+[includeIf "gitdir:~/companyname/"]
+    path = ~/companyname/.gitconfig
+[includeIf "gitdir:~/me/code/"]
+    path = ~/me/code/.gitconfig
+[includeIf "gitdir:~/dotfiles/"]
+    path = ~/me/code/.gitconfig
+
 [push]
     default = upstream
 [alias]

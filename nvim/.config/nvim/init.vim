@@ -378,7 +378,8 @@ lua require('colorizer').setup()
 
 """" nvim-cmp: auto-complete, smart completion
 lua << EOF
-vim.opt_global.shortmess:remove("F"):append("c")
+vim.opt_global.shortmess:remove('F')
+vim.opt_global.shortmess:append('c')
 vim.opt_global.completeopt = { "menuone", "noinsert" }
 
 local cmp = require'cmp'
@@ -436,7 +437,7 @@ local lspconfig = require('lspconfig')
 local servers = { "rust_analyzer", "tsserver", "pyright", "teal_ls" }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
-    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
+    capabilities = require'cmp_nvim_lsp'.default_capabilities(),
     flags = { debounce_text_changes = 150 },
   }
 end
@@ -448,7 +449,7 @@ lua << EOF
 function make_metals_config()
   local config = require'metals'.bare_config()
 
-  config.capabilities = require'cmp_nvim_lsp'.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+  config.capabilities = require'cmp_nvim_lsp'.default_capabilities()
   config.settings = {
     showImplicitArguments = true,
     showInferredType = true,

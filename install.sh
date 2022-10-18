@@ -5,20 +5,8 @@ echo 'stowing neovim configs'
 stow --ignore='.md' --target="$TARGET" nvim
 
 echo 'GIT'
-echo 'Add the following to ~/.gitconfig:'
-echo '```'
-echo '[include]'
-echo '    path = ~/path/to/dotfiles/git/.gitconfig'
-echo '```'
-echo 'You may also want to add these lines for your work-specific or'
-echo 'personal-project-specific identities/configs:'
-echo '```'
-echo '[includeIf "gitdir:~/hopper/"]'
-echo '    path = ~/hopper/.gitconfig'
-echo '[includeIf "gitdir:~/me/code/"]'
-echo '    path = ~/me/code/.gitconfig'
-echo '```'
-echo
+echo 'stowing ~/.gitconfig'
+stow --ignore='.md' --target="$TARGET" git
 
 echo 'BASH'
 echo 'stowing bash configs'
@@ -33,4 +21,6 @@ echo
 echo 'OTHER'
 echo 'stowing other configs'
 stow --ignore='.md$' --target="$TARGET" other
+
+# and an extra newline for readability 🤷
 echo
