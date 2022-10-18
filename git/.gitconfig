@@ -1,4 +1,4 @@
-# in the files listed in the snippets below, define a section like:
+# in the files listed in the `path =` snippets below, define a `user` section like:
 # [user]
 #     name = Stuart Mashaal
 #     email = <email address>

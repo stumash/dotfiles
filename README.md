@@ -6,6 +6,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
 
 ### Tools I Use
 
+* git > 2.38.0
 * stow
 * rust
   * rustup
@@ -38,7 +39,7 @@ installs softlinks for
 
 ### git
 
-doesn't install anything. just prints the lines you should put in your
+installs softlinks for
 
 * `~/.gitconfig`
 
