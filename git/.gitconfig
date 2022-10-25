@@ -2,8 +2,8 @@
 # [user]
 #     name = Stuart Mashaal
 #     email = <email address>
-[includeIf "gitdir:~/companyname/"]
-    path = ~/companyname/.gitconfig
+[includeIf "gitdir:~/flourish/"]
+    path = ~/flourish/.gitconfig
 [includeIf "gitdir:~/me/code/"]
     path = ~/me/code/.gitconfig
 [includeIf "gitdir:~/dotfiles/"]

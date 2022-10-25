@@ -104,7 +104,9 @@ nnoremap <leader>nn :NvimTreeToggle<CR>
 lua << EOF
 local start_size = 30
 local incr_size = 10
-require'nvim-tree'.setup {}
+require'nvim-tree'.setup {
+  git = { ignore = false },
+}
 local size = start_size
 function increaseNvimTreeSize()
   size = size + incr_size
@@ -204,7 +206,7 @@ require('telescope').setup {
   }
 }
 EOF
-nnoremap <leader>fF <cmd>lua require'telescope.builtin'.find_files { no_ignore = true }<cr>
+nnoremap <leader>fF <cmd>lua require'telescope.builtin'.find_files { hidden = true, no_ignore = true }<cr>
 nnoremap <leader>ff <cmd>Telescope git_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fp <cmd>lua require'telescope.builtin'.find_files { cwd = '$HOME/.config/nvim/plugged' }<cr>
@@ -396,7 +398,7 @@ cmp.setup {
     ['<C-y>'] = cmp.mapping.scroll_docs(-4),
     ['<C-e>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
-    ['<tab>'] = cmp.mapping.confirm({
+    ['<cr>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     })
@@ -506,7 +508,7 @@ nnoremap <leader>gb :Gitsigns toggle_current_line_blame<CR>
 
 
 """" icon-picker
-lua require'icon-picker'
+lua require'icon-picker'.setup{}
 nnoremap <leader>i <cmd>PickEmoji<cr>
 nnoremap <leader>I <cmd>PickEverything<cr>
 inoremap <c-i> <cmd>PickEmojiInsert<cr>
