@@ -372,6 +372,7 @@ require"nvim-treesitter.configs".setup {
   },
 }
 EOF
+let g:markdown_fenced_languages = ['html', 'python', 'lua', 'vim', 'typescript', 'javascript', 'rust']
 
 
 """" colorizer: show the color of hex and rgb color values
