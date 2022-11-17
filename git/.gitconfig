@@ -55,7 +55,7 @@
 [delta]
     features = decorations
     line-numbers = true
-    max-line-length = 120
+    max-line-length = 0 # lines occupy full terminal width
 [delta "interactive"]
     keep-plus-minus-markers = false
 [delta "decorations"]
