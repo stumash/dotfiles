@@ -3,16 +3,18 @@ let &packpath = &runtimepath
 lua vim.o.shell = "bash"
 lua vim.o.encoding = "utf-8"
 lua vim.cmd [[filetype plugin on]]
+lua vim.filetype.add { extension = { ron = "ron" } }
 lua vim.o.mouse = "a" -- mouse can scroll, click, select
 lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
-nnoremap <esc> <esc>:noh<cr>jk:<esc>
+" nnoremap <esc> <esc>:noh<cr>jk:<esc>
+lua vim.keymap.set("n", "<esc>", "<esc><cmd>noh<cr>jk<cmd><esc>")
 set foldmethod=indent
 set nofoldenable
 " no ex-mode by accident
-nnoremap Q <Nop>
+lua vim.keymap.set("n", "Q", "<nop>")
 let mapleader=" "
 
 
@@ -59,10 +61,12 @@ Plug 'junegunn/vim-easy-align'
 Plug 'NMAC427/guess-indent.nvim'
 Plug 'ThePrimeagen/harpoon'
 Plug 'aarondiel/spread.nvim'
+Plug 'mbbill/undotree'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
 Plug 'joshdick/onedark.vim'
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 " " autocompletion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -76,22 +80,23 @@ call plug#end()
 
 
 """" toggle-lsp-diagnostics:
-nnoremap <leader>kT :ToggleDiag<cr>
+lua require'toggle_lsp_diagnostics'.init()
+lua vim.keymap.set("n", "<leader>kT", "<cmd>ToggleDiag<cr>")
 
 
 """" guess-indent
 lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
-autocmd FileType java,python,rust,bash,sh,tex setlocal shiftwidth=4
+autocmd FileType java,python,rust,bash,sh,tex,ron setlocal shiftwidth=4
 autocmd FileType scala,typescript,javascript,lua,teal setlocal shiftwidth=2
 
 
 """" vim-matchup
-let g:loaded_matchit = 1
+lua vim.g.loaded_matchit = 1
 
 
 """" spread.nvim
-nnoremap <leader>so <cmd>lua require'spread'.out()<cr>
-nnoremap <leader>si <cmd>lua require'spread'.combine()<cr>
+lua vim.keymap.set('n', '<leader>so', function() require'spread'.out() end)
+lua vim.keymap.set('n', '<leader>si', function() require'spread'.combine() end)
 
 
 """" fidget
@@ -99,14 +104,21 @@ lua require"fidget".setup{}
 
 
 """" nvim-tree
-nnoremap <leader>nN :NvimTreeFindFile<CR>
-nnoremap <leader>nn :NvimTreeToggle<CR>
 lua << EOF
-local start_size = 30
-local incr_size = 10
 require'nvim-tree'.setup {
   git = { ignore = false },
+  sort_by = "case_sensitive",
+  view = {
+    adaptive_size = true,
+    mappings = {
+      list = {
+        { key = "c", action = "cd" },
+      },
+    },
+  },
 }
+local start_size = 30
+local incr_size = 10
 local size = start_size
 function increaseNvimTreeSize()
   size = size + incr_size
@@ -120,20 +132,24 @@ function decreaseNvimTreeSize()
     print([[can't decrease below start_size ]] .. start_size)
   end
 end
+vim.keymap.set('n', '<leader>nl', increaseNvimTreeSize)
+vim.keymap.set('n', '<leader>nh', decreaseNvimTreeSize)
+vim.keymap.set('n', '<leader>nN', '<cmd>NvimTreeFindFile<cr>')
+vim.keymap.set('n', '<leader>nn', '<cmd>NvimTreeToggle<cr>')
 EOF
-nnoremap <leader>nl :lua increaseNvimTreeSize()<cr>
-nnoremap <leader>nh :lua decreaseNvimTreeSize()<cr>
 
 
 """" vim-easy-align
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-xnoremap ga <Plug>(EasyAlign)
-xnoremap gA <Plug>(LiveEasyAlign)
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nnoremap ga <Plug>(EasyAlign)
-nnoremap gA <Plug>(LiveEasyAlign)
-" format curent table
-nnoremap <leader><bar> mavip:EasyAlign *<bar><cr>'a
+lua << EOF
+-- Start interactive EasyAlign in visual mode (e.g. vipga)
+vim.keymap.set('x', 'ga', '<Plug>(EasyAlign)')
+vim.keymap.set('x', 'gA', '<Plug>(LiveEasyAlign)')
+-- Start interactive EasyAlign for a motion/text object (e.g. gaip)
+vim.keymap.set('n', 'ga', '<Plug>(EasyAlign)')
+vim.keymap.set('n', 'gA', '<Plug>(LiveEasyAlign)')
+-- format current table
+vim.keymap.set('n', ' <leader><bar>', [[mavip:EasyAlign *<bar><cr>'a]])
+EOF
 
 
 """" shellvis and text transforms
@@ -228,9 +244,10 @@ lua require('telescope').load_extension('fzf')
 
 
 """" symbols-outline: ast tree structure of code
-nnoremap <leader>aa <CMD>SymbolsOutline<CR>
-nnoremap <leader>ax <CMD>SymbolsOutlineClose<CR>
-nnoremap <leader>ai <CMD>SymbolsOutlineOpen<CR>
+lua require'symbols-outline'.setup()
+lua vim.keymap.set('n', '<leader>aa', '<CMD>SymbolsOutline<CR>')
+lua vim.keymap.set('n', '<leader>ax', '<CMD>SymbolsOutlineClose<CR>')
+lua vim.keymap.set('n', '<leader>ai', '<CMD>SymbolsOutlineOpen<CR>')
 
 
 """" non-printable characters, a.k.a. listchars:
@@ -241,17 +258,17 @@ set termguicolors " colors
 
 """ lcs.nvim: toggle listchars
 lua require'lcs'.setup()
-nnoremap <leader>LCSs <CMD>lua require"lcs".toggleShowSpace()<CR>
-nnoremap <leader>LCSt <CMD>lua require"lcs".toggleShowTab()<CR>
-nnoremap <leader>LCSe <CMD>lua require"lcs".toggleShowEol()<CR>
-nnoremap <leader>LCSr <CMD>lua require"lcs".toggleShowTrail()<CR>
-nnoremap <leader>LCSL <CMD>lua require'lcs'.toggleListchars()<CR>
+nnoremap <leader>LCSL <CMD>lua require'lcs'.toggleShow()<CR>
+nnoremap <leader>LCSs <CMD>lua require"lcs".toggleShow('s')<CR>
+nnoremap <leader>LCSt <CMD>lua require"lcs".toggleShow('tb')<CR>
+nnoremap <leader>LCSe <CMD>lua require"lcs".toggleShow('e')<CR>
+nnoremap <leader>LCSr <CMD>lua require"lcs".toggleShow('tr')<CR>
 
 
 """" display settings
 set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
-colorscheme onedark
+colorscheme tokyonight-night
 hi Normal ctermbg=NONE
 set colorcolumn=120 " highlight column 120
 set signcolumn=yes " always show signcolumns
@@ -264,10 +281,21 @@ lua require'nvim-web-devicons'.setup { default = true }
 
 
 """" bufferline:
-lua require"bufferline".setup { options = { diagnostics = "nvim_lsp", numbers = "ordinal" } }
+lua << EOF
+require"bufferline".setup {
+  options = {
+    diagnostics = "nvim_lsp",
+    numbers = "ordinal",
+    offsets = {
+      { filetype = "NvimTree", highlight = "Directory", separator = true },
+    },
+  },
+}
+EOF
+
 " last buffer
 nnoremap <silent><leader>bb <C-^>
-" go left or right
+" go SS
 nnoremap <silent><leader>. :BufferLineCycleNext<cr>
 nnoremap <silent><leader>, :BufferLineCyclePrev<cr>
 " move buffer left or right
@@ -297,7 +325,7 @@ nnoremap <leader>LP :Luapad<CR>:lua require('luapad').toggle()<CR>
 lua << EOF
 vim.g.vimsyn_embed = "l" -- highlight lua in vim files
 require"nvim-treesitter.configs".setup {
-  indent = { enable = false },
+  indent = { enable = true }, -- might want this to be `false` for javascript
   playground = { enable = true },
   query_linter = {
     enable = true,
@@ -307,7 +335,7 @@ require"nvim-treesitter.configs".setup {
   ensure_installed = {
     "c", "rust", "cpp",
     "javascript", "typescript", "tsx",
-    "json", "yaml",
+    "json", "ron", "yaml",
     "lua", "teal", "vim",
     "python",
     "bash",
@@ -371,8 +399,8 @@ require"nvim-treesitter.configs".setup {
     },
   },
 }
+vim.g.markdown_fenced_languages = {'html', 'python', 'lua', 'vim', 'typescript', 'javascript', 'rust'}
 EOF
-let g:markdown_fenced_languages = ['html', 'python', 'lua', 'vim', 'typescript', 'javascript', 'rust']
 
 
 """" colorizer: show the color of hex and rgb color values
@@ -383,7 +411,7 @@ lua require('colorizer').setup()
 lua << EOF
 vim.opt_global.shortmess:remove('F')
 vim.opt_global.shortmess:append('c')
-vim.opt_global.completeopt = { "menuone", "noinsert" }
+vim.opt_global.completeopt = { "menuone", "noinsert", "preview" }
 
 local cmp = require'cmp'
 cmp.setup {
@@ -589,7 +617,12 @@ nnoremap <leader>cs <Plug>NERDCommenterSexy
 vnoremap <leader>cs <Plug>NERDCommenterSexy
 
 
-"""" sneak: quicksearch for single or two characters with f,t, and s
+"""" undotree: view and access the entire edit history of the buffer
+nnoremap <leader>u :UndotreeToggle<CR>
+lua vim.g.undotree_WindowLayout = 4
+
+
+"""" sneak: quicksearch for single or two characters with f,t, and s, respectively
 "" label-mode
 let g:sneak#label = 1
 "" replace 'f' with 1-char Sneak
@@ -610,7 +643,7 @@ omap T <Plug>Sneak_T
 
 """" cursor:
 "" highlight current row
-set cursorline
+lua vim.go.cursorline = true
 
 
 """" toggle nums
@@ -645,8 +678,8 @@ lua vim.o.splitright = true
 lua vim.o.splitbelow = true
 
 " I think is prevents crashes in some buggy LSPs?
-set nobackup
-set nowritebackup
+lua vim.go.bk = false
+lua vim.go.wb = false
 
 """" windows
 nmap <leader><leader>l <c-w>l
