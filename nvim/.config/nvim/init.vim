@@ -339,7 +339,7 @@ require"nvim-treesitter.configs".setup {
     "lua", "teal", "vim",
     "python",
     "bash",
-    "java",
+    "java", "kotlin",
     "latex",
     "dockerfile",
     "css", "scss", "html",
