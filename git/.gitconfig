@@ -36,11 +36,14 @@
     sp = stash pop
     sd = stash drop
     sl = stash list
-    lg = log --decorate --graph
+    lg = !git-igitt
     d = diff
     dc = diff --cached
     dm = diff master
     dw = diff --word-diff
+    dn = diff --name-only
+    dcn = diff --cached --name-only
+    dmn = diff --name-only master
     ps = push
     pl = pull
     i = init
@@ -76,3 +79,8 @@
     diffFilter = delta --color-only --features=interactive
 [color]
     ui = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

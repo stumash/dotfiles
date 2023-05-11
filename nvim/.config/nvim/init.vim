@@ -145,10 +145,10 @@ lua << EOF
 vim.keymap.set('x', 'ga', '<Plug>(EasyAlign)')
 vim.keymap.set('x', 'gA', '<Plug>(LiveEasyAlign)')
 -- Start interactive EasyAlign for a motion/text object (e.g. gaip)
-vim.keymap.set('n', 'ga', '<Plug>(EasyAlign)')
-vim.keymap.set('n', 'gA', '<Plug>(LiveEasyAlign)')
+vim.keymap.set('n', '<leader>ga', '<Plug>(EasyAlign)')
+vim.keymap.set('n', '<leader>gA', '<Plug>(LiveEasyAlign)')
 -- format current table
-vim.keymap.set('n', ' <leader><bar>', [[mavip:EasyAlign *<bar><cr>'a]])
+vim.keymap.set('n', '<leader><bar>', [[mavip:EasyAlign *<bar><cr>'a]])
 EOF
 
 
@@ -214,11 +214,19 @@ luafile ~/.config/nvim/lua/helpers.lua
 
 """" telescope:
 lua << EOF
-require('telescope').setup {
+require'telescope'.setup {
   defaults = {
-    path_display = { "truncate", shorten = 5 },
+    path_display = { 'truncate', shorten = 5 },
     dynamic_preview_title = true,
-    preview = { filesize_limit = 10 } -- 10 MB
+    preview = { filesize_limit = 10 }, -- 10 MB
+    layout_strategy = 'flex',
+    layout_config = {
+      flex = { flip_columns = 250 }, -- go horizontal if nvim wider than this
+      vertical = {
+        preview_cutoff = 110, -- if vertical, dont display file preview when height less than this
+        preview_height = 110, -- if vertical, dedicate this many row to file preview
+    },
+    },
   }
 }
 EOF

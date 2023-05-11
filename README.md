@@ -19,6 +19,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
   * bat
   * starship
   * delta
+  * git-igitt
 * gogh
 * jq
 * neovim
