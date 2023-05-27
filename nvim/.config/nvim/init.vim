@@ -300,6 +300,7 @@ require"bufferline".setup {
     offsets = {
       { filetype = "NvimTree", highlight = "Directory", separator = true },
     },
+    buffer_close_icon = '󰅖',
   },
 }
 EOF
