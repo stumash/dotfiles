@@ -36,7 +36,8 @@
     sp = stash pop
     sd = stash drop
     sl = stash list
-    lg = !git-igitt
+    lg = !git-graph
+    lig = !git-igitt
     d = diff
     dc = diff --cached
     dm = diff master
