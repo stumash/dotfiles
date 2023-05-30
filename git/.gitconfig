@@ -29,10 +29,11 @@
     bn = checkout -b
     ch = checkout
     chg = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1 | choose -1); }; gchg"
-    chag = "!function gchag() { git checkout $(git branch -a | rg \"remotes.*$1\" | choose -f / 2 | sort | uniq | fzf -1 | choose -1); }; gchag"
+    chag = "!function gchag() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchag"
     ls = ls-files
     s = status
     ss = stash save
+    sa = stash apply
     sp = stash pop
     sd = stash drop
     sl = stash list

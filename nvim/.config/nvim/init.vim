@@ -11,6 +11,10 @@ lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
 " nnoremap <esc> <esc>:noh<cr>jk:<esc>
 lua vim.keymap.set("n", "<esc>", "<esc><cmd>noh<cr>jk<cmd><esc>")
+augroup vimrc_foldmethod
+  au BufReadPre * setlocal foldmethod=indent
+  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
+augroup END
 set foldmethod=indent
 set nofoldenable
 " no ex-mode by accident
@@ -195,10 +199,8 @@ nnoremap <leader>q :q<CR>
 nnoremap <leader>Q :qa!<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>W :wa<CR>
-nnoremap <leader>z :w<CR>:bd<CR>
-nnoremap <leader>Z :wqa<CR>
-nnoremap <leader>x :bd<CR>
-nnoremap <leader>X :bd!<CR>
+nnoremap <leader>x :lua closeWindowOrBufferAsNeeded{}<CR>
+nnoremap <leader>X :lua closeWindowOrBufferAsNeeded{force=true}<CR>
 " copy current filename into system clipboard
 nnoremap <leader>%% <cmd>lua print(vim.fn.expand('%:p'))<cr>
 nnoremap <leader>%p mz:put=expand('%:p')<cr>
@@ -255,7 +257,17 @@ lua require('telescope').load_extension('fzf')
 
 
 """" symbols-outline: ast tree structure of code
-lua require'symbols-outline'.setup()
+lua << EOF
+require'symbols-outline'.setup {
+  autofold_depth = 1,
+  keymaps = {
+    fold = "h",
+    unfold = "l",
+    fold_all = "H",
+    unfold_all = "L",
+  }
+}
+EOF
 lua vim.keymap.set('n', '<leader>aa', '<CMD>SymbolsOutline<CR>')
 lua vim.keymap.set('n', '<leader>ax', '<CMD>SymbolsOutlineClose<CR>')
 lua vim.keymap.set('n', '<leader>ai', '<CMD>SymbolsOutlineOpen<CR>')
@@ -300,7 +312,7 @@ require"bufferline".setup {
     offsets = {
       { filetype = "NvimTree", highlight = "Directory", separator = true },
     },
-    buffer_close_icon = '󰅖',
+    show_buffer_close_icons = false,
   },
 }
 EOF
@@ -353,7 +365,7 @@ require"nvim-treesitter.configs".setup {
     "bash",
     "java", "kotlin",
     "latex",
-    "dockerfile",
+    "dockerfile", "hcl", "terraform",
     "css", "scss", "html",
   },
   highlight = {
