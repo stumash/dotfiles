@@ -47,7 +47,7 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
 Plug 'unblevable/quick-scope'
 Plug 'nvim-tree/nvim-web-devicons'
-Plug 'kyazdani42/nvim-tree.lua'
+Plug 'nvim-tree/nvim-tree.lua'
 Plug 'akinsho/bufferline.nvim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'folke/which-key.nvim'
