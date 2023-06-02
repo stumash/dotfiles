@@ -66,6 +66,7 @@ Plug 'NMAC427/guess-indent.nvim'
 Plug 'ThePrimeagen/harpoon'
 Plug 'aarondiel/spread.nvim'
 Plug 'mbbill/undotree'
+Plug 'nathom/filetype.nvim'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
@@ -81,6 +82,10 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 call plug#end()
+
+
+"""" filetype.nvim
+lua vim.g.did_load_filetypes = 1
 
 
 """" toggle-lsp-diagnostics:
