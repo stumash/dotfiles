@@ -78,10 +78,17 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'SirVer/ultisnips'
 Plug 'stumash/vim-snippets'
-Plug 'quangnguyen30192/cmp-nvim-ultisnips'
+Plug 'quangnguyen3192/cmp-nvim-ultisnips'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 call plug#end()
+
+
+"""" which-key: show keymaps
+lua << EOF
+WK = require"which-key"
+WK.setup { triggers = { "<leader>" } }
+EOF
 
 
 """" filetype.nvim
@@ -115,12 +122,12 @@ lua require"fidget".setup{}
 """" nvim-tree
 lua << EOF
 local function nvim_tree_on_attach(bufnr)
-  local api = require('nvim-tree.api')
-  local function opts(desc)
-    return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-  end
-  api.config.mappings.default_on_attach(bufnr) -- OR use all default mappings
-  vim.keymap.set('n', '<C-]>', api.tree.change_root_to_node, opts('CD'))
+local api = require('nvim-tree.api')
+local function opts(desc)
+return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+end
+api.config.mappings.default_on_attach(bufnr) -- OR use all default mappings
+vim.keymap.set('n', '<C-]>', api.tree.change_root_to_node, opts('CD'))
 end
 
 require'nvim-tree'.setup {
@@ -129,7 +136,7 @@ require'nvim-tree'.setup {
   view = { adaptive_size = true },
   on_attach = nvim_tree_on_attach,
 }
-local start_size = 30
+local start_size = 3
 local incr_size = 10
 local size = start_size
 function increaseNvimTreeSize()
@@ -153,14 +160,17 @@ EOF
 
 """" vim-easy-align
 lua << EOF
--- Start interactive EasyAlign in visual mode (e.g. vipga)
-vim.keymap.set('x', 'ga', '<Plug>(EasyAlign)')
-vim.keymap.set('x', 'gA', '<Plug>(LiveEasyAlign)')
--- Start interactive EasyAlign for a motion/text object (e.g. gaip)
-vim.keymap.set('n', '<leader>ga', '<Plug>(EasyAlign)')
-vim.keymap.set('n', '<leader>gA', '<Plug>(LiveEasyAlign)')
--- format current table
-vim.keymap.set('n', '<leader><bar>', [[mavip:EasyAlign *<bar><cr>'a]])
+for _, mode in ipairs{"n", "x"} do 
+  WK.register {
+    ["<leader>e"] = {
+      name  = "easy-align",
+      e     = { "<Plug>(LiveEasyAlign)",        "live easy-align" },
+      E     = { "<Plug>(EasyAlign)",            "easy-align" },
+      ["|"] = { "mavip:EasyAlign *<bar><cr>'a", "table easy-align" },
+      mode  = mode,
+    },
+  }
+end
 EOF
 
 
@@ -294,6 +304,7 @@ nnoremap <leader>LCSr <CMD>lua require"lcs".toggleShow('tr')<CR>
 
 
 """" display settings
+set nowrap
 set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
 colorscheme tokyonight-night
@@ -494,7 +505,7 @@ lua << EOF
 vim.lsp.set_log_level("debug")
 local lspconfig = require('lspconfig')
 
-local servers = { "rust_analyzer", "tsserver", "pyright", "teal_ls" }
+local servers = { "rust_analyzer", "tsserver", "pyright", "teal_ls", "kotlin_language_server" }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     capabilities = require'cmp_nvim_lsp'.default_capabilities(),
@@ -536,52 +547,6 @@ EOF
 nnoremap <leader>ore :!rm -rf .metals .bloop project/metals.sbt<CR>:lua make_metals_config_and_restart()<CR>
 
 
-"""" gitsigns: show which lines have tracked and untracked changes. and more.
-lua << EOF
-require'gitsigns'.setup {
-  current_line_blame_opts = {
-    virt_text = true,
-    virt_text_pos = 'eol',
-    delay = 200,
-  },
-}
-EOF
-highlight GitSignsCurrentLineBlame guifg=#fffd30
-" show the current hunk as popover
-nnoremap <leader>gp :Gitsigns preview_hunk<CR>
-nnoremap <leader>ghr :Gitsigns reset_hunk<CR>
-nnoremap <leader>ghs :Gitsigns stage_hunk<CR>
-nnoremap <leader>ghu :Gitsigns undo_stage_hunk<CR>
-" go to next hunk of code that git diff thinks changed
-nnoremap ]g :Gitsigns next_hunk<CR>
-nnoremap [g :Gitsigns prev_hunk<CR>
-" change diff base
-nnoremap <leader>gC :Gitsigns change_base<Space>
-nnoremap <leader>gcm :Gitsigns change_base master<CR>
-nnoremap <leader>gch :Gitsigns change_base HEAD<CR>
-" set base back to index
-nnoremap <leader>gci :Gitsigns change_base<CR>
-" show line blame
-nnoremap <leader>gb :Gitsigns toggle_current_line_blame<CR>
-
-
-"""" icon-picker
-lua require'icon-picker'.setup{}
-nnoremap <leader>i <cmd>PickEmoji<cr>
-nnoremap <leader>I <cmd>PickEverything<cr>
-inoremap <c-i> <cmd>PickEmojiInsert<cr>
-inoremap <c-I> <cmd>PickEverythingInsert<cr>
-
-
-"""" neogit
-lua require'neogit'.setup {}
-nnoremap <leader>gg :Neogit<cr>
-
-
-"""" which-key: show keymaps
-lua require("which-key").setup { triggers = { "<leader>" } }
-
-
 """" rooter: set the cwd to the project root automatically
 let g:rooter_patterns = ['.git', 'Cargo.toml', 'package.json', 'Makefile']
 
@@ -608,19 +573,75 @@ nnoremap <leader>hh :Telescope harpoon marks<cr>
 " <c-d> to delete entries
 
 
+"""" git START
+"""" gitsigns: show which lines have tracked and untracked changes. and more.
+lua << EOF
+require'gitsigns'.setup {
+  keymaps = {},
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol',
+    delay = 200,
+  },
+}
+EOF
+highlight GitSignsCurrentLineBlame guifg=#fffd30
+" show the current hunuhjrnettkecifhucldrlekrnjtcibgnvuknlhgf
+" go to next hunk of code that git diff thinks changed
+nnoremap ]g :Gitsigns next_hunk<CR>
+nnoremap [g :Gitsigns prev_hunk<CR>
+
+
+"""" icon-picker
+lua require'icon-picker'.setup{}
+nnoremap <leader>i <cmd>PickEmoji<cr>
+nnoremap <leader>I <cmd>PickEverything<cr>
+inoremap <c-i> <cmd>PickEmojiInsert<cr>
+inoremap <c-I> <cmd>PickEverythingInsert<cr>
+
+
+"""" neogit
+lua require'neogit'.setup {}
+
+
 """" git-conflict: handle merge conflicts slightly better
 lua require('git-conflict').setup()
-" Select 'ours'
-nnoremap <leader>gco <cmd>GitConflictChooseOurs<cr>
-" Select 'theirs'
-nnoremap <leader>gct <cmd>GitConflictChooseTheirs<cr>
-" Select 'both' ours and theirs
-nnoremap <leader>gcb <cmd>GitConflictChooseBoth<cr>
-" Select 'neither'
-nnoremap <leader>gcn <cmd>GitConflictChooseNone<cr>
 nnoremap <leader>]c <cmd>GitConflictNextConflict<cr>
 nnoremap <leader>[c <cmd>GitConflictPrevConflict<cr>
-nnoremap <leader>gcc <cmd>GitConflictListQ<cr>
+
+
+lua << EOF
+WK.register {
+  ["<leader>g"] = {
+    name = "git",
+    h = {
+      name = "gitsigns hunk actions",
+      p = {"<cmd>Gitsigns preview_hunk<cr>",    "preview hunk"},
+      r = {"<cmd>Gitsigns reset_hunk<cr>",      "reset hunk"},
+      s = {"<cmd>Gitsigns stage_hunk<cr>",      "stage hunk"},
+      u = {"<cmd>Gitsigns undo_stage_hunk<cr>", "unstage hunk"},
+      c = {
+        name = "change gitsigns diff base",
+        c = {"<cmd>Gitsigns change_base<space>",     "diff against custom refname"},
+        m = {"<cmd>Gitsigns change_base master<cr>", "diff against master"},
+        h = {"<cmd>Gitsigns change_base HEAD<cr>",   "diff unstaged"},
+      },
+    },
+    b = {"<cmd>Gitsigns toggle_current_line_blame<cr>", "toggle line blame"},
+    g = {"<cmd>Neogit<cr>", "neogit"},
+    c = {
+      name = "conflict",
+      o = {"<cmd>GitConflictChooseOurs<cr>",   "choose ours"},
+      t = {"<cmd>GitConflictChooseTheirs<cr>", "choose theirs"},
+      b = {"<cmd>GitConflictChooseBoth<cr>",   "choose both"},
+      n = {"<cmd>GitConflictChooseNone<cr>",   "choose neither"},
+      c = {"<cmd>GitConflictListQ<cr>",        "list conflicts"},
+    },
+  },
+}
+EOF
+"""" git END
+
 
 """" nvim-surround
 lua require'nvim-surround'.setup{}
