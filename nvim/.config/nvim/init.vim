@@ -122,12 +122,12 @@ lua require"fidget".setup{}
 """" nvim-tree
 lua << EOF
 local function nvim_tree_on_attach(bufnr)
-local api = require('nvim-tree.api')
-local function opts(desc)
-return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-end
-api.config.mappings.default_on_attach(bufnr) -- OR use all default mappings
-vim.keymap.set('n', '<C-]>', api.tree.change_root_to_node, opts('CD'))
+  local api = require('nvim-tree.api')
+  local function opts(desc)
+    return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+  api.config.mappings.default_on_attach(bufnr) -- OR use all default mappings
+  vim.keymap.set('n', '<C-]>', api.tree.change_root_to_node, opts('CD'))
 end
 
 require'nvim-tree'.setup {
@@ -136,25 +136,13 @@ require'nvim-tree'.setup {
   view = { adaptive_size = true },
   on_attach = nvim_tree_on_attach,
 }
-local start_size = 3
-local incr_size = 10
-local size = start_size
-function increaseNvimTreeSize()
-  size = size + incr_size
-  require'nvim-tree'.resize(size)
-end
-function decreaseNvimTreeSize()
-  if size > start_size then
-    size = size - incr_size
-    require'nvim-tree'.resize(size)
-  else
-    print([[can't decrease below start_size ]] .. start_size)
-  end
-end
-vim.keymap.set('n', '<leader>nl', increaseNvimTreeSize)
-vim.keymap.set('n', '<leader>nh', decreaseNvimTreeSize)
-vim.keymap.set('n', '<leader>nN', '<cmd>NvimTreeFindFile<cr>')
-vim.keymap.set('n', '<leader>nn', '<cmd>NvimTreeToggle<cr>')
+WK.register {
+  ["<leader>n"] = {
+    name = "nvim-tree",
+    N = { '<cmd>NvimTreeFindFile<cr>', "find current file" },
+    n = { '<cmd>NvimTreeToggle<cr>',   "toggle" },
+  },
+}
 EOF
 
 
@@ -210,12 +198,13 @@ lua require"stabilize".setup { nexted = "QuickFixCmdPost *" }
 """" leader:
 nmap <C-Space> <Space>
 lua leader = "<Space>"
-nnoremap <leader>q :q<CR>
+nnoremap <leader>q :qa<CR>
 nnoremap <leader>Q :qa!<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>W :wa<CR>
-nnoremap <leader>x :lua closeWindowOrBufferAsNeeded{}<CR>
-nnoremap <leader>X :lua closeWindowOrBufferAsNeeded{force=true}<CR>
+nnoremap <leader>x :bd<cr>
+nnoremap <leader>X :bd!<cr>
+nnoremap <leader>z :close<cr>
 " copy current filename into system clipboard
 nnoremap <leader>%% <cmd>lua print(vim.fn.expand('%:p'))<cr>
 nnoremap <leader>%p mz:put=expand('%:p')<cr>
