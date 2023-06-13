@@ -1,4 +1,4 @@
-set runtimepath^=~/.config/nvim
+set runtimepath^=~/.config/nvim.nvim
 let &packpath = &runtimepath
 lua vim.o.shell = "bash"
 lua vim.o.encoding = "utf-8"
@@ -67,6 +67,7 @@ Plug 'ThePrimeagen/harpoon'
 Plug 'aarondiel/spread.nvim'
 Plug 'mbbill/undotree'
 Plug 'nathom/filetype.nvim'
+Plug 'johmsalas/text-case.nvim'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
@@ -78,7 +79,7 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'SirVer/ultisnips'
 Plug 'stumash/vim-snippets'
-Plug 'quangnguyen3192/cmp-nvim-ultisnips'
+Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 call plug#end()
@@ -95,11 +96,6 @@ EOF
 lua vim.g.did_load_filetypes = 1
 
 
-"""" toggle-lsp-diagnostics:
-lua require'toggle_lsp_diagnostics'.init()
-lua vim.keymap.set("n", "<leader>kT", "<cmd>ToggleDiag<cr>")
-
-
 """" guess-indent
 lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
 autocmd FileType java,python,rust,bash,sh,tex,ron setlocal shiftwidth=4
@@ -111,8 +107,17 @@ lua vim.g.loaded_matchit = 1
 
 
 """" spread.nvim
-lua vim.keymap.set('n', '<leader>so', function() require'spread'.out() end)
-lua vim.keymap.set('n', '<leader>si', function() require'spread'.combine() end)
+lua << EOF
+local spread = require'spread'
+WK.register {
+  ["<leader>s"] = {
+    mode = "n",
+    name = "spread",
+    o = {function() spread.out() end, "multiline args"},
+    i = {function() spread.combine() end, "single line args"},
+  }
+}
+EOF
 
 
 """" fidget
@@ -148,7 +153,7 @@ EOF
 
 """" vim-easy-align
 lua << EOF
-for _, mode in ipairs{"n", "x"} do 
+for _, mode in ipairs{"n", "x"} do
   WK.register {
     ["<leader>e"] = {
       name  = "easy-align",
@@ -223,7 +228,8 @@ luafile ~/.config/nvim/lua/helpers.lua
 
 """" telescope:
 lua << EOF
-require'telescope'.setup {
+local telescope = require'telescope'
+telescope.setup {
   defaults = {
     path_display = { 'truncate', shorten = 5 },
     dynamic_preview_title = true,
@@ -238,16 +244,31 @@ require'telescope'.setup {
     },
   }
 }
+local builtins = require'telescope.builtin'
+local find_files = builtins.find_files
+local buffers = builtins.buffers
+WK.register {
+  ["<leader>f"] = {
+    mode = "n",
+    name = "telescope",
+    -- general telescope commands
+    F = {function() find_files { hidden = true, no_ignore = true  } end, "search all file names"},
+    f = {"<cmd>Telescope git_files<cr>", "search git file names"},
+    a = {"<cmd>Telescope live_grep<cr>", "search all files"},
+    p = {function() find_files { cwd = '$HOME/.config/nvim/plugged' } end, "search nvim plugin file names"},
+    b = {function() buffers { last_used = true } end, "search open buffer file names"},
+    ["/"] = {"<cmd>Telescope current_buffer_fuzzy_find<cr>", "search current buffer"},
+    [":"] = {"<cmd>Telescope command_history<cr>", "search command history"},
+    -- git telescope commands
+    g = {
+      mode = "n",
+      name = "git telescope commands",
+      B = {"<cmd>Telescope git_branches<cr>", "search git branches"},
+      s = {"<cmd>Telescope git_status<cr>", "search git status"},
+    },
+  }
+}
 EOF
-nnoremap <leader>fF <cmd>lua require'telescope.builtin'.find_files { hidden = true, no_ignore = true }<cr>
-nnoremap <leader>ff <cmd>Telescope git_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fp <cmd>lua require'telescope.builtin'.find_files { cwd = '$HOME/.config/nvim/plugged' }<cr>
-nnoremap <leader>fb <cmd>lua require'telescope.builtin'.buffers { last_used = true }<cr>
-nnoremap <leader>f/ <cmd>Telescope current_buffer_fuzzy_find<cr>
-nnoremap <leader>gB <cmd>Telescope git_branches<cr>
-nnoremap <leader>gs <cmd>Telescope git_status<cr>
-nnoremap <leader>f: <cmd>Telescope command_history<cr>
 nnoremap <leader>fL <cmd>Telescope reloader<cr>
 
 
@@ -271,10 +292,14 @@ require'symbols-outline'.setup {
     unfold_all = "L",
   }
 }
+WK.register {
+  ["<leader>a"] = {
+    mode = "n",
+    name = "symbols tree",
+    a = {"<CMD>SymbolsOutline<CR>", "toggle symbols tree"},
+  }
+}
 EOF
-lua vim.keymap.set('n', '<leader>aa', '<CMD>SymbolsOutline<CR>')
-lua vim.keymap.set('n', '<leader>ax', '<CMD>SymbolsOutlineClose<CR>')
-lua vim.keymap.set('n', '<leader>ai', '<CMD>SymbolsOutlineOpen<CR>')
 
 
 """" non-printable characters, a.k.a. listchars:
@@ -284,12 +309,22 @@ set hlsearch " set hlsearch
 set termguicolors " colors
 
 """ lcs.nvim: toggle listchars
-lua require'lcs'.setup()
-nnoremap <leader>LCSL <CMD>lua require'lcs'.toggleShow()<CR>
-nnoremap <leader>LCSs <CMD>lua require"lcs".toggleShow('s')<CR>
-nnoremap <leader>LCSt <CMD>lua require"lcs".toggleShow('tb')<CR>
-nnoremap <leader>LCSe <CMD>lua require"lcs".toggleShow('e')<CR>
-nnoremap <leader>LCSr <CMD>lua require"lcs".toggleShow('tr')<CR>
+lua << EOF
+local lcs = require'lcs'
+lcs.setup()
+WK.register {
+  ["<leader>LCS"] = {
+    mode = "n",
+    name = "toggle show listchars",
+    L = {function() lcs.toggleShow() end, "on/off"},
+    s = {function() lcs.toggleShow('s') end, "toggle space"},
+    t = {function() lcs.toggleShow('tb') end, "toggle tab"},
+    e = {function() lcs.toggleShow('e') end, "toggle eol"},
+    r = {function() lcs.toggleShow('tr') end, "toggle trailing space"},
+  }
+}
+EOF
+
 
 
 """" display settings
@@ -436,6 +471,11 @@ EOF
 lua require('colorizer').setup()
 
 
+"""" toggle-lsp-diagnostics:
+lua require'toggle_lsp_diagnostics'.init()
+lua vim.keymap.set("n", "<leader>kT", "<cmd>ToggleDiag<cr>")
+
+
 """" nvim-cmp: auto-complete, smart completion
 lua << EOF
 vim.opt_global.shortmess:remove('F')
@@ -474,23 +514,29 @@ nnoremap <leader>U :UltiSnipsEdit<cr>
 
 
 """" LSP-CONFIG: neovim-native Language Server Protocol client configuration
-nnoremap <silent> <leader>kD :lua vim.lsp.buf.declaration()<CR>
-nnoremap <silent> <leader>kd :lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> <leader>kh :lua vim.lsp.buf.hover()<CR>
-nnoremap <silent> <leader>kH :lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent> <leader>kt :lua vim.lsp.buf.type_definition()<CR>
-nnoremap <silent> <leader>kr :lua vim.lsp.buf.rename()<CR>
-nnoremap <silent> <leader>ka :lua vim.lsp.buf.code_action()<CR>
-nnoremap <silent> <leader>kv :Telescope lsp_references<CR>
-nnoremap <silent> <leader>ke :lua vim.diagnostic.open_float()<CR>
-nnoremap <silent> ]k :lua vim.diagnostic.goto_next({severity=1})<CR>
-nnoremap <silent> [k :lua vim.diagnostic.goto_prev({severity=1})<CR>
-nnoremap <silent> ]i :lua vim.diagnostic.goto_next()<CR>
-nnoremap <silent> [i :lua vim.diagnostic.goto_prev()<CR>
-nnoremap <silent> <leader>kq :lua vim.lsp.diagnostic.set_loclist()<CR>
-nnoremap <silent> <leader>kf :lua vim.lsp.buf.formatting()<CR>
-
 lua << EOF
+WK.register {
+  ["<leader>k"] = {
+    mode = "n",
+    name = "LSP actions",
+    D = { function() vim.lsp.buf.declaration() end,              "go to declaration" },
+    d = { function() vim.lsp.buf.definition() end,               "go to defintion" },
+    h = { function() vim.lsp.buf.hover() end,                    "hover info" },
+    H = { function() vim.lsp.buf.signature_help() end,           "show signature" },
+    t = { function() vim.lsp.buf.type_definition() end,          "show type def" },
+    r = { function() vim.lsp.buf.rename() end,                   "rename" },
+    a = { function() vim.lsp.buf.code_action() end,              "show all actions" },
+    v = { "<cmd>Telescope lsp_references<cr>",                   "list references" },
+    e = { function() vim.diagnostic.open_float() end,            "open in floating window" },
+    k = { function() vim.diagnostic.goto_next({severity=1}) end, "go to next error" },
+    k = { function() vim.diagnostic.goto_prev({severity=1}) end, "go to prev error" },
+    i = { function() vim.diagnostic.goto_next() end,             "go to next warning" },
+    i = { function() vim.diagnostic.goto_prev() end,             "go to prev warning" },
+    q = { function() vim.lsp.diagnostic.set_loclist() end,       "loclist for errors" },
+    f = { function() vim.lsp.buf.formatting() end,               "format buffer" },
+  }
+}
+
 vim.lsp.set_log_level("debug")
 local lspconfig = require('lspconfig')
 
@@ -562,6 +608,21 @@ nnoremap <leader>hh :Telescope harpoon marks<cr>
 " <c-d> to delete entries
 
 
+"""" icon-picker
+lua << EOF
+require'icon-picker'.setup{}
+WK.register {
+  ["<leader>i"] = {
+    mode = "n",
+    name = "icon-picker",
+    i = {"<cmd>PickEmoji<cr>", "pick emoji"},
+    I = {"<cmd>PickEverything<cr>", "pick any icon"},
+  }
+}
+EOF
+inoremap <c-i> <cmd>PickEmojiInsert<cr>
+
+
 """" git START
 """" gitsigns: show which lines have tracked and untracked changes. and more.
 lua << EOF
@@ -581,22 +642,12 @@ nnoremap ]g :Gitsigns next_hunk<CR>
 nnoremap [g :Gitsigns prev_hunk<CR>
 
 
-"""" icon-picker
-lua require'icon-picker'.setup{}
-nnoremap <leader>i <cmd>PickEmoji<cr>
-nnoremap <leader>I <cmd>PickEverything<cr>
-inoremap <c-i> <cmd>PickEmojiInsert<cr>
-inoremap <c-I> <cmd>PickEverythingInsert<cr>
-
-
 """" neogit
 lua require'neogit'.setup {}
 
 
 """" git-conflict: handle merge conflicts slightly better
 lua require('git-conflict').setup()
-nnoremap <leader>]c <cmd>GitConflictNextConflict<cr>
-nnoremap <leader>[c <cmd>GitConflictPrevConflict<cr>
 
 
 lua << EOF
@@ -625,6 +676,8 @@ WK.register {
       b = {"<cmd>GitConflictChooseBoth<cr>",   "choose both"},
       n = {"<cmd>GitConflictChooseNone<cr>",   "choose neither"},
       c = {"<cmd>GitConflictListQ<cr>",        "list conflicts"},
+      ["]"] = {"<cmd>GitConflictNextConflict<cr>", "next conflict"},
+      ["["] = {"<cmd>GitConflictPrevConflict<cr>", "prev conflict"},
     },
   },
 }
@@ -636,29 +689,85 @@ EOF
 lua require'nvim-surround'.setup{}
 
 
+"""" text-case and nerdcommenter
+lua << EOF
+-- nergcommenter
+vim.g.NERDDefaultAlign = 'left'
+vim.g.NERDSpaceDelims = 1
+vim.g.NERDCreateDefaultMappings = 0
+vim.g.NERDCompactSexyComs = 1
+vim.g.NERDTrimTrailingWhitespace = 1
+vim.g.NERDToggleCheckAllLines = 1
+-- text-case
+local tc = require'textcase'
+tc.setup {}
+-- shorcuts
+local function make_onkeypress_function(textcase_fn_name)
+  return function()
+    local mode = vim.fn.mode()
+    if mode == "n" then
+      tc.current_word(textcase_fn_name)
+    elseif mode == "v" then
+      tc.operator(textcase_fn_name)
+    end
+  end
+end
+
+for _, mode in ipairs { "n", "v" } do
+  WK.register {
+    ["<leader>c"] = {
+      mode = mode,
+      name = "NerdComment & Text-Case",
+      -- nerd commenter
+      ["/"] = { "<Plug>NERDCommenterToggle", "toggle comment" },
+      ["?"] = { "<Plug>NERDCommenterInvert", "invert comment" },
+      -- text-case
+      c = {
+        mode = mode,
+        name = "text-case",
+        u = { make_onkeypress_function('to_upper_case'), "upper case" },
+        l = { make_onkeypress_function('to_lower_case'), "lower case" },
+        ["_"] = { make_onkeypress_function('to_snake_case'), "snake case" },
+        ["-"] = { make_onkeypress_function('to_dash_case'), "dash case" },
+        ["."] = { make_onkeypress_function('to_dot_case'), "dot case" },
+        c = { make_onkeypress_function('to_camel_case'), "camel case" },
+        p = { make_onkeypress_function('to_pascal_case'), "pascal case" },
+        ["/"] = { make_onkeypress_function('to_path_case'), "path case" },
+      }
+    }
+  }
+end
+EOF
+
+
 """" nerdcommenter: comment and uncomment easily
-let g:NERDDefaultAlign = 'left'
-let g:NERDSpaceDelims = 1
-let g:NERDCreateDefaultMappings = 0
-let g:NERDCompactSexyComs = 1
-let g:NERDTrimTrailingWhitespace = 1
-let g:NERDToggleCheckAllLines = 1
-" toggle line(s)
-nnoremap <leader>cc <Plug>NERDCommenterToggle
-vnoremap <leader>cc <Plug>NERDCommenterToggle
-" toggle line(s), but respect individual line commentedness
-nnoremap <leader>ci <Plug>NERDCommenterInvert
-vnoremap <leader>ci <Plug>NERDCommenterInvert
-" start writing a comment at the end of the current line
-nnoremap <leader>cA <Plug>NERDCommenterAppend
-" 'sexy' comment
-nnoremap <leader>cs <Plug>NERDCommenterSexy
-vnoremap <leader>cs <Plug>NERDCommenterSexy
+" let g:NERDDefaultAlign = 'left'
+" let g:NERDSpaceDelims = 1
+" let g:NERDCreateDefaultMappings = 0
+" let g:NERDCompactSexyComs = 1
+" let g:NERDTrimTrailingWhitespace = 1
+" let g:NERDToggleCheckAllLines = 1
 
 
 """" undotree: view and access the entire edit history of the buffer
-nnoremap <leader>u :UndotreeToggle<CR>
-lua vim.g.undotree_WindowLayout = 4
+lua << EOF
+WK.register {
+  ["<leader>u"] = { "<cmd>UndotreeToggle<cr>", "undotree toggle"}
+}
+if bool(vim.fn.has("persistent_undo")) then
+  local target_path = os.getenv("HOME") .. "/.nvim/undodir/"
+  if not bool(vim.fn.isdirectory(target_path)) then
+    vim.fn.mkdir(target_path, "p")
+  end
+  vim.opt.swapfile = false
+  vim.opt.backup = false
+  vim.opt.undodir = target_path
+  vim.opt.undofile = true
+else
+  print("no persistent_undo")
+end
+vim.g.undotree_WindowLayout = 4
+EOF
 
 
 """" sneak: quicksearch for single or two characters with f,t, and s, respectively

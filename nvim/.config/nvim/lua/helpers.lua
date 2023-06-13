@@ -9,3 +9,11 @@ end
 function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
+
+-- wrap calls that return boolean from vim.fn in this
+function bool(x)
+  if type(x) == "number" then
+    return not (x == 0)
+  end
+  return false
+end
