@@ -1,4 +1,4 @@
-set runtimepath^=~/.config/nvim.nvim
+set runtimepath^=~/.config/nvim.nvim,
 let &packpath = &runtimepath
 lua vim.o.shell = "bash"
 lua vim.o.encoding = "utf-8"
@@ -28,7 +28,6 @@ call plug#begin(g:pluggedir)
 Plug 'stumash/shellvis'
 Plug 'stumash/lcs.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'stevearc/dressing.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'ziontee113/icon-picker.nvim'
@@ -138,14 +137,27 @@ end
 require'nvim-tree'.setup {
   git = { ignore = false },
   sort_by = "case_sensitive",
-  view = { adaptive_size = true },
+  view = {
+    adaptive_size = true,
+    float = {
+      enable = true,
+      quit_on_focus_loss = false,
+      open_win_config = {
+        relative = "win",
+        height = math.floor(vim.api.nvim_win_get_height(0) * 0.70),
+        col = (vim.api.nvim_win_get_width(0) - 1),
+      },
+    },
+  },
   on_attach = nvim_tree_on_attach,
 }
 WK.register {
   ["<leader>n"] = {
     name = "nvim-tree",
-    N = { '<cmd>NvimTreeFindFile<cr>', "find current file" },
-    n = { '<cmd>NvimTreeToggle<cr>',   "toggle" },
+    N = { '<cmd>NvimTreeFindFile<cr>',           "find current file" },
+    n = { '<cmd>NvimTreeToggle<cr>',             "toggle" },
+    c = { '<cmd>NvimTreeCollapseKeepBuffer<cr>', "collapse all folders" },
+    C = { '<cmd>NvimTreeCollapse<cr>',           "collapse folders w/o open buffers" },
   },
 }
 EOF
@@ -213,13 +225,12 @@ nnoremap <leader>z :close<cr>
 " copy current filename into system clipboard
 nnoremap <leader>%% <cmd>lua print(vim.fn.expand('%:p'))<cr>
 nnoremap <leader>%p mz:put=expand('%:p')<cr>
-nnoremap <leader>O <C-W><C-W>
 
 
 """" terminal
 " double-esc to enter vim edit mode
 tnoremap <esc><esc> <c-\><c-n>
-nnoremap <leader>T :terminal bash --login<cr>
+lua WK.register { ["<leader>T"] = {"<cmd>terminal bash<cr>", "open terminal"} }
 
 
 """" my lua helpers:
@@ -239,7 +250,7 @@ telescope.setup {
       flex = { flip_columns = 250 }, -- go horizontal if nvim wider than this
       vertical = {
         preview_cutoff = 110, -- if vertical, dont display file preview when height less than this
-        preview_height = 110, -- if vertical, dedicate this many row to file preview
+        preview_height = 90, -- if vertical, dedicate this many row to file preview
     },
     },
   }
@@ -290,7 +301,10 @@ require'symbols-outline'.setup {
     unfold = "l",
     fold_all = "H",
     unfold_all = "L",
-  }
+  },
+  symbols = {
+    Class = { icon = 'C', hl = '@type' },
+  },
 }
 WK.register {
   ["<leader>a"] = {
@@ -326,17 +340,24 @@ WK.register {
 EOF
 
 
-
 """" display settings
 set nowrap
 set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
-colorscheme tokyonight-night
-hi Normal ctermbg=NONE
 set colorcolumn=120 " highlight column 120
 set signcolumn=yes " always show signcolumns
 highlight SignColumn guibg=0
 set cmdheight=2 " Better display for messages
+colorscheme tokyonight-night
+lua << EOF
+require'tokyonight'.setup {
+  transparent = true,
+  styles = {
+    sidebars = "transparent",
+    floats = "transparent",
+  },
+}
+EOF
 
 
 """" devicons:
@@ -528,13 +549,21 @@ WK.register {
     a = { function() vim.lsp.buf.code_action() end,              "show all actions" },
     v = { "<cmd>Telescope lsp_references<cr>",                   "list references" },
     e = { function() vim.diagnostic.open_float() end,            "open in floating window" },
-    k = { function() vim.diagnostic.goto_next({severity=1}) end, "go to next error" },
-    k = { function() vim.diagnostic.goto_prev({severity=1}) end, "go to prev error" },
-    i = { function() vim.diagnostic.goto_next() end,             "go to next warning" },
-    i = { function() vim.diagnostic.goto_prev() end,             "go to prev warning" },
     q = { function() vim.lsp.diagnostic.set_loclist() end,       "loclist for errors" },
     f = { function() vim.lsp.buf.formatting() end,               "format buffer" },
-  }
+  },
+  ["]"] = {
+    mode = "n",
+    name = "go to next",
+    k = { function() vim.diagnostic.goto_next({severity=1}) end, "go to next error" },
+    i = { function() vim.diagnostic.goto_next() end,             "go to next warning" },
+  },
+  ["["] = {
+    mode = "n",
+    name = "go to prev",
+    k = { function() vim.diagnostic.goto_prev({severity=1}) end, "go to prev error" },
+    i = { function() vim.diagnostic.goto_prev() end,             "go to prev warning" },
+  },
 }
 
 vim.lsp.set_log_level("debug")
@@ -830,7 +859,16 @@ lua vim.go.bk = false
 lua vim.go.wb = false
 
 """" windows
-nmap <leader><leader>l <c-w>l
-nmap <leader><leader>h <c-w>h
-nmap <leader><leader>j <c-w>j
-nmap <leader><leader>k <c-w>k
+lua << EOF
+WK.register {
+  ["<leader><leader>"] = {
+    mode = "n",
+    name = "switching windows",
+    l = { "<c-w>l", "right" },
+    h = { "<c-w>h", "left" },
+    j = { "<c-w>j", "down" },
+    k = { "<c-w>k", "up" },
+    o = { "<c-w><c-w>", "other" },
+  },
+}
+EOF
