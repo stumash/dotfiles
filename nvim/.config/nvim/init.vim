@@ -139,15 +139,7 @@ require'nvim-tree'.setup {
   sort_by = "case_sensitive",
   view = {
     adaptive_size = true,
-    float = {
-      enable = true,
-      quit_on_focus_loss = false,
-      open_win_config = {
-        relative = "win",
-        height = math.floor(vim.api.nvim_win_get_height(0) * 0.70),
-        col = (vim.api.nvim_win_get_width(0) - 1),
-      },
-    },
+    side = "right",
   },
   on_attach = nvim_tree_on_attach,
 }
@@ -348,15 +340,15 @@ set colorcolumn=120 " highlight column 120
 set signcolumn=yes " always show signcolumns
 highlight SignColumn guibg=0
 set cmdheight=2 " Better display for messages
-colorscheme tokyonight-night
 lua << EOF
 require'tokyonight'.setup {
   transparent = true,
   styles = {
-    sidebars = "transparent",
-    floats = "transparent",
+    sidebars = "dark",
+    floats = "dark",
   },
 }
+vim.cmd[[colorscheme tokyonight-night]]
 EOF
 
 
