@@ -336,7 +336,7 @@ EOF
 set nowrap
 set breakindent " let lines wrap at the indentation of the line being wrapped
 "" colors
-set colorcolumn=120 " highlight column 120
+set colorcolumn=140 " highlight column 120
 set signcolumn=yes " always show signcolumns
 highlight SignColumn guibg=0
 set cmdheight=2 " Better display for messages
