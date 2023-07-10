@@ -1,6 +1,9 @@
 [package] # don't show semver of current repo
 disabled = true
 
+[docker_context]
+disabled = true
+
 [cmd_duration]
 min_time = 500 # show command duration if >0.5s
 

@@ -10,7 +10,7 @@ lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
 " nnoremap <esc> <esc>:noh<cr>jk:<esc>
-lua vim.keymap.set("n", "<esc>", "<esc><cmd>noh<cr>jk<cmd><esc>")
+lua vim.keymap.set("n", "<esc>", "<cmd>noh<cr>jk<esc>")
 augroup vimrc_foldmethod
   au BufReadPre * setlocal foldmethod=indent
   au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
@@ -30,6 +30,7 @@ Plug 'stumash/lcs.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'stevearc/dressing.nvim'
 Plug 'ziontee113/icon-picker.nvim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
