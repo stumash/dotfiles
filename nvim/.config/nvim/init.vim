@@ -9,8 +9,6 @@ lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
-" nnoremap <esc> <esc>:noh<cr>jk:<esc>
-lua vim.keymap.set("n", "<esc>", "<cmd>noh<cr>jk<esc>")
 augroup vimrc_foldmethod
   au BufReadPre * setlocal foldmethod=indent
   au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
@@ -30,13 +28,14 @@ Plug 'stumash/lcs.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'jssee/vim-delight' " stop highlighting searches when the cursor moves
 Plug 'stevearc/dressing.nvim'
 Plug 'ziontee113/icon-picker.nvim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'TimUntersberger/neogit'
 Plug 'akinsho/git-conflict.nvim'
-Plug 'j-hui/fidget.nvim'
+Plug 'j-hui/fidget.nvim', { 'tag': 'legacy' }
 Plug 'tpope/vim-repeat'
 Plug 'justinmk/vim-sneak'
 Plug 'kylechui/nvim-surround'
@@ -122,6 +121,10 @@ EOF
 
 """" fidget
 lua require"fidget".setup{}
+
+
+"""" dressing.nvim
+lua require'dressing'.setup { input = { insert_only = false } }
 
 
 """" nvim-tree
@@ -543,7 +546,7 @@ WK.register {
     v = { "<cmd>Telescope lsp_references<cr>",                   "list references" },
     e = { function() vim.diagnostic.open_float() end,            "open in floating window" },
     q = { function() vim.lsp.diagnostic.set_loclist() end,       "loclist for errors" },
-    f = { function() vim.lsp.buf.formatting() end,               "format buffer" },
+    f = { function() vim.lsp.buf.format() end,               "format buffer" },
   },
   ["]"] = {
     mode = "n",
@@ -762,15 +765,6 @@ end
 EOF
 
 
-"""" nerdcommenter: comment and uncomment easily
-" let g:NERDDefaultAlign = 'left'
-" let g:NERDSpaceDelims = 1
-" let g:NERDCreateDefaultMappings = 0
-" let g:NERDCompactSexyComs = 1
-" let g:NERDTrimTrailingWhitespace = 1
-" let g:NERDToggleCheckAllLines = 1
-
-
 """" undotree: view and access the entire edit history of the buffer
 lua << EOF
 WK.register {
@@ -850,6 +844,7 @@ lua vim.o.splitbelow = true
 " I think is prevents crashes in some buggy LSPs?
 lua vim.go.bk = false
 lua vim.go.wb = false
+
 
 """" windows
 lua << EOF
