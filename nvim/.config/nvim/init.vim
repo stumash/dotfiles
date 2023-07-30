@@ -9,10 +9,6 @@ lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
-augroup vimrc_foldmethod
-  au BufReadPre * setlocal foldmethod=indent
-  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
-augroup END
 set foldmethod=indent
 set nofoldenable
 " no ex-mode by accident
@@ -37,7 +33,7 @@ Plug 'TimUntersberger/neogit'
 Plug 'akinsho/git-conflict.nvim'
 Plug 'j-hui/fidget.nvim', { 'tag': 'legacy' }
 Plug 'tpope/vim-repeat'
-Plug 'justinmk/vim-sneak'
+Plug 'ggandor/leap.nvim'
 Plug 'kylechui/nvim-surround'
 Plug 'tommcdo/vim-exchange'
 Plug 'simrat39/symbols-outline.nvim'
@@ -65,14 +61,15 @@ Plug 'NMAC427/guess-indent.nvim'
 Plug 'ThePrimeagen/harpoon'
 Plug 'aarondiel/spread.nvim'
 Plug 'mbbill/undotree'
-Plug 'nathom/filetype.nvim'
 Plug 'johmsalas/text-case.nvim'
+Plug 'kevinhwang91/promise-async'
+Plug 'kevinhwang91/nvim-ufo'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
 Plug 'joshdick/onedark.vim'
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
-" " autocompletion
+" autocompletion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
@@ -91,10 +88,6 @@ WK.setup { triggers = { "<leader>" } }
 EOF
 
 
-"""" filetype.nvim
-lua vim.g.did_load_filetypes = 1
-
-
 """" guess-indent
 lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
 autocmd FileType java,python,rust,bash,sh,tex,ron setlocal shiftwidth=4
@@ -105,18 +98,9 @@ autocmd FileType scala,typescript,javascript,lua,teal setlocal shiftwidth=2
 lua vim.g.loaded_matchit = 1
 
 
-"""" spread.nvim
-lua << EOF
-local spread = require'spread'
-WK.register {
-  ["<leader>s"] = {
-    mode = "n",
-    name = "spread",
-    o = {function() spread.out() end, "multiline args"},
-    i = {function() spread.combine() end, "single line args"},
-  }
-}
-EOF
+"""" leap.nvim: get around fast
+lua require'leap'.add_default_mappings()
+lua require'leap'.opts.highlight_unlabeled_phase_one_targets = true
 
 
 """" fidget
@@ -406,6 +390,7 @@ nnoremap <leader>LP :Luapad<CR>:lua require('luapad').toggle()<CR>
 lua << EOF
 vim.g.vimsyn_embed = "l" -- highlight lua in vim files
 require"nvim-treesitter.configs".setup {
+  matchup = { enable = false },
   indent = { enable = true }, -- might want this to be `false` for javascript
   playground = { enable = true },
   query_linter = {
@@ -440,8 +425,8 @@ require"nvim-treesitter.configs".setup {
       lookahead = true,
       keymaps = {
         -- You can use the capture groups defined in textobjects.scm
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
+        ["am"] = "@function.outer",
+        ["im"] = "@function.inner",
         ["ac"] = "@class.outer",
         ["ic"] = "@class.inner",
         ["aa"] = "@parameter.outer",
@@ -481,6 +466,20 @@ require"nvim-treesitter.configs".setup {
   },
 }
 vim.g.markdown_fenced_languages = {'html', 'python', 'lua', 'vim', 'typescript', 'javascript', 'rust'}
+EOF
+
+
+"""" spread.nvim
+lua << EOF
+local spread = require'spread'
+WK.register {
+  ["<leader>s"] = {
+    mode = "n",
+    name = "spread",
+    o = {function() pcall(spread.out, {silent=true}) end, "multiline args"},
+    i = {function() pcall(spread.combine, {silent=true}) end, "single line args"},
+  }
+}
 EOF
 
 
@@ -627,9 +626,11 @@ set laststatus=2
 
 
 """" harpoon: navigate to popular fle locations faster
+lua require'harpoon'.setup { menu = { width = math.floor(vim.api.nvim_win_get_width(0) * 0.8) } }
 lua require("telescope").load_extension('harpoon')
 nnoremap <leader>ha :lua require("harpoon.mark").add_file()<cr>
 nnoremap <leader>hh :Telescope harpoon marks<cr>
+nnoremap <leader>hH :lua require"harpoon.ui".toggle_quick_menu()<cr>
 " <c-d> to delete entries
 
 
@@ -786,23 +787,17 @@ vim.g.undotree_WindowLayout = 4
 EOF
 
 
-"""" sneak: quicksearch for single or two characters with f,t, and s, respectively
-"" label-mode
-let g:sneak#label = 1
-"" replace 'f' with 1-char Sneak
-nmap f <Plug>Sneak_f
-nmap F <Plug>Sneak_F
-xmap f <Plug>Sneak_f
-xmap F <Plug>Sneak_F
-omap f <Plug>Sneak_f
-omap F <Plug>Sneak_F
-" replace 't' with 1-char Sneak
-nmap t <Plug>Sneak_t
-nmap T <Plug>Sneak_T
-xmap t <Plug>Sneak_t
-xmap T <Plug>Sneak_T
-omap t <Plug>Sneak_t
-omap T <Plug>Sneak_T
+"""" nvim-ufo: better folding
+lua << EOF
+vim.o.foldcolumn = '0'
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+
+require'ufo'.setup {
+  provider_selector = function(bufnr, filetype, buftype) return {'treesitter', 'indent'} end,
+}
+EOF
 
 
 """" cursor:
@@ -824,6 +819,7 @@ noremap <leader>NN :lua toggleNums()<cr>
 
 " reload file
 nmap <leader>rr :bufdo e<cr>
+nmap <leader>rc <cmd>source ~/.config/nvim/init.vim<cr>
 " remove trailing whitespace + tabs to spaces
 function RemoveTrailingWhitespace_and_TabsToSpaces()
   :exe "silent! :%s/\\s\\+\\n/\\r/"
