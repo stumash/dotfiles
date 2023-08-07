@@ -21,15 +21,12 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
   * delta
   * git-graph
   * git-igitt
+  * zoxide
 * gogh
 * jq
 * neovim
   * vim-plug
-* tmux
-  * tpm
-  * tmux-pain-control
-  * tmux-thumbs
-
+* iterm2
 ### bash
 
 installs softlinks for

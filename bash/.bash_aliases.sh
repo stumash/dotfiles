@@ -5,3 +5,4 @@ alias g=git
 alias ps=procs
 alias pst='procs --tree'
 alias ls=exa
+alias cd=z
