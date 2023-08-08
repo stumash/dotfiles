@@ -535,17 +535,17 @@ WK.register {
   ["<leader>k"] = {
     mode = "n",
     name = "LSP actions",
-    D = { function() vim.lsp.buf.declaration() end,              "go to declaration" },
-    d = { function() vim.lsp.buf.definition() end,               "go to defintion" },
-    h = { function() vim.lsp.buf.hover() end,                    "hover info" },
-    H = { function() vim.lsp.buf.signature_help() end,           "show signature" },
-    t = { function() vim.lsp.buf.type_definition() end,          "show type def" },
-    r = { function() vim.lsp.buf.rename() end,                   "rename" },
-    a = { function() vim.lsp.buf.code_action() end,              "show all actions" },
-    v = { "<cmd>Telescope lsp_references<cr>",                   "list references" },
-    e = { function() vim.diagnostic.open_float() end,            "open in floating window" },
-    q = { function() vim.lsp.diagnostic.set_loclist() end,       "loclist for errors" },
-    f = { function() vim.lsp.buf.format() end,               "format buffer" },
+    D = { function() vim.lsp.buf.declaration() end,        "go to declaration" },
+    d = { function() vim.lsp.buf.definition() end,         "go to defintion" },
+    h = { function() vim.lsp.buf.hover() end,              "hover info" },
+    H = { function() vim.lsp.buf.signature_help() end,     "show signature" },
+    t = { function() vim.lsp.buf.type_definition() end,    "show type def" },
+    r = { function() vim.lsp.buf.rename() end,             "rename" },
+    a = { function() vim.lsp.buf.code_action() end,        "show all actions" },
+    v = { "<cmd>Telescope lsp_references<cr>",             "list references" },
+    e = { function() vim.diagnostic.open_float() end,      "open in floating window" },
+    q = { function() vim.lsp.diagnostic.set_loclist() end, "loclist for errors" },
+    f = { function() vim.lsp.buf.format() end,             "format buffer" },
   },
   ["]"] = {
     mode = "n",
@@ -809,15 +809,17 @@ lua vim.go.cursorline = true
 
 """" toggle nums
 lua << EOF
-  local all = require('plenary.functional').all
-  local isTrue = function(_, x) return x == true end
-  local setColNums = function(b) vim.o.number = b; vim.o.relativenumber = b end
-  function toggleNums()
-    setColNums(not all(isTrue, { vim.o.number, vim.o.relativenumber}))
-  end
-  setColNums(true)
+local all = require('plenary.functional').all
+local function isTrue(_, x) return x == true end
+local function setColNums(b) vim.o.number = b; vim.o.relativenumber = b end
+function toggleNums() setColNums(not all(isTrue, { vim.o.number, vim.o.relativenumber})) end
+
+setColNums(true)
+
+WK.register {
+  ["<leader>NN"] = { "<cmd>lua toggleNums()<cr>", "toggle line numbers" },
+}
 EOF
-noremap <leader>NN :lua toggleNums()<cr>
 
 " reload file
 nmap <leader>rr :bufdo e<cr>
