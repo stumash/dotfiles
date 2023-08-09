@@ -9,6 +9,7 @@ lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
 lua vim.o.clipboard = "unnamed" -- yank to system clipboard
+lua vim.o.textwidth = 0
 set foldmethod=indent
 set nofoldenable
 " no ex-mode by accident
@@ -59,7 +60,7 @@ Plug 'nvim-telescope/telescope-file-browser.nvim'
 Plug 'junegunn/vim-easy-align'
 Plug 'NMAC427/guess-indent.nvim'
 Plug 'ThePrimeagen/harpoon'
-Plug 'aarondiel/spread.nvim'
+Plug 'Wansmer/treesj'
 Plug 'mbbill/undotree'
 Plug 'johmsalas/text-case.nvim'
 Plug 'kevinhwang91/promise-async'
@@ -469,20 +470,6 @@ vim.g.markdown_fenced_languages = {'html', 'python', 'lua', 'vim', 'typescript',
 EOF
 
 
-"""" spread.nvim
-lua << EOF
-local spread = require'spread'
-WK.register {
-  ["<leader>s"] = {
-    mode = "n",
-    name = "spread",
-    o = {function() pcall(spread.out, {silent=true}) end, "multiline args"},
-    i = {function() pcall(spread.combine, {silent=true}) end, "single line args"},
-  }
-}
-EOF
-
-
 """" colorizer: show the color of hex and rgb color values
 lua require('colorizer').setup()
 
@@ -516,6 +503,24 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     })
+  }
+}
+EOF
+
+
+"""" treesj: change code from single line to multiline (and vice versa) syntax style where applicable
+lua << EOF
+local tsj = require'treesj'
+tsj.setup {
+  use_default_keymaps = false,
+  max_join_length = 140,
+  last_separator = true,
+}
+WK.register {
+  ["<leader>s"] = {
+    name = "multiline or single-line argument formatter",
+    i = { tsj.join, "join ('in')" },
+    o = { tsj.split, "join ('in')" },
   }
 }
 EOF
