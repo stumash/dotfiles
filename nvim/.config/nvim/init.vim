@@ -248,7 +248,8 @@ WK.register {
     f = {"<cmd>Telescope git_files<cr>", "search git file names"},
     a = {"<cmd>Telescope live_grep<cr>", "search all files"},
     p = {function() find_files { cwd = '$HOME/.config/nvim/plugged' } end, "search nvim plugin file names"},
-    b = {function() buffers { last_used = true } end, "search open buffer file names"},
+    b = {function() builtins.live_grep { grep_open_files = true } end, "search in open buffers"},
+    B = {function() buffers { last_used = true } end, "search open buffer file names"},
     ["/"] = {"<cmd>Telescope current_buffer_fuzzy_find<cr>", "search current buffer"},
     [":"] = {"<cmd>Telescope command_history<cr>", "search command history"},
     -- git telescope commands
@@ -612,7 +613,7 @@ nnoremap <leader>ore :!rm -rf .metals .bloop project/metals.sbt<CR>:lua make_met
 
 
 """" rooter: set the cwd to the project root automatically
-let g:rooter_patterns = ['.git', 'Cargo.toml', 'package.json', 'Makefile']
+let g:rooter_patterns = ['.git']
 
 
 """" feline: fancy status bar
