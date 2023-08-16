@@ -15,6 +15,11 @@ set nofoldenable
 " no ex-mode by accident
 lua vim.keymap.set("n", "Q", "<nop>")
 let mapleader=" "
+augroup savescroll
+  autocmd!
+  autocmd BufLeave * let b:winview = winsaveview()
+  autocmd BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif
+augroup END
 
 
 lua vim.g.home = "~/.config/nvim/"
@@ -512,18 +517,19 @@ EOF
 """" treesj: change code from single line to multiline (and vice versa) syntax style where applicable
 lua << EOF
 local tsj = require'treesj'
+local tsj_lu = require'treesj.langs.utils'
 tsj.setup {
   use_default_keymaps = false,
   max_join_length = 140,
-  last_separator = true,
 }
 WK.register {
   ["<leader>s"] = {
     name = "multiline or single-line argument formatter",
     i = { tsj.join, "join ('in')" },
-    o = { tsj.split, "join ('in')" },
+    o = { function() tsj.split { split = { last_separator = true } } end, "split ('out')" },
   }
 }
+
 EOF
 
 
@@ -683,6 +689,8 @@ lua require('git-conflict').setup()
 
 
 lua << EOF
+local gs = require'gitsigns'
+function toggle_blame() print('show_blame=' .. bool_to_str(gs.toggle_current_line_blame())) end
 WK.register {
   ["<leader>g"] = {
     name = "git",
@@ -699,7 +707,7 @@ WK.register {
         h = {"<cmd>Gitsigns change_base HEAD<cr>",   "diff unstaged"},
       },
     },
-    b = {"<cmd>Gitsigns toggle_current_line_blame<cr>", "toggle line blame"},
+    b = {toggle_blame, "toggle line blame"},
     g = {"<cmd>Neogit<cr>", "neogit"},
     c = {
       name = "conflict",

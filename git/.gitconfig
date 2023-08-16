@@ -22,14 +22,14 @@
     b = branch
     ba = branch --all
     bc = branch --show-current
-    bg = "!function g_bg() { git branch | rg $1 | fzf -1 | choose -1; }; g_bg"
-    bag = !git branch --all | rg
+    bg = "!function g_bg() { git branch | rg \"$1\" | fzf -1 | choose -1; }; g_bg"
+    bga = !git branch --all | rg
     bd = branch -d
     bD = branch -D
     bn = checkout -b
     ch = checkout
     chg = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1 | choose -1); }; gchg"
-    chag = "!function gchag() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchag"
+    chga = "!function gchag() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchag"
     ls = ls-files
     s = status
     ss = stash save
@@ -38,7 +38,7 @@
     sd = stash drop
     sl = stash list
     lg = !git-graph
-    lig = !git-igitt
+    lgi = !git-igitt
     d = diff
     dc = diff --cached
     dm = diff master
@@ -54,6 +54,7 @@
     rsc = reset --cached
     m = merge
     mm = merge master
+    mg = "!function mg() { git merge $(git branch | rg \"$1\" | fzf -1 | choose -1); }; mg"
 [diff]
     algorithm = patience
 

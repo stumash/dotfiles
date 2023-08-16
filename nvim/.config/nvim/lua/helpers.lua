@@ -17,3 +17,9 @@ function bool(x)
   end
   return false
 end
+
+-- convert truthy values to string 'true' and falsy ones to string 'false'
+function bool_to_str(b)
+  if b then return 'true' end
+  return 'false'
+end
