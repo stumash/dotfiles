@@ -21,3 +21,9 @@ function showkeys() {
 }
 # complete the sshstart function by calling the showkeys function
 complete -F showkeys sshstart
+
+# man but backup to --help
+function ma() {
+    cmd=$(echo "$@" | tr ' ' '-')
+    (man "$cmd") || ("$cmd" --help | bat -l man --style=plain)
+}
