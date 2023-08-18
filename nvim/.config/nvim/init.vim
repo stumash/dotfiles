@@ -55,7 +55,6 @@ Plug 'folke/which-key.nvim'
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/playground'
-Plug 'p00f/nvim-ts-rainbow'
 Plug 'rafcamlet/nvim-luapad'
 Plug 'folke/lsp-colors.nvim'
 Plug 'folke/trouble.nvim'
@@ -95,10 +94,10 @@ EOF
 
 
 """" guess-indent
-set tabstop=4
+autocmd FileType java,python,rust,bash,sh,tex,ron setlocal tabstop=4
+autocmd FileType scala,typescript,javascript,lua,teal setlocal tabstop=2
+set shiftwidth=0  " in insert mode, the tab key and backspace key should move the cursor by `tabstop` columns
 lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
-autocmd FileType java,python,rust,bash,sh,tex,ron setlocal shiftwidth=4
-autocmd FileType scala,typescript,javascript,lua,teal setlocal shiftwidth=2
 
 
 """" vim-matchup
@@ -421,11 +420,6 @@ require"nvim-treesitter.configs".setup {
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = true,
-  },
-  rainbow = {
-    enable = true,
-    extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-    max_file_lines = 10000, -- Do not enable for files with more than n lines, int
   },
   textobjects = {
     select = {
