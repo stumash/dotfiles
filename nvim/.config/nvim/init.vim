@@ -83,6 +83,7 @@ Plug 'stumash/vim-snippets'
 Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'HiPhish/rainbow-delimiters.nvim'
 call plug#end()
 
 
@@ -95,7 +96,7 @@ EOF
 
 """" guess-indent
 autocmd FileType java,python,rust,bash,sh,tex,ron setlocal tabstop=4
-autocmd FileType scala,typescript,javascript,lua,teal setlocal tabstop=2
+autocmd FileType scala,typescript,javascript,jsx,tsx,lua,teal setlocal tabstop=2
 set shiftwidth=0  " in insert mode, the tab key and backspace key should move the cursor by `tabstop` columns
 lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
 
