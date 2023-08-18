@@ -95,6 +95,7 @@ EOF
 
 
 """" guess-indent
+set tabstop=4
 lua require'guess-indent'.setup { filetype_exclude = { "netrw", "tutor" } }
 autocmd FileType java,python,rust,bash,sh,tex,ron setlocal shiftwidth=4
 autocmd FileType scala,typescript,javascript,lua,teal setlocal shiftwidth=2
@@ -845,11 +846,6 @@ function RemoveTrailingWhitespace_and_TabsToSpaces()
 endfunction
 noremap <leader>rmw :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
 
-"""" TABS:
-lua vim.o.shiftround = true -- '<<' & '>>' always shit to multiples of shiftwidth
-lua vim.o.tabstop = 4       -- The width of a TAB is set to 4, but is still \t
-lua vim.o.softtabstop = 4   -- Sets the number of columns for a TAB
-lua vim.o.expandtab = true  -- Expand TABs to spaces
 
 " :split opens to the right or below
 lua vim.o.splitright = true
