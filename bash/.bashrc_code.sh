@@ -1,8 +1,3 @@
-# imports
-[ -f "$HOME/.bash_aliases.sh" ]   && source "$HOME/.bash_aliases.sh"
-[ -f "$HOME/.bash_functions.sh" ] && source "$HOME/.bash_functions.sh"
-[ -f "$HOME/.bash_env.sh" ]       && source "$HOME/.bash_env.sh"
-
 # path
 export PATH="$HOME/bin/:$PATH"
 
@@ -17,3 +12,8 @@ which pyenv > /dev/null 2>&1 && eval "$(pyenv init -)"
 which zoxide > /dev/null 2>&1 && eval "$(zoxide init bash)"
 which bat > /dev/null 2>&1 && export PAGER='bat'
 which bat > /dev/null 2>&1 && export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
+# imports
+[ -f "$HOME/.bash_aliases.sh" ]   && source "$HOME/.bash_aliases.sh"
+[ -f "$HOME/.bash_functions.sh" ] && source "$HOME/.bash_functions.sh"
+[ -f "$HOME/.bash_env.sh" ]       && source "$HOME/.bash_env.sh"

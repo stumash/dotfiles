@@ -167,22 +167,20 @@ EOF
 
 
 """" shellvis and text transforms
-" <leader>e is for 'e'llvis
+" <leader>E is for 'E'llvis
 " base64
-vnoremap <leader>esf :<c-u>call shellvis#do("base64")<cr>
-vnoremap <leader>efs :<c-u>call shellvis#do("base64 -d")<cr>
-" gzip | base64
-vnoremap <leader>ezsf :<c-u>call shellvis#do("gzip \| base64")<cr>
-vnoremap <leader>ezfs :<c-u>call shellvis#do("base64 -d \| gzip -d")<cr>
-" json formatting, defaults to indent = 2 spaces
-nnoremap <leader>json :%!jq<CR>
-nnoremap <leader>jsoN4 :%!jq --indent 4<CR>
-vnoremap <leader>json :<c-u>call shellvis#do("jq")<cr>
-vnoremap <leader>jsoN4 :<c-u>call shellvis#do("jq --indent 4")<cr>
-" sort
-vnoremap <leader>esort :<c-u>call shellvis#do("sort")<cr>
-" uniq
-vnoremap <leader>euniq :<c-u>call shellvis#do("uniq")<cr>
+lua << EOF
+local sv = require'shellvis'
+WK.register {
+  ["<leader>E"] = {
+    mode = "v",
+    name = "shellvis",
+    sf = { function() sv.replaceWith'base64' end,        "base64 encode" },
+    fs = { function() sv.replaceWith'base64 -d' end,     "base64 decode" },
+    jq = { function() sv.replaceWith'jq --indent 2' end, "json format" },
+  },
+}
+EOF
 
 
 """" trouble
@@ -518,11 +516,18 @@ tsj.setup {
   use_default_keymaps = false,
   max_join_length = 140,
 }
+
 WK.register {
   ["<leader>s"] = {
     name = "multiline or single-line argument formatter",
-    i = { tsj.join, "join ('in')" },
-    o = { function() tsj.split { split = { last_separator = true } } end, "split ('out')" },
+    i = { tsj.join, "join [I]n" },
+    o = {
+      function()
+        local no_last_sep = { lua=true }
+        tsj.split { split = { last_separator = not no_last_sep[vim.o.ft] } }
+      end, 
+      "split [O]ut",
+    },
   }
 }
 

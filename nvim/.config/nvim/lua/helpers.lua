@@ -5,6 +5,10 @@ function dump(...)
   return ...
 end
 
+function pack(...)
+  return {n=select("#", ...), ...}
+end
+
 -- t is for `t`ermcode escaping, e.g. "<TAB>" should be interpreted as a tab character
 function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
