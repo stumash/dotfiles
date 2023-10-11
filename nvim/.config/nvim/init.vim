@@ -42,7 +42,6 @@ Plug 'tpope/vim-repeat'
 Plug 'ggandor/leap.nvim'
 Plug 'kylechui/nvim-surround'
 Plug 'tommcdo/vim-exchange'
-Plug 'simrat39/symbols-outline.nvim'
 Plug 'airblade/vim-rooter'
 Plug 'neovim/nvim-lspconfig'
 Plug 'scalameta/nvim-metals'
@@ -58,7 +57,6 @@ Plug 'nvim-treesitter/playground'
 Plug 'rafcamlet/nvim-luapad'
 Plug 'folke/lsp-colors.nvim'
 Plug 'folke/trouble.nvim'
-Plug 'luukvbaal/stabilize.nvim'
 Plug 'andymass/vim-matchup'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
 Plug 'junegunn/vim-easy-align'
@@ -69,6 +67,7 @@ Plug 'mbbill/undotree'
 Plug 'johmsalas/text-case.nvim'
 Plug 'kevinhwang91/promise-async'
 Plug 'kevinhwang91/nvim-ufo'
+Plug 'stevearc/aerial.nvim'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
@@ -193,10 +192,6 @@ nnoremap <leader>tl <cmd>TroubleToggle loclist<cr>
 nnoremap <leader>tk <cmd>TroubleToggle lsp_references<cr>
 
 
-"""" stabilize:
-lua require"stabilize".setup { nexted = "QuickFixCmdPost *" }
-
-
 """" leader:
 nmap <C-Space> <Space>
 lua leader = "<Space>"
@@ -276,31 +271,6 @@ nnoremap <leader>fb :Telescope file_browser<cr>
 
 """" telescope-fzf:
 lua require('telescope').load_extension('fzf')
-
-
-"""" symbols-outline: ast tree structure of code
-lua << EOF
-require'symbols-outline'.setup {
-  autofold_depth = 1,
-  keymaps = {
-    fold = "h",
-    unfold = "l",
-    fold_all = "H",
-    unfold_all = "L",
-  },
-  symbols = {
-    Class = { icon = 'C', hl = '@type' },
-  },
-}
-WK.register {
-  ["<leader>a"] = {
-    mode = "n",
-    name = "symbols tree",
-    a = {"<CMD>SymbolsOutline<CR>", "toggle symbols tree"},
-  }
-}
-EOF
-
 
 """" non-printable characters, a.k.a. listchars:
 " non-printable character display settings when :set list!
@@ -467,6 +437,22 @@ require"nvim-treesitter.configs".setup {
   },
 }
 vim.g.markdown_fenced_languages = {'html', 'python', 'lua', 'vim', 'typescript', 'javascript', 'rust'}
+EOF
+
+
+"""" aerial.nvim
+lua << EOF
+vim.o.splitkeep = 'screen' -- need this for some reason
+require'aerial'.setup {
+  highlight_on_hover = true,
+}
+WK.register {
+  ['<leader>a'] = {
+    mode = 'n',
+    name = "symbols outline",
+    a = {"<cmd>AerialToggle right<cr>", "toggle symbols outline"}
+  },
+}
 EOF
 
 
@@ -675,10 +661,6 @@ require'gitsigns'.setup {
 }
 EOF
 highlight GitSignsCurrentLineBlame guifg=#fffd30
-" show the current hunuhjrnettkecifhucldrlekrnjtcibgnvuknlhgf
-" go to next hunk of code that git diff thinks changed
-nnoremap ]g :Gitsigns next_hunk<CR>
-nnoremap [g :Gitsigns prev_hunk<CR>
 
 
 """" neogit
@@ -701,6 +683,8 @@ WK.register {
       r = {"<cmd>Gitsigns reset_hunk<cr>",      "reset hunk"},
       s = {"<cmd>Gitsigns stage_hunk<cr>",      "stage hunk"},
       u = {"<cmd>Gitsigns undo_stage_hunk<cr>", "unstage hunk"},
+      [']'] = {"<cmd>Gitsigns next_hunk<cr>",       "next hunk"},
+      ['['] = {"<cmd>Gitsigns prev_hunk<cr>",       "previous hunk"},
       c = {
         name = "change gitsigns diff base",
         c = {"<cmd>Gitsigns change_base<space>",     "diff against custom refname"},
