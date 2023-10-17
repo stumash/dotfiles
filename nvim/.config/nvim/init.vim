@@ -44,7 +44,6 @@ Plug 'kylechui/nvim-surround'
 Plug 'tommcdo/vim-exchange'
 Plug 'airblade/vim-rooter'
 Plug 'neovim/nvim-lspconfig'
-Plug 'scalameta/nvim-metals'
 Plug 'unblevable/quick-scope'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-tree/nvim-tree.lua'
@@ -314,6 +313,7 @@ require'tokyonight'.setup {
 }
 vim.cmd[[colorscheme tokyonight-night]]
 EOF
+highlight! link DiagnosticUnnecessary Comment " unused variables should be formatted the same as comments
 
 
 """" devicons:
@@ -571,38 +571,6 @@ for _, lsp in ipairs(servers) do
   }
 end
 EOF
-
-
-"""" nvim-metals: config for scala language server, metals
-lua << EOF
-function make_metals_config()
-  local config = require'metals'.bare_config()
-
-  config.capabilities = require'cmp_nvim_lsp'.default_capabilities()
-  config.settings = {
-    showImplicitArguments = true,
-    showInferredType = true,
-    serverVersion = [[0.11.5]],
-    decorationColor = [[Title]],
-  }
-
-  return config
-end
-function make_metals_config_and_restart()
-  local config = make_metals_config()
-  local metals = require'metals'
-  metals.initialize_or_attach(config)
-  metals.restart_server()
-end
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "scala", "sbt", "sc", "java" },
-  callback = function()
-    require'metals'.initialize_or_attach(make_metals_config())
-  end,
-})
-EOF
-nnoremap <leader>ore :!rm -rf .metals .bloop project/metals.sbt<CR>:lua make_metals_config_and_restart()<CR>
 
 
 """" rooter: set the cwd to the project root automatically
