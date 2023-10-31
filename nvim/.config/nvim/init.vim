@@ -5,6 +5,7 @@ lua vim.o.encoding = "utf-8"
 lua vim.cmd [[filetype plugin on]]
 lua vim.filetype.add { extension = { ron = "ron" } }
 lua vim.o.mouse = "a" -- mouse can scroll, click, select
+lua vim.o.scrolloff = 3 -- always at least 3 lines above and below cursor a top and bottom of screen
 lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
