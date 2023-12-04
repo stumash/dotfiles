@@ -222,6 +222,20 @@ lua << EOF
 local telescope = require'telescope'
 telescope.setup {
   defaults = {
+    vimgrep_arguments = {
+      "rg",
+      "--color=never",
+      "--no-heading",
+      "--with-filename",
+      "--line-number",
+      "--column",
+      "--smart-case",
+      "--hidden",
+      -- above are the defaults
+      "--glob", "*",
+      "--glob", "!.git",
+      "--glob", "!notebooks"
+    },
     path_display = { 'truncate', shorten = 5 },
     dynamic_preview_title = true,
     preview = { filesize_limit = 10 }, -- 10 MB
@@ -231,13 +245,14 @@ telescope.setup {
       vertical = {
         preview_cutoff = 110, -- if vertical, dont display file preview when height less than this
         preview_height = 90, -- if vertical, dedicate this many row to file preview
+      },
     },
-    },
-  }
+  },
 }
 local builtins = require'telescope.builtin'
 local find_files = builtins.find_files
 local buffers = builtins.buffers
+local live_grep = builtins.live_grep
 WK.register {
   ["<leader>f"] = {
     mode = "n",
@@ -245,9 +260,9 @@ WK.register {
     -- general telescope commands
     F = {function() find_files { hidden = true, no_ignore = true  } end, "search all file names"},
     f = {"<cmd>Telescope git_files<cr>", "search git file names"},
-    a = {"<cmd>Telescope live_grep<cr>", "search all files"},
+    a = {live_grep, "search all files"},
     p = {function() find_files { cwd = '$HOME/.config/nvim/plugged' } end, "search nvim plugin file names"},
-    b = {function() builtins.live_grep { grep_open_files = true } end, "search in open buffers"},
+    b = {function() live_grep { grep_open_files = true } end, "search in open buffers"},
     B = {function() buffers { last_used = true } end, "search open buffer file names"},
     ["/"] = {"<cmd>Telescope current_buffer_fuzzy_find<cr>", "search current buffer"},
     [":"] = {"<cmd>Telescope command_history<cr>", "search command history"},
@@ -444,14 +459,30 @@ EOF
 """" aerial.nvim
 lua << EOF
 vim.o.splitkeep = 'screen' -- need this for some reason
-require'aerial'.setup {
-  highlight_on_hover = true,
-}
+local fk = { "Class", "Constructor", "Enum", "Function", "Interface", "Module", "Method", "Struct" }
+local aerial_settings =            { filter_kind = fk,    highlight_on_hover = true, manage_folds = true, link_tree_to_folds = true }
+local aerial_settings_unfiltered = { filter_kind = false, highlight_on_hover = true, manage_folds = true, link_tree_to_folds = true }
+
+require'aerial'.setup(aerial_settings)
+local is_unfiltered = false
+
+local function toggle_filter()
+  local new_is_unfiltered = not is_unfiltered
+  local new_settings = new_is_unfiltered and aerial_settings_unfiltered or aerial_settings
+  print('unfiltered: ' .. (new_is_unfiltered and 'true' or 'false'))
+  local aerial = require'aerial'
+  aerial.setup(new_settings)
+  aerial.refetch_symbols(0)
+
+  is_unfiltered = new_is_unfiltered
+end
+
 WK.register {
   ['<leader>a'] = {
     mode = 'n',
     name = "symbols outline",
-    a = {"<cmd>AerialToggle right<cr>", "toggle symbols outline"}
+    a = {"<cmd>AerialToggle right<cr>", "toggle symbols outline"},
+    t = {toggle_filter, "toggle symbols filtering"},
   },
 }
 EOF
