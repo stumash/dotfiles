@@ -77,9 +77,6 @@ Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
-Plug 'SirVer/ultisnips'
-Plug 'stumash/vim-snippets'
-Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'HiPhish/rainbow-delimiters.nvim'
@@ -505,10 +502,8 @@ vim.opt_global.completeopt = { "menuone", "noinsert", "preview" }
 
 local cmp = require'cmp'
 cmp.setup {
-  snippet = { expand = function(args) vim.fn["UltiSnips#Anon"](args.body) end },
   sources = {
     { name = 'nvim_lsp' },
-    { name = 'ultisnips' },
     { name = 'buffer' },
   },
   mapping = {
@@ -550,14 +545,6 @@ WK.register {
 }
 
 EOF
-
-
-"""" ultisnips: snippets for autocomplete
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-let g:UltiSnipsSnippetDirectories=[ g:pluggedir . "vim-snippets/UltiSnips/"]
-nnoremap <leader>U :UltiSnipsEdit<cr>
 
 
 """" LSP-CONFIG: neovim-native Language Server Protocol client configuration
@@ -645,8 +632,8 @@ WK.register {
   }
 }
 EOF
-inoremap <c-i> <cmd>PickEmojiInsert<cr>
-
+" e is for emoji
+inoremap <c-e> <cmd>PickEmojiInsert<cr>
 
 """" git START
 """" gitsigns: show which lines have tracked and untracked changes. and more.
