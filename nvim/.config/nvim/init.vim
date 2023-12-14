@@ -216,6 +216,21 @@ luafile ~/.config/nvim/lua/helpers.lua
 
 """" telescope:
 lua << EOF
+local select_one_or_multi = function(prompt_bufnr)
+  local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+  local multi = picker:get_multi_selection()
+  if not vim.tbl_isempty(multi) then
+    require('telescope.actions').close(prompt_bufnr)
+    for _, j in pairs(multi) do
+      if j.path ~= nil then
+        vim.cmd(string.format('%s %s', 'edit', j.path))
+      end
+    end
+  else
+    require('telescope.actions').select_default(prompt_bufnr)
+  end
+end
+
 local telescope = require'telescope'
 telescope.setup {
   defaults = {
@@ -242,6 +257,11 @@ telescope.setup {
       vertical = {
         preview_cutoff = 110, -- if vertical, dont display file preview when height less than this
         preview_height = 90, -- if vertical, dedicate this many row to file preview
+      },
+    },
+    mappings = {
+      i = {
+        ['<CR>'] = select_one_or_multi,
       },
     },
   },
@@ -808,15 +828,23 @@ WK.register {
 EOF
 
 " reload file
-nmap <leader>rr :bufdo e<cr>
-nmap <leader>rc <cmd>source ~/.config/nvim/init.vim<cr>
+lua << EOF
+WK.register {
+  ["<leader>rr"] = { "<cmd>bufdo e<cr>", "re-open current file" },
+  ["<leader>rc"] = { "<cmd>source ~/.config/nvim/init.vim<cr>", "re-load config" }
+}
+EOF
 " remove trailing whitespace + tabs to spaces
 function RemoveTrailingWhitespace_and_TabsToSpaces()
   :exe "silent! :%s/\\s\\+\\n/\\r/"
   :exe "silent! :%s/\\t/    /g"
 endfunction
-noremap <leader>rmw :call RemoveTrailingWhitespace_and_TabsToSpaces()<CR>
 
+lua << EOF
+WK.register {
+  ["<leader>rmw"] = { "<cmd>call RemoveTrailingWhitespace_and_TabsToSpaces()<cr>", "rm trailing \\s, and tabs to spaces" }
+}
+EOF
 
 " :split opens to the right or below
 lua vim.o.splitright = true
