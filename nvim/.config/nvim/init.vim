@@ -518,7 +518,6 @@ lua vim.keymap.set("n", "<leader>kT", "<cmd>ToggleDiag<cr>")
 lua << EOF
 vim.opt_global.shortmess:remove('F')
 vim.opt_global.shortmess:append('c')
-vim.opt_global.completeopt = { "menuone", "noinsert", "preview" }
 
 local cmp = require'cmp'
 cmp.setup {
@@ -527,11 +526,23 @@ cmp.setup {
     { name = 'buffer' },
   },
   mapping = {
-    ['<C-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-    ['<C-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+    ['<C-j>'] = cmp.mapping.select_next_item(),
+    ['<C-k>'] = cmp.mapping.select_prev_item(),
     ['<C-y>'] = cmp.mapping.scroll_docs(-4),
     ['<C-e>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
+    -- <cr> only inserts completion if choice is selected
+    ["<CR>"] = cmp.mapping({
+      i = function(fallback)
+        if cmp.visible() and cmp.get_active_entry() then
+          cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+        else
+          fallback()
+        end
+      end,
+      s = cmp.mapping.confirm({ select = true }),
+      c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+    }),
     ['<cr>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
