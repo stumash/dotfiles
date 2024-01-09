@@ -266,6 +266,10 @@ telescope.setup {
     },
   },
 }
+
+telescope.load_extension'file_browser' -- telescope-file-browser
+telescope.load_extension'fzf' -- telescope-fzf
+
 local builtins = require'telescope.builtin'
 local find_files = builtins.find_files
 local buffers = builtins.buffers
@@ -290,19 +294,12 @@ WK.register {
       B = {"<cmd>Telescope git_branches<cr>", "search git branches"},
       s = {"<cmd>Telescope git_status<cr>", "search git status"},
     },
-  }
+    t = { "<cmd>Telescope file_browser<cr>", "telescope filebrowser" },
+    L = { "<cmd>Telescope reloader<cr>", "telescope reloader" },
+  },
 }
 EOF
-nnoremap <leader>fL <cmd>Telescope reloader<cr>
 
-
-"""" telescope-file-browser:
-lua require"telescope".load_extension"file_browser"
-nnoremap <leader>fb :Telescope file_browser<cr>
-
-
-"""" telescope-fzf:
-lua require('telescope').load_extension('fzf')
 
 """" non-printable characters, a.k.a. listchars:
 " non-printable character display settings when :set list!
@@ -625,7 +622,7 @@ EOF
 
 
 """" rooter: set the cwd to the project root automatically
-let g:rooter_patterns = ['.git']
+let g:rooter_patterns = ['.git', 'pyproject.toml']
 
 
 """" feline: fancy status bar
