@@ -180,18 +180,45 @@ EOF
 
 
 """" trouble
-lua require"trouble".setup {}
-nnoremap <leader>tt <cmd>TroubleToggle<cr>
-nnoremap <leader>tw <cmd>TroubleToggle workspace_diagnostics<cr>
-nnoremap <leader>td <cmd>TroubleToggle document_diagnostics<cr>
-nnoremap <leader>tq <cmd>TroubleToggle quickfix<cr>
-nnoremap <leader>tl <cmd>TroubleToggle loclist<cr>
-nnoremap <leader>tk <cmd>TroubleToggle lsp_references<cr>
+lua << EOF
+local diagnostics_enabled = true
+function toggle_all_diagnostics(only_current_file)
+  diagnostics_enabled = not diagnostics_enabled
+  if diagnostics_enabled then
+    if only_current_file then
+      pcall(vim.diagnostic.enable, 0)
+    else
+      pcall(vim.diagnostic.enable)
+    end
+  else
+    if only_current_file then
+      pcall(vim.diagnostic.disable, 0)
+    else
+      pcall(vim.diagnostic.disable)
+    end
+  end
+end
+
+require"trouble".setup {}
+WK.register {
+  ["<leader>t"] = {
+    mode = "n",
+    name = "trouble",
+    t = { "<cmd>TroubleToggle<cr>", "toggle"},
+    w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "toggle trouble all diags"},
+    d = { "<cmd>TroubleToggle document_diagnostics<cr>", "toggle trouble file diags"},
+    q = { "<cmd>TroubleToggle quickfix<cr>", "toggle trouble quickfix"},
+    l = { "<cmd>TroubleToggle loclist<cr>", "toggle trouble loclist"},
+    k = { "<cmd>TroubleToggle lsp_references<cr>", "toggle trouble lsp refs"},
+    a = { function() toggle_all_diagnostics(true) end, "toggle file diagnostics" },
+    A = { toggle_all_diagnostics, "toggle all diagnostics" },
+  }
+}
+EOF
 
 
 """" leader:
 nmap <C-Space> <Space>
-lua leader = "<Space>"
 nnoremap <leader>q :qa<CR>
 nnoremap <leader>Q :qa!<CR>
 nnoremap <leader>w :w<CR>
