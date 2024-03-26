@@ -59,6 +59,7 @@ Plug 'folke/lsp-colors.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'andymass/vim-matchup'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
+Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 Plug 'junegunn/vim-easy-align'
 Plug 'NMAC427/guess-indent.nvim'
 Plug 'ThePrimeagen/harpoon'
@@ -259,7 +260,11 @@ local select_one_or_multi = function(prompt_bufnr)
 end
 
 local telescope = require'telescope'
+local lga_actions = require'telescope-live-grep-args.actions'
 telescope.setup {
+  extensions = {
+    live_grep_args = { auto_quoting = true },
+  },
   defaults = {
     vimgrep_arguments = {
       "rg",
@@ -289,6 +294,7 @@ telescope.setup {
     mappings = {
       i = {
         ['<CR>'] = select_one_or_multi,
+        ['<C-k>'] = lga_actions.quote_prompt(),
       },
     },
   },
@@ -296,6 +302,7 @@ telescope.setup {
 
 telescope.load_extension'file_browser' -- telescope-file-browser
 telescope.load_extension'fzf' -- telescope-fzf
+telescope.load_extension'live_grep_args' -- telescope-live-grep-args
 
 local builtins = require'telescope.builtin'
 local find_files = builtins.find_files
