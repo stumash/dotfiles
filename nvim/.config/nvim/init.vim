@@ -262,9 +262,7 @@ end
 local telescope = require'telescope'
 local lga_actions = require'telescope-live-grep-args.actions'
 telescope.setup {
-  extensions = {
-    live_grep_args = { auto_quoting = true },
-  },
+  extensions = { live_grep_args = { auto_quoting = true } },
   defaults = {
     vimgrep_arguments = {
       "rg",
@@ -294,7 +292,7 @@ telescope.setup {
     mappings = {
       i = {
         ['<CR>'] = select_one_or_multi,
-        ['<C-k>'] = lga_actions.quote_prompt(),
+        ['<C-k>'] = lga_actions.quote_prompt({postfix = [[ -g "!*test*" -g "!*notebook*"]]}),
       },
     },
   },
@@ -316,6 +314,7 @@ WK.register {
     F = {function() find_files { hidden = true, no_ignore = true  } end, "search all file names"},
     f = {"<cmd>Telescope git_files<cr>", "search git file names"},
     a = {live_grep, "search all files"},
+    A = {telescope.extensions.live_grep_args.live_grep_args, "search all files with args"},
     p = {function() find_files { cwd = '$HOME/.config/nvim/plugged' } end, "search nvim plugin file names"},
     b = {function() live_grep { grep_open_files = true } end, "search in open buffers"},
     B = {function() buffers { last_used = true } end, "search open buffer file names"},
