@@ -69,6 +69,9 @@ Plug 'johmsalas/text-case.nvim'
 Plug 'kevinhwang91/promise-async'
 Plug 'kevinhwang91/nvim-ufo'
 Plug 'stevearc/aerial.nvim'
+Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'rafamadriz/friendly-snippets'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
@@ -552,9 +555,11 @@ vim.opt_global.shortmess:append('c')
 
 local cmp = require'cmp'
 cmp.setup {
+  snippet = { expand = function(args) require'luasnip'.expand_snippet(args.body) end },
   sources = {
     { name = 'nvim_lsp' },
     { name = 'buffer' },
+    { name = "luasnip" },
   },
   mapping = {
     ['<C-j>'] = cmp.mapping.select_next_item(),
@@ -583,6 +588,20 @@ cmp.setup {
 EOF
 
 
+"""" luasnip: snippets
+lua require'luasnip.loaders.from_vscode'.lazy_load()
+" press <Tab> to expand or jump in a snippet. These can also be mapped separately
+" via <Plug>luasnip-expand-snippet and <Plug>luasnip-jump-next.
+imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>'
+" -1 for jumping backwards.
+inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
+snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
+snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
+" For changing choices in choiceNodes (not strictly necessary for a basic setup).
+imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
+smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
+
+
 """" treesj: change code from single line to multiline (and vice versa) syntax style where applicable
 lua << EOF
 local tsj = require'treesj'
@@ -600,7 +619,7 @@ WK.register {
       function()
         local no_last_sep = { lua=true }
         tsj.split { split = { last_separator = not no_last_sep[vim.o.ft] } }
-      end, 
+      end,
       "split [O]ut",
     },
   }
@@ -676,10 +695,18 @@ set laststatus=2
 """" harpoon: navigate to popular fle locations faster
 lua require'harpoon'.setup { menu = { width = math.floor(vim.api.nvim_win_get_width(0) * 0.8) } }
 lua require("telescope").load_extension('harpoon')
-nnoremap <leader>ha :lua require("harpoon.mark").add_file()<cr>
-nnoremap <leader>hh :Telescope harpoon marks<cr>
-nnoremap <leader>hH :lua require"harpoon.ui".toggle_quick_menu()<cr>
-" <c-d> to delete entries
+lua << EOF
+local harpoon_mark = require'harpoon.mark'
+local harpoon_ui = require'harpoon.ui'
+WK.register {
+  ["<leader>h"] = {
+    name = "harpoon",
+    a = { harpoon_mark.add_file, "harpoon add file" },                    -- <c-d> to delete entries
+    h = { "<cmd>Telescope harpoon marks<cr>", "harpoon telescope menu" }, -- <c-d> to delete entries
+    H = { harpoon_ui.toggle_quick_menua, "harpoon toggle menu" },
+  }
+}
+EOF
 
 
 """" icon-picker
