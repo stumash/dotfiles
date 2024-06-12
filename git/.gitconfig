@@ -10,7 +10,7 @@
     path = ~/me/code/.gitconfig
 
 [push]
-    default = upstream
+    default = current
 [alias]
     cm = commit
     cmm = commit -m
@@ -19,6 +19,7 @@
     aacm = !git add -A && git commit
     aacmm = !git add -A && git commit -m
     f = fetch
+    fa = fetch --all
     b = branch
     ba = branch --all
     bc = branch --show-current
