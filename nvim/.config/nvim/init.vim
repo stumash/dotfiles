@@ -449,7 +449,7 @@ require"nvim-treesitter.configs".setup {
     "python",
     "bash",
     "java", "kotlin",
-    "latex",
+    "markdown", "latex",
     "dockerfile", "hcl", "terraform",
     "css", "scss", "html",
   },
