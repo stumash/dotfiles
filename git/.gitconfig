@@ -26,6 +26,7 @@
     bg = "!function g_bg() { git branch | rg \"$1\" | fzf -1 | choose -1; }; g_bg"
     bga = !git branch --all | rg
     bd = branch -d
+    bda = "!function g_bda() { git branch | rg -v '\\*|master|main|qa|dev|uat' | xargs git branch -d; }; g_bda" # delete extra branches
     bD = branch -D
     bn = checkout -b
     co = clone
