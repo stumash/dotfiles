@@ -83,7 +83,7 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-Plug 'HiPhish/rainbow-delimiters.nvim'
+" Plug 'HiPhish/rainbow-delimiters.nvim'
 call plug#end()
 
 
@@ -332,6 +332,7 @@ WK.register {
     },
     t = { "<cmd>Telescope file_browser<cr>", "telescope filebrowser" },
     L = { "<cmd>Telescope reloader<cr>", "telescope reloader" },
+    ["'"] = {"/[^[:alnum:][:punct:][:space:]]<cr>", "search non-ascii chars" },
   },
 }
 EOF
