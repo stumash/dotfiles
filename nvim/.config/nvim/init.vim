@@ -83,14 +83,17 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-" Plug 'HiPhish/rainbow-delimiters.nvim'
 call plug#end()
 
 
 """" which-key: show keymaps
 lua << EOF
 WK = require"which-key"
-WK.setup { triggers = { "<leader>" } }
+WK.setup {
+  triggers = {
+    { "<leader>", mode = { "n", "v" } },
+  }
+}
 EOF
 
 
@@ -138,14 +141,13 @@ require'nvim-tree'.setup {
   },
   on_attach = nvim_tree_on_attach,
 }
-WK.register {
-  ["<leader>n"] = {
-    name = "nvim-tree",
-    N = { '<cmd>NvimTreeFindFile<cr>',           "find current file" },
-    n = { '<cmd>NvimTreeToggle<cr>',             "toggle" },
-    c = { '<cmd>NvimTreeCollapseKeepBuffer<cr>', "collapse all folders" },
-    C = { '<cmd>NvimTreeCollapse<cr>',           "collapse folders w/o open buffers" },
-  },
+WK.add {
+  mode = { "n" },
+  { "<leader>n", group = "nvim-tree" },
+  { "<leader>nN", '<cmd>NvimTreeFindFile<cr>',           desc = "find current file" },
+  { "<leader>nn", '<cmd>NvimTreeToggle<cr>',             desc = "toggle" },
+  { "<leader>nc", '<cmd>NvimTreeCollapseKeepBuffer<cr>', desc = "collapse all folders" },
+  { "<leader>nC", '<cmd>NvimTreeCollapse<cr>',           desc = "collapse folders w/o open buffers" },
 }
 EOF
 
@@ -153,14 +155,11 @@ EOF
 """" vim-easy-align
 lua << EOF
 for _, mode in ipairs{"n", "x"} do
-  WK.register {
-    ["<leader>e"] = {
-      name  = "easy-align",
-      e     = { "<Plug>(LiveEasyAlign)",        "live easy-align" },
-      E     = { "<Plug>(EasyAlign)",            "easy-align" },
-      ["|"] = { "mavip:EasyAlign *<bar><cr>'a", "table easy-align" },
-      mode  = mode,
-    },
+  WK.add {
+    { "<leader>e", group = "easy-align" },
+    { "<leader>ee", "<Plug>(LiveEasyAlign)",        mode = mode, desc = "live easy-align" },
+    { "<leader>eE", "<Plug>(EasyAlign)",            mode = mode, desc = "easy-align" },
+    { "<leader>e|", "mavip:EasyAlign *<bar><cr>'a", mode = mode, desc = "table easy-align" },
   }
 end
 EOF
@@ -171,14 +170,12 @@ EOF
 " base64
 lua << EOF
 local sv = require'shellvis'
-WK.register {
-  ["<leader>E"] = {
-    mode = "v",
-    name = "shellvis",
-    sf = { function() sv.replaceWith'base64' end,        "base64 encode" },
-    fs = { function() sv.replaceWith'base64 -d' end,     "base64 decode" },
-    jq = { function() sv.replaceWith'jq --indent 2' end, "json format" },
-  },
+WK.add {
+  mode = { "v" },
+  { "<leader>E", group = "shellvis" },
+  { "<leader>Esf", function() sv.replaceWith'base64' end,        desc = "base64 encode" },
+  { "<leader>Efs", function() sv.replaceWith'base64 -d' end,     desc = "base64 decode" },
+  { "<leader>Ejq", function() sv.replaceWith'jq --indent 2' end, desc = "json format" },
 }
 EOF
 
@@ -204,19 +201,17 @@ function toggle_all_diagnostics(only_current_file)
 end
 
 require"trouble".setup {}
-WK.register {
-  ["<leader>t"] = {
-    mode = "n",
-    name = "trouble",
-    t = { "<cmd>TroubleToggle<cr>", "toggle"},
-    w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "toggle trouble all diags"},
-    d = { "<cmd>TroubleToggle document_diagnostics<cr>", "toggle trouble file diags"},
-    q = { "<cmd>TroubleToggle quickfix<cr>", "toggle trouble quickfix"},
-    l = { "<cmd>TroubleToggle loclist<cr>", "toggle trouble loclist"},
-    k = { "<cmd>TroubleToggle lsp_references<cr>", "toggle trouble lsp refs"},
-    a = { function() toggle_all_diagnostics(true) end, "toggle file diagnostics" },
-    A = { toggle_all_diagnostics, "toggle all diagnostics" },
-  }
+WK.add {
+  mode = { "n" },
+  { "<leader>t", group = "trouble" },
+  { "<leader>tt", "<cmd>TroubleToggle<cr>",                       desc = "toggle" },
+  { "<leader>tw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "toggle trouble all diags" },
+  { "<leader>td", "<cmd>TroubleToggle document_diagnostics<cr>",  desc = "toggle trouble file diags" },
+  { "<leader>tq", "<cmd>TroubleToggle quickfix<cr>",              desc = "toggle trouble quickfix" },
+  { "<leader>tl", "<cmd>TroubleToggle loclist<cr>",               desc = "toggle trouble loclist" },
+  { "<leader>tk", "<cmd>TroubleToggle lsp_references<cr>",        desc = "toggle trouble lsp refs" },
+  { "<leader>ta", function() toggle_all_diagnostics(true) end,    desc = "toggle file diagnostics" },
+  { "<leader>tA", toggle_all_diagnostics,                         desc = "toggle all diagnostics" },
 }
 EOF
 
@@ -238,7 +233,7 @@ nnoremap <leader>%p mz:put=expand('%:p')<cr>
 """" terminal
 " double-esc to enter vim edit mode
 tnoremap <esc><esc> <c-\><c-n>
-lua WK.register { ["<leader>T"] = {"<cmd>terminal bash<cr>", "open terminal"} }
+lua WK.add { {"<leader>T", "<cmd>terminal bash<cr>", desc = "open terminal"} }
 
 
 """" my lua helpers:
@@ -309,30 +304,28 @@ local builtins = require'telescope.builtin'
 local find_files = builtins.find_files
 local buffers = builtins.buffers
 local live_grep = builtins.live_grep
-WK.register {
-  ["<leader>f"] = {
-    mode = "n",
-    name = "telescope",
-    -- general telescope commands
-    F = {function() find_files { hidden = true, no_ignore = true  } end, "search all file names"},
-    f = {"<cmd>Telescope git_files<cr>", "search git file names"},
-    a = {live_grep, "search all files"},
-    A = {telescope.extensions.live_grep_args.live_grep_args, "search all files with args"},
-    p = {function() find_files { cwd = '$HOME/.config/nvim/plugged' } end, "search nvim plugin file names"},
-    b = {function() live_grep { grep_open_files = true } end, "search in open buffers"},
-    B = {function() buffers { last_used = true } end, "search open buffer file names"},
-    ["/"] = {"<cmd>Telescope current_buffer_fuzzy_find<cr>", "search current buffer"},
-    [":"] = {"<cmd>Telescope command_history<cr>", "search command history"},
-    -- git telescope commands
-    g = {
-      mode = "n",
-      name = "git telescope commands",
-      B = {"<cmd>Telescope git_branches<cr>", "search git branches"},
-      s = {"<cmd>Telescope git_status<cr>", "search git status"},
-    },
-    t = { "<cmd>Telescope file_browser<cr>", "telescope filebrowser" },
-    L = { "<cmd>Telescope reloader<cr>", "telescope reloader" },
-    ["'"] = {"/[^[:alnum:][:punct:][:space:]]<cr>", "search non-ascii chars" },
+WK.add {
+  mode = { "n" },
+  { "<leader>f", group = "telescope" },
+  -- general telescope commands
+  { "<leader>fF", function() find_files { hidden = true, no_ignore = true  } end,   desc = "search all file names"},
+  { "<leader>ff", "<cmd>Telescope git_files<cr>",                                   desc = "search git file names"},
+  { "<leader>fa", live_grep,                                                        desc = "search all files"},
+  { "<leader>fA", telescope.extensions.live_grep_args.live_grep_args,               desc = "search all files with args"},
+  { "<leader>fp", function() find_files { cwd = '$HOME/.config/nvim/plugged' } end, desc = "search nvim plugin file names"},
+  { "<leader>fb", function() live_grep { grep_open_files = true } end,              desc = "search in open buffers"},
+  { "<leader>fB", function() buffers { last_used = true } end,                      desc = "search open buffer file names"},
+  { "<leader>f/", "<cmd>Telescope current_buffer_fuzzy_find<cr>",                   desc = "search current buffer"},
+  { "<leader>f:", "<cmd>Telescope command_history<cr>",                             desc = "search command history"},
+  -- not really a telescope command
+  { "<leader>f'", "/[^[:alnum:][:punct:][:space:]]<cr>", desc = "search non-ascii chars" },
+  -- git telescope commands
+  { 
+    { "<leader>fg", group = "git telescope commands" },
+    { "<leader>fgB", "<cmd>Telescope git_branches<cr>", desc = "search git branches"},
+    { "<leader>fgs", "<cmd>Telescope git_status<cr>",   desc = "search git status"},
+    { "<leader>fgt", "<cmd>Telescope file_browser<cr>", desc = "telescope filebrowser" },
+    { "<leader>fgtL", "<cmd>Telescope reloader<cr>",    desc = "telescope reloader" },
   },
 }
 EOF
@@ -348,16 +341,14 @@ set termguicolors " colors
 lua << EOF
 local lcs = require'lcs'
 lcs.setup()
-WK.register {
-  ["<leader>LCS"] = {
-    mode = "n",
-    name = "toggle show listchars",
-    L = {function() lcs.toggleShow() end, "on/off"},
-    s = {function() lcs.toggleShow('s') end, "toggle space"},
-    t = {function() lcs.toggleShow('tb') end, "toggle tab"},
-    e = {function() lcs.toggleShow('e') end, "toggle eol"},
-    r = {function() lcs.toggleShow('tr') end, "toggle trailing space"},
-  }
+WK.add {
+  mode = { "n" },
+  { "<leader>LCS", group = "toggle show listchars" },
+  { "<leader>LCSL", function() lcs.toggleShow() end,     desc = "on/off"},
+  { "<leader>LCSs", function() lcs.toggleShow('s') end,  desc = "toggle space"},
+  { "<leader>LCSt", function() lcs.toggleShow('tb') end, desc = "toggle tab"},
+  { "<leader>LCSe", function() lcs.toggleShow('e') end,  desc = "toggle eol"},
+  { "<leader>LCSr", function() lcs.toggleShow('tr') end, desc = "toggle trailing space"},
 }
 EOF
 
@@ -529,13 +520,11 @@ local function toggle_filter()
   is_unfiltered = new_is_unfiltered
 end
 
-WK.register {
-  ['<leader>a'] = {
-    mode = 'n',
-    name = "symbols outline",
-    a = {"<cmd>AerialToggle right<cr>", "toggle symbols outline"},
-    t = {toggle_filter, "toggle symbols filtering"},
-  },
+WK.add {
+  mode = { "n" },
+  { "<leader>a", group = "symbols outline" },
+  { "<leader>aa", "<cmd>AerialToggle right<cr>", desc = "toggle symbols outline"},
+  { "<leader>at", toggle_filter,                 desc = "toggle symbols filtering"},
 }
 EOF
 
@@ -612,48 +601,39 @@ tsj.setup {
   max_join_length = 140,
 }
 
+local no_last_sep = { lua=true }
 WK.register {
-  ["<leader>s"] = {
-    name = "multiline or single-line argument formatter",
-    i = { tsj.join, "join [I]n" },
-    o = {
-      function()
-        local no_last_sep = { lua=true }
-        tsj.split { split = { last_separator = not no_last_sep[vim.o.ft] } }
-      end,
-      "split [O]ut",
-    },
-  }
+  { "<leader>s", group = "multiline or single-line argument formatter"},
+  { "<leader>si", tsj.join,                                                                            desc = "join [I]n" },
+  { "<leader>so", function() tsj.split { split = { last_separator = not no_last_sep[vim.o.ft] } } end, desc = "split [O]ut" },
 }
-
 EOF
 
 
 """" LSP-CONFIG: neovim-native Language Server Protocol client configuration
 lua << EOF
-WK.register {
-  ["<leader>k"] = {
-    mode = "n",
-    name = "LSP actions",
-    D = { function() vim.lsp.buf.declaration() end,                  "go to declaration" },
-    d = { function() vim.lsp.buf.definition() end,                   "go to defintion" },
-    h = { function() vim.lsp.buf.hover() end,                        "hover info" },
-    H = { function() vim.lsp.buf.signature_help() end,               "show signature" },
-    t = { function() vim.lsp.buf.type_definition() end,              "show type def" },
-    r = { function() vim.lsp.buf.rename() end,                       "rename" },
-    a = { function() vim.lsp.buf.code_action() end,                  "show all actions" },
-    v = { "<cmd>Telescope lsp_references<cr>",                       "list references" },
-    e = { function() vim.diagnostic.open_float() end,                "open in floating window" },
-    q = { function() vim.lsp.diagnostic.set_loclist() end,           "loclist for errors" },
-    f = { function() vim.lsp.buf.format() end,                       "format buffer" },
-    ["]"] = { function() vim.diagnostic.goto_next({severity=1}) end, "go to next error" },
-    ["["] = { function() vim.diagnostic.goto_prev({severity=1}) end, "go to prev error" },
-  },
-  ["<leader>i"] = {
-    mode = "n",
-    ["]"] = { function() vim.diagnostic.goto_next() end, "go to next warning" },
-    ["["] = { function() vim.diagnostic.goto_prev() end, "go to prev warning" },
-  },
+WK.add {
+  mode = { "n" },
+  { "<leader>k", group = "LSP actions" },
+  { "<leader>kD", function() vim.lsp.buf.declaration() end,              desc = "go to declaration" },
+  { "<leader>kd", function() vim.lsp.buf.definition() end,               desc = "go to defintion" },
+  { "<leader>kh", function() vim.lsp.buf.hover() end,                    desc = "hover info" },
+  { "<leader>kH", function() vim.lsp.buf.signature_help() end,           desc = "show signature" },
+  { "<leader>kt", function() vim.lsp.buf.type_definition() end,          desc = "show type def" },
+  { "<leader>kr", function() vim.lsp.buf.rename() end,                   desc = "rename" },
+  { "<leader>ka", function() vim.lsp.buf.code_action() end,              desc = "show all actions" },
+  { "<leader>kv", "<cmd>Telescope lsp_references<cr>",                   desc = "list references" },
+  { "<leader>ke", function() vim.diagnostic.open_float() end,            desc = "open in floating window" },
+  { "<leader>kq", function() vim.lsp.diagnostic.set_loclist() end,       desc = "loclist for errors" },
+  { "<leader>kf", function() vim.lsp.buf.format() end,                   desc = "format buffer" },
+  { "<leader>k]", function() vim.diagnostic.goto_next({severity=1}) end, desc = "go to next error" },
+  { "<leader>k[", function() vim.diagnostic.goto_prev({severity=1}) end, desc = "go to prev error" },
+}
+WK.add {
+  mode = { "n" },
+  { "<leader>i", group = "LSP goto warning" },
+  { "<leader>i]", function() vim.diagnostic.goto_next() end, desc = "go to next warning" },
+  { "<leader>i[", function() vim.diagnostic.goto_prev() end, desc = "go to prev warning" },
 }
 
 vim.lsp.set_log_level("debug")
