@@ -18,7 +18,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
   * procs
   * bat
   * starship
-  * delta
+  * git-delta
   * git-graph
   * git-igitt
   * zoxide

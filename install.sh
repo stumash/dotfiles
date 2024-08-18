@@ -13,6 +13,11 @@ echo 'stowing bash configs'
 stow --ignore='.md' --target="$TARGET" bash
 echo
 
+echo 'ZSH'
+echo 'stowing zsh configs'
+stow --ignore='.md' --target="$TARGET" zsh
+echo
+
 echo 'STARSHIP'
 echo 'stowing starship configs'
 stow --ignore='.md' --target="$TARGET" starship
