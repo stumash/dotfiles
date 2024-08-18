@@ -602,7 +602,7 @@ tsj.setup {
 }
 
 local no_last_sep = { lua=true }
-WK.register {
+WK.add {
   { "<leader>s", group = "multiline or single-line argument formatter"},
   { "<leader>si", tsj.join,                                                                            desc = "join [I]n" },
   { "<leader>so", function() tsj.split { split = { last_separator = not no_last_sep[vim.o.ft] } } end, desc = "split [O]ut" },
