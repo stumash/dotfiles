@@ -1,2 +1,5 @@
+let mapleader=" "
 set relativenumber
 set number
+Plug 'tpope/vim-surround'
+set easymotion
