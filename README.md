@@ -27,6 +27,11 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
 * neovim
   * vim-plug
 * iterm2
+
+### mac
+
+* [contexts](https://contexts.co/) for better app switcher
+
 ### bash
 
 installs softlinks for
