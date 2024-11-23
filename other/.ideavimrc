@@ -1,5 +1,10 @@
 let mapleader=" "
-set relativenumber
-set number
+
+set relativenumber number                  " line numbers
+set noerrorbells visualbell t_vb=          " Disable annoying bells.
+
 Plug 'tpope/vim-surround'
+
 set easymotion
+map <leader> <Plug>(easymotion-prefix)
+map s <Plug>(easymotion-s)

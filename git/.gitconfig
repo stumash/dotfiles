@@ -37,9 +37,11 @@
     chga = "!function gchag() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchag"
     ls = ls-files
     s = status
-    ss = stash save --include-untracked
+    ss = stash push --include-untracked
     sa = stash apply
+    san = "!function gsan() { stash apply stash{$n} }; gsan"
     sp = stash pop
+    spn = "!function gspn() { stash pop stash{$n} }; gspn"
     sd = stash drop
     sl = stash list
     lg = !git-graph -n 15

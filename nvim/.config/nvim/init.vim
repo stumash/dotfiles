@@ -320,7 +320,7 @@ WK.add {
   -- not really a telescope command
   { "<leader>f'", "/[^[:alnum:][:punct:][:space:]]<cr>", desc = "search non-ascii chars" },
   -- git telescope commands
-  { 
+  {
     { "<leader>fg", group = "git telescope commands" },
     { "<leader>fgB", "<cmd>Telescope git_branches<cr>", desc = "search git branches"},
     { "<leader>fgs", "<cmd>Telescope git_status<cr>",   desc = "search git status"},
@@ -674,13 +674,12 @@ lua require("telescope").load_extension('harpoon')
 lua << EOF
 local harpoon_mark = require'harpoon.mark'
 local harpoon_ui = require'harpoon.ui'
-WK.register {
-  ["<leader>h"] = {
-    name = "harpoon",
-    a = { harpoon_mark.add_file, "harpoon add file" },                    -- <c-d> to delete entries
-    h = { "<cmd>Telescope harpoon marks<cr>", "harpoon telescope menu" }, -- <c-d> to delete entries
-    H = { harpoon_ui.toggle_quick_menua, "harpoon toggle menu" },
-  }
+WK.add {
+  mode = { "n" },
+  { "<leader>h", group = "harpoon" },
+  { "<leader>ha", harpoon_mark.add_file,              desc = "harpoon add file" },       -- <c-d> to delete entries
+  { "<leader>hh", "<cmd>Telescope harpoon marks<cr>", desc = "harpoon telescope menu" }, -- <c-d> to delete entries
+  { "<leader>hH", harpoon_ui.toggle_quick_menu,       desc = "harpoon toggle menu" },
 }
 EOF
 
