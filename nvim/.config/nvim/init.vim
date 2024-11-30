@@ -72,6 +72,7 @@ Plug 'stevearc/aerial.nvim'
 Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'rafamadriz/friendly-snippets'
+Plug 'github/copilot.vim'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
