@@ -23,7 +23,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
   * git-igitt
   * zoxide
 * gogh
-* jq
+* jq, csvq
 * neovim
   * vim-plug
 * iterm2
