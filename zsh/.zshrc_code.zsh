@@ -2,8 +2,7 @@
 export PATH="$HOME/bin/:$PATH"
 
 # asdf first, then its tools, then everything else
-[ -f "$HOME/.asdf/asdf.sh" ] &&    source "$HOME/.asdf/asdf.sh"
-which asdf > /dev/null 2>&1 &&     source "$HOME/.asdf/installs/rust/stable/env"
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # initialize some tools
 [ -f "$HOME/.cargo/env" ] &&     source "$HOME/.cargo/env"

@@ -11,6 +11,8 @@
 
 [push]
     default = current
+[pull]
+    default = current
 [alias]
     cm = commit
     cmm = commit -m
@@ -33,10 +35,12 @@
     co = clone
     ce = clean
     ch = checkout
+    chm = checkout master
     chg = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1 | choose -1); }; gchg"
     chga = "!function gchag() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchag"
     ls = ls-files
     s = status
+    su = ls-files --others --exclude-standard # untracked files that would appear in status
     ss = stash push --include-untracked
     sa = stash apply
     san = "!function gsan() { stash apply stash{$n} }; gsan"
