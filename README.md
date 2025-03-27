@@ -10,6 +10,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
 * git > 2.38.0
 * asdf
 * stow
+* pipx
 * starship
 * neovim
   * vim-plug
