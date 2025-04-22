@@ -766,7 +766,7 @@ lua require'nvim-surround'.setup{}
 
 """" text-case and nerdcommenter
 lua << EOF
--- nergcommenter
+-- nerdcommenter
 vim.g.NERDDefaultAlign = 'left'
 vim.g.NERDSpaceDelims = 1
 vim.g.NERDCreateDefaultMappings = 0
@@ -789,27 +789,22 @@ local function make_onkeypress_function(textcase_fn_name)
 end
 
 for _, mode in ipairs { "n", "v" } do
-  WK.register {
-    ["<leader>c"] = {
-      mode = mode,
-      name = "NerdComment & Text-Case",
-      -- nerd commenter
-      ["/"] = { "<Plug>NERDCommenterToggle", "toggle comment" },
-      ["?"] = { "<Plug>NERDCommenterInvert", "invert comment" },
-      -- text-case
-      c = {
-        mode = mode,
-        name = "text-case",
-        u = { make_onkeypress_function('to_upper_case'), "upper case" },
-        l = { make_onkeypress_function('to_lower_case'), "lower case" },
-        ["_"] = { make_onkeypress_function('to_snake_case'), "snake case" },
-        ["-"] = { make_onkeypress_function('to_dash_case'), "dash case" },
-        ["."] = { make_onkeypress_function('to_dot_case'), "dot case" },
-        c = { make_onkeypress_function('to_camel_case'), "camel case" },
-        p = { make_onkeypress_function('to_pascal_case'), "pascal case" },
-        ["/"] = { make_onkeypress_function('to_path_case'), "path case" },
-      }
-    }
+  WK.add {
+    mode = mode,
+    { "<leader>c", group = "NerdComment & Text-Case" },
+    { "<leader>c/", "<Plug>NERDCommenterToggle", desc = "toggle comment" },
+    { "<leader>c?", "<Plug>NERDCommenterInvert", desc = "invert comment" },
+    { 
+      { "<leader>cc", name = "text-case" },
+      { "<leader>ccu", make_onkeypress_function('to_upper_case'),  desc = "upper case" },
+      { "<leader>ccl", make_onkeypress_function('to_lower_case'),  desc = "lower case" },
+      { "<leader>cc_", make_onkeypress_function('to_snake_case'),  desc = "snake case" },
+      { "<leader>cc-", make_onkeypress_function('to_dash_case'),   desc = "dash case" },
+      { "<leader>cc.", make_onkeypress_function('to_dot_case'),    desc = "dot case" },
+      { "<leader>ccc", make_onkeypress_function('to_camel_case'),  desc = "camel case" },
+      { "<leader>ccp", make_onkeypress_function('to_pascal_case'), desc = "pascal case" },
+      { "<leader>cc/", make_onkeypress_function('to_path_case'),   desc = "path case" },
+    },
   }
 end
 EOF
@@ -817,9 +812,7 @@ EOF
 
 """" undotree: view and access the entire edit history of the buffer
 lua << EOF
-WK.register {
-  ["<leader>u"] = { "<cmd>UndotreeToggle<cr>", "undotree toggle"}
-}
+WK.add { { "<leader>u", "<cmd>UndotreeToggle<cr>", desc = "undotree toggle" } }
 if bool(vim.fn.has("persistent_undo")) then
   local target_path = os.getenv("HOME") .. "/.nvim/undodir/"
   if not bool(vim.fn.isdirectory(target_path)) then
@@ -865,16 +858,14 @@ function toggleNums() setColNums(not all(isTrue, { vim.o.number, vim.o.relativen
 
 setColNums(true)
 
-WK.register {
-  ["<leader>NN"] = { "<cmd>lua toggleNums()<cr>", "toggle line numbers" },
-}
+WK.add { { "<leader>NN", "<cmd>lua toggleNums()<cr>", desc= "toggle line numbers" } }
 EOF
 
 " reload file
 lua << EOF
-WK.register {
-  ["<leader>rr"] = { "<cmd>bufdo e<cr>", "re-open current file" },
-  ["<leader>rc"] = { "<cmd>source ~/.config/nvim/init.vim<cr>", "re-load config" }
+WK.add {
+  { "<leader>rr", "<cmd>bufdo e<cr>",                        desc = "re-open current file" },
+  { "<leader>rc", "<cmd>source ~/.config/nvim/init.vim<cr>", desc = "re-load config" },
 }
 EOF
 " remove trailing whitespace + tabs to spaces
@@ -883,11 +874,7 @@ function RemoveTrailingWhitespace_and_TabsToSpaces()
   :exe "silent! :%s/\\t/    /g"
 endfunction
 
-lua << EOF
-WK.register {
-  ["<leader>rmw"] = { "<cmd>call RemoveTrailingWhitespace_and_TabsToSpaces()<cr>", "rm trailing \\s, and tabs to spaces" }
-}
-EOF
+lua WK.add { { "<leader>rmw", "<cmd>call RemoveTrailingWhitespace_and_TabsToSpaces()<cr>", desc = "rm trailing \\s, and tabs to spaces" } }
 
 " :split opens to the right or below
 lua vim.o.splitright = true
@@ -900,15 +887,13 @@ lua vim.go.wb = false
 
 """" windows
 lua << EOF
-WK.register {
-  ["<leader><leader>"] = {
-    mode = "n",
-    name = "switching windows",
-    l = { "<c-w>l", "right" },
-    h = { "<c-w>h", "left" },
-    j = { "<c-w>j", "down" },
-    k = { "<c-w>k", "up" },
-    o = { "<c-w><c-w>", "other" },
-  },
+WK.add {
+  mode = "n",
+  { "<leader><leader>", group = "switching windows" },
+  { "<leader><leader>l", "<c-w>l",     desc = "right" },
+  { "<leader><leader>h", "<c-w>h",     desc = "left" },
+  { "<leader><leader>j", "<c-w>j",     desc = "down" },
+  { "<leader><leader>k", "<c-w>k",     desc = "up" },
+  { "<leader><leader>o", "<c-w><c-w>", desc = "other" },
 }
 EOF
