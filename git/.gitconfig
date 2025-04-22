@@ -6,6 +6,8 @@
     path = ~/flourish/.gitconfig
 [includeIf "gitdir:~/me/code/"]
     path = ~/me/code/.gitconfig
+[includeIf "gitdir:~/me/obsidian_vault_stumash/"]
+    path = ~/me/code/.gitconfig
 [includeIf "gitdir:~/dotfiles/"]
     path = ~/me/code/.gitconfig
 

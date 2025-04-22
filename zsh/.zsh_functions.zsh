@@ -13,3 +13,17 @@ function ma() {
     cmd=$(echo "$@" | tr ' ' '-')
     (man "$cmd") || ("$cmd" --help | bat -l man --style=plain)
 }
+
+function retry() {
+  local max_attempts=$1
+  local cmd="${@:2}"
+  local attempt=1
+  until $cmd; do
+    if [ $attempt -ge $max_attempts ]; then
+      echo "Command failed after $max_attempts attempts."
+      return 1
+    fi
+    echo "Attempt $attempt failed. Retrying..."
+    attempt=$(( attempt + 1 ))
+  done
+}

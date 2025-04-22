@@ -435,7 +435,8 @@ require"nvim-treesitter.configs".setup {
     lint_events = { "BufWrite", "CursorHold" },
   },
   ensure_installed = {
-    "c", "rust", "cpp",
+    "c", "cpp",
+    "rust",
     "javascript", "typescript", "tsx",
     "json", "ron", "yaml",
     "lua", "teal", "vim",
@@ -688,13 +689,11 @@ EOF
 """" icon-picker
 lua << EOF
 require'icon-picker'.setup{}
-WK.register {
-  ["<leader>i"] = {
-    mode = "n",
-    name = "icon-picker",
-    i = {"<cmd>PickEmoji<cr>", "pick emoji"},
-    I = {"<cmd>PickEverything<cr>", "pick any icon"},
-  }
+WK.add {
+  mode = { "n" },
+  { "<leader>i", group = "icon-picker" },
+  { "<leader>ii", "<cmd>PickEmoji<cr>",      desc = "pick emoji" },
+  { "<leader>iI", "<cmd>PickEverything<cr>", desc = "pick any icon" },
 }
 EOF
 " e is for emoji
@@ -726,36 +725,35 @@ lua require('git-conflict').setup()
 lua << EOF
 local gs = require'gitsigns'
 function toggle_blame() print('show_blame=' .. bool_to_str(gs.toggle_current_line_blame())) end
-WK.register {
-  ["<leader>g"] = {
-    name = "git",
-    h = {
-      name = "gitsigns hunk actions",
-      p = {"<cmd>Gitsigns preview_hunk<cr>",    "preview hunk"},
-      r = {"<cmd>Gitsigns reset_hunk<cr>",      "reset hunk"},
-      s = {"<cmd>Gitsigns stage_hunk<cr>",      "stage hunk"},
-      u = {"<cmd>Gitsigns undo_stage_hunk<cr>", "unstage hunk"},
-      [']'] = {"<cmd>Gitsigns next_hunk<cr>",       "next hunk"},
-      ['['] = {"<cmd>Gitsigns prev_hunk<cr>",       "previous hunk"},
-      c = {
-        name = "change gitsigns diff base",
-        c = {"<cmd>Gitsigns change_base<space>",     "diff against custom refname"},
-        m = {"<cmd>Gitsigns change_base master<cr>", "diff against master"},
-        h = {"<cmd>Gitsigns change_base HEAD<cr>",   "diff unstaged"},
-      },
+WK.add {
+  mode = "n",
+  { "<leader>g", group = "git" },
+  { "<leader>gb", toggle_blame,      desc = "toggle line blame"},
+  { "<leader>gg", "<cmd>Neogit<cr>", desc = "neogit"},
+  {
+    { "<leader>gh", group = "gitsigns hunk" },
+    { "<leader>ghp", "<cmd>Gitsigns preview_hunk<cr>",    desc = "preview hunk" },
+    { "<leader>ghr", "<cmd>Gitsigns reset_hunk<cr>",      desc = "reset hunk" },
+    { "<leader>ghs", "<cmd>Gitsigns stage_hunk<cr>",      desc = "stage hunk" },
+    { "<leader>ghu", "<cmd>Gitsigns undo_stage_hunk<cr>", desc = "unstage hunk" },
+    { "<leader>gh]", "<cmd>Gitsigns next_hunk<cr>",       desc = "next hunk" },
+    { "<leader>gh[", "<cmd>Gitsigns prev_hunk<cr>",       desc = "previous hunk" },
+    {
+      { "<leader>ghc", group = "change gitsigns diff base" },
+      { "<leader>ghcc", "<cmd>Gitsigns change_base<space>",     desc = "diff against custom refname" },
+      { "<leader>ghcm", "<cmd>Gitsigns change_base master<cr>", desc = "diff against master" },
+      { "<leader>ghch", "<cmd>Gitsigns change_base HEAD<cr>",   desc = "diff unstaged" },
     },
-    b = {toggle_blame, "toggle line blame"},
-    g = {"<cmd>Neogit<cr>", "neogit"},
-    c = {
-      name = "conflict",
-      o = {"<cmd>GitConflictChooseOurs<cr>",   "choose ours"},
-      t = {"<cmd>GitConflictChooseTheirs<cr>", "choose theirs"},
-      b = {"<cmd>GitConflictChooseBoth<cr>",   "choose both"},
-      n = {"<cmd>GitConflictChooseNone<cr>",   "choose neither"},
-      c = {"<cmd>GitConflictListQ<cr>",        "list conflicts"},
-      ["]"] = {"<cmd>GitConflictNextConflict<cr>", "next conflict"},
-      ["["] = {"<cmd>GitConflictPrevConflict<cr>", "prev conflict"},
-    },
+  },
+  {
+    { "<leader>gc", group = "conflict" },
+    { "<leader>gco", "<cmd>GitConflictChooseOurs<cr>",   desc = "choose ours" },
+    { "<leader>gct", "<cmd>GitConflictChooseTheirs<cr>", desc = "choose theirs" },
+    { "<leader>gcb", "<cmd>GitConflictChooseBoth<cr>",   desc = "choose both" },
+    { "<leader>gcn", "<cmd>GitConflictChooseNone<cr>",   desc = "choose neither" },
+    { "<leader>gcc", "<cmd>GitConflictListQ<cr>",        desc = "list conflicts" },
+    { "<leader>gc]", "<cmd>GitConflictNextConflict<cr>", desc = "next conflict" },
+    { "<leader>gc[", "<cmd>GitConflictPrevConflict<cr>", desc = "prev conflict" },
   },
 }
 EOF
@@ -846,7 +844,7 @@ vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 
 vim.keymap.set('n', 'zR', require'ufo'.openAllFolds, { desc = "open all folds" })
-vim.keymap.set('n', 'zM', require'ufo'.closeAllFolds, { desc = "open all folds" })
+vim.keymap.set('n', 'zM', require'ufo'.closeAllFolds, { desc = "close all folds" })
 require'ufo'.setup {
   provider_selector = function(bufnr, filetype, buftype) return {'treesitter', 'indent'} end,
 }
