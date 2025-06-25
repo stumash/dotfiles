@@ -11,6 +11,10 @@
 [includeIf "gitdir:~/dotfiles/"]
     path = ~/me/code/.gitconfig
 
+# ssh instead of https by default
+[url "ssh://git@github.com/"]
+  insteadOf = https://github.com/
+
 [push]
     default = current
 [pull]

@@ -73,6 +73,7 @@ Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'github/copilot.vim'
+Plug 'LunarVim/bigfile.nvim'
 " colors/appearance
 Plug 'feline-nvim/feline.nvim'
 Plug 'stumash/snowball.nvim'
@@ -641,7 +642,7 @@ WK.add {
 vim.lsp.set_log_level("debug")
 local lspconfig = require('lspconfig')
 
-local servers = { "rust_analyzer", "tsserver", "pyright", "teal_ls", "kotlin_language_server" }
+local servers = { "rust_analyzer", "tsserver", "ruff", "pyright", "teal_ls", "kotlin_language_server" }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     capabilities = require'cmp_nvim_lsp'.default_capabilities(),

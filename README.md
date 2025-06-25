@@ -13,6 +13,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
   * awscli
 * stow
 * pipx
+* nvm
 * starship
 * neovim
   * vim-plug
