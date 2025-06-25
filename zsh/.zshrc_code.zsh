@@ -1,3 +1,10 @@
+ZVM_INIT_MODE=sourcing
+# oh-my-zsh
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME=""
+plugins=(git zsh-syntax-highlighting zsh-autosuggestions zsh-vi-mode ssh gradle asdf fzf ssh-agent)
+source $ZSH/oh-my-zsh.sh
+
 # path
 export PATH="$HOME/bin/:$PATH"
 
@@ -17,3 +24,4 @@ which starship > /dev/null 2>&1 && [ "$STARSHIP_SHELL" != "zsh" ] && eval "$(sta
 [ -f "$HOME/.zsh_aliases.zsh" ]   && source "$HOME/.zsh_aliases.zsh"
 [ -f "$HOME/.zsh_functions.zsh" ] && source "$HOME/.zsh_functions.zsh"
 [ -f "$HOME/.zsh_env.zsh" ]       && source "$HOME/.zsh_env.zsh"
+[ -f "$HOME/.zsh_ssh.zsh" ]       && source "$HOME/.zsh_ssh.zsh"
