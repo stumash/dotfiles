@@ -6,20 +6,22 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
 
 ### Tools I Use
 
+* iterm2
 * brew
   * fzf
   * moar
-* iterm2
-* git > 2.38.0
-* asdf
-  * python
-  * awscli
-* stow
-* pipx
-* nvm
-* starship
-* neovim
-  * vim-plug
+  * keychain
+  * stow
+  * pipx
+  * starship
+  * neovim
+    * vim-plug
+  * git > 2.38.0
+  * jq
+  * csvq
+  * asdf
+    * python
+    * awscli
 * rustup
   * rust, and tools below install via `cargo install $name`
     * exa
@@ -33,9 +35,11 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
     * git-graph
     * git-igitt
     * zoxide
+* nvm
+  * node
+  * npm
+    * yarn
 * gogh
-* jq
-* csvq
 
 ### mac
 
