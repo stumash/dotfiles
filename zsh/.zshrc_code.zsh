@@ -15,8 +15,8 @@ export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 [ -f "$HOME/.cargo/env" ] &&     source "$HOME/.cargo/env"
 which zoxide > /dev/null 2>&1 && eval "$(zoxide init zsh)"
 which fzf > /dev/null 2>&1 &&    source <(fzf --zsh)
-which bat > /dev/null 2>&1 &&    export PAGER='bat'
-which bat > /dev/null 2>&1 &&    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+which moar > /dev/null 2>&1 &&   export PAGER=moar
+which moar > /dev/null 2>&1 &&   export MANPAGER=moar
 
 which starship > /dev/null 2>&1 && [ "$STARSHIP_SHELL" != "zsh" ] && eval "$(starship init zsh)"
 

@@ -8,6 +8,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
 
 * brew
   * fzf
+  * moar
 * iterm2
 * git > 2.38.0
 * asdf
