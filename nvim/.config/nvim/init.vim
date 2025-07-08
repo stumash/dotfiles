@@ -9,7 +9,7 @@ lua vim.o.scrolloff = 3 -- always at least 3 lines above and below cursor a top 
 lua vim.o.hidden = true -- allow open new buffer even when current is modified
 lua vim.o.timeoutlen = 300
 lua vim.o.updatetime = 300
-lua vim.o.clipboard = "unnamed" -- yank to system clipboard
+lua vim.o.clipboard = "unnamedplus" -- yank to system clipboard
 lua vim.o.textwidth = 0
 set foldmethod=indent
 set nofoldenable
@@ -642,7 +642,7 @@ WK.add {
 vim.lsp.set_log_level("debug")
 local lspconfig = require('lspconfig')
 
-local servers = { "rust_analyzer", "tsserver", "ruff", "pyright", "teal_ls", "kotlin_language_server" }
+local servers = { "rust_analyzer", "tsserver", "pyright", "teal_ls", "kotlin_language_server" }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     capabilities = require'cmp_nvim_lsp'.default_capabilities(),
