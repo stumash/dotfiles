@@ -12,11 +12,12 @@ export PATH="$HOME/bin/:$PATH"
 export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # initialize some tools
-[ -f "$HOME/.cargo/env" ] &&     source "$HOME/.cargo/env"
-which zoxide > /dev/null 2>&1 && eval "$(zoxide init zsh)"
-which fzf > /dev/null 2>&1 &&    source <(fzf --zsh)
-which moar > /dev/null 2>&1 &&   export PAGER=moar
-which moar > /dev/null 2>&1 &&   export MANPAGER=moar
+[ -f "$HOME/.cargo/env" ] &&                                   source "$HOME/.cargo/env"
+which zoxide > /dev/null 2>&1 &&                               eval "$(zoxide init zsh)"
+which fzf > /dev/null 2>&1 &&                                  source <(fzf --zsh)
+which moor > /dev/null 2>&1 &&                                 export PAGER='moor -quit-if-one-screen'
+which moor > /dev/null 2>&1 && which delta > /dev/null 2>&1 && export DELTA_PAGER='moor -quit-if-one-screen'
+which moor > /dev/null 2>&1 &&                                 export MANPAGER=moor
 
 which starship > /dev/null 2>&1 && [ "$STARSHIP_SHELL" != "zsh" ] && eval "$(starship init zsh)"
 
