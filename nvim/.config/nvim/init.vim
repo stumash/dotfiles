@@ -261,6 +261,7 @@ end
 
 local telescope = require'telescope'
 local lga_actions = require'telescope-live-grep-args.actions'
+local actions = require'telescope.actions'
 telescope.setup {
   extensions = { live_grep_args = { auto_quoting = true } },
   defaults = {
@@ -291,7 +292,7 @@ telescope.setup {
     },
     mappings = {
       i = {
-        ['<CR>'] = select_one_or_multi,
+        ['<CR>'] = function(pbn) select_one_or_multi(pbn); actions.center(pbn) end,
         ['<C-k>'] = lga_actions.quote_prompt({postfix = [[ -g "!*test*" -g "!*notebook*"]]}),
       },
     },

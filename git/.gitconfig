@@ -2,7 +2,7 @@
 # [user]
 #     name = Stuart Mashaal
 #     email = <email address>
-[includeIf "gitdir:~/flourish/"]
+[include] # always try to default to flourish git credentials
     path = ~/flourish/.gitconfig
 [includeIf "gitdir:~/me/code/"]
     path = ~/me/code/.gitconfig
