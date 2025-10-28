@@ -37,7 +37,7 @@ Plug 'ziontee113/icon-picker.nvim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'TimUntersberger/neogit'
-Plug 'akinsho/git-conflict.nvim'
+Plug 'akinsho/git-conflict.nvim', {'tag': '*'}
 Plug 'j-hui/fidget.nvim', { 'tag': 'legacy' }
 Plug 'tpope/vim-repeat'
 Plug 'ggandor/leap.nvim'
