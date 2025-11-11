@@ -614,7 +614,7 @@ WK.add {
 EOF
 
 
-"""" LSP-CONFIG: neovim-native Language Server Protocol client configuration
+"""" lspconfig: neovim-native Language Server Protocol client configuration
 lua << EOF
 WK.add {
   mode = { "n" },
@@ -644,6 +644,7 @@ vim.lsp.set_log_level("debug")
 
 local servers = { "rust_analyzer", "ts_ls", "pyright", "teal_ls", "kotlin_language_server" }
 for _, lsp in ipairs(servers) do
+  -- note that these two functions, vim.lsp.config and vim.lsp.enable, are provided by the lspconfig plug, not native vim lsp api
   vim.lsp.config(lsp, {
     capabilities = require'cmp_nvim_lsp'.default_capabilities(),
     flags = { debounce_text_changes = 150 },
