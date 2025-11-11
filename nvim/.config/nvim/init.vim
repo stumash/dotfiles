@@ -641,14 +641,14 @@ WK.add {
 }
 
 vim.lsp.set_log_level("debug")
-local lspconfig = require('lspconfig')
 
 local servers = { "rust_analyzer", "ts_ls", "pyright", "teal_ls", "kotlin_language_server" }
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
+  vim.lsp.config(lsp, {
     capabilities = require'cmp_nvim_lsp'.default_capabilities(),
     flags = { debounce_text_changes = 150 },
-  }
+  })
+  vim.lsp.enable(lsp)
 end
 EOF
 
