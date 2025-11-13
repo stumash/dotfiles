@@ -44,7 +44,7 @@ Plug 'ggandor/leap.nvim'
 Plug 'kylechui/nvim-surround'
 Plug 'tommcdo/vim-exchange'
 Plug 'airblade/vim-rooter'
-Plug 'neovim/nvim-lspconfig'
+Plug 'neovim/nvim-lspconfig' " download default configs for most LSPs and put them in folders that neovim knows to check
 Plug 'unblevable/quick-scope'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-tree/nvim-tree.lua'
