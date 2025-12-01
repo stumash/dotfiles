@@ -22,6 +22,7 @@ This project really only works if you clone it to your `~` (`$HOME`) folder.
   * asdf
     * python
     * awscli
+  * yazi
 * rustup
   * rust, and tools below install via `cargo install $name`
     * exa
