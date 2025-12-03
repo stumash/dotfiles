@@ -40,10 +40,9 @@
     bn = checkout -b
     co = clone
     ce = clean
-    ch = checkout
     chm = checkout master
-    chg = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1 | choose -1); }; gchg"
-    chga = "!function gchga() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchga"
+    ch = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1 | choose -1); }; gchg"
+    cha = "!function gchga() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchga"
     ls = ls-files
     s = status
     su = ls-files --others --exclude-standard # untracked files that would appear in status
@@ -73,9 +72,8 @@
     rs = reset
     rsh = reset --hard
     rsc = reset --cached
-    m = merge
     mm = merge master
-    mg = "!function mg() { git merge $(git branch | rg \"$1\" | fzf -1 | choose -1); }; mg"
+    m = "!function mg() { git merge $(git branch | rg \"$1\" | fzf -1 | choose -1); }; mg"
 [diff]
     algorithm = patience
 
