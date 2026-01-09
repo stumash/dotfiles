@@ -37,12 +37,12 @@
     bda = "!function g_bda() { git branch | rg -v '\\*|master|main|qa|dev|uat' | xargs git branch -d; }; g_bda" # delete extra branches
     bdA = "!function g_bdA() { git branch | rg -v '\\*|master|main|qa|dev|uat' | xargs git branch -D; }; g_bdA" # force-delete extra branches
     bD = branch -D
-    bn = checkout -b
+    bn = switch -c
     co = clone
     ce = clean
-    chm = checkout master
-    ch = "!function gchg() { git checkout $(git branch | rg \"$1\" | fzf -1 | choose -1); }; gchg"
-    cha = "!function gchga() { git checkout $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchga"
+    chm = switch master
+    ch = "!function gchg() { git switch $(git branch | rg \"$1\" | fzf -1 | choose -1); }; gchg"
+    cha = "!function gchga() { git switch $(git branch -a | sd 'remotes/[^/]+/' '' | rg \"$1\" | sort | uniq | fzf -1 | choose -1); }; gchga"
     ls = ls-files
     s = status
     su = ls-files --others --exclude-standard # untracked files that would appear in status
