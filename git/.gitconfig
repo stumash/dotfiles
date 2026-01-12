@@ -28,11 +28,9 @@
     aacmm = !git add -A && git commit -m
     f = fetch
     fa = fetch --all
-    b = branch
-    ba = branch --all
     bc = branch --show-current
-    bg = "!function g_bg() { git branch | rg \"$1\" | fzf -1 | choose -1; }; g_bg"
-    bga = !git branch --all | rg
+    b = "!function g_b() { if [ -n \"$1\" ]; then git branch | rg \"$1\" | fzf -1 | choose -1; else git branch; fi }; g_b"
+    ba = "!function g_ba() { if [ -n \"$1\" ]; then git branch --all | rg \"$1\" | fzf -1 | choose -1; else git branch --all; fi }; g_ba"
     bd = branch -d
     bda = "!function g_bda() { git branch | rg -v '\\*|master|main|qa|dev|uat' | xargs git branch -d; }; g_bda" # delete extra branches
     bdA = "!function g_bdA() { git branch | rg -v '\\*|master|main|qa|dev|uat' | xargs git branch -D; }; g_bdA" # force-delete extra branches
