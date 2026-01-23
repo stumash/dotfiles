@@ -57,6 +57,7 @@
     lg = !git-graph -n 15
     lga = !git-graph
     lgi = !git-igitt
+    lgb = !git log --graph --oneline --decorate
     d = diff
     dc = diff --cached
     dm = diff master
